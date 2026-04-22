@@ -1,0 +1,117 @@
+{
+  "project_name": "Biblioteca Escolar RGB",
+  "theme": "dark",
+  "archetype": "5 - Jewel & Luxury",
+  "design_philosophy": {
+    "core": "A premium, magical, and institutional educational dashboard. It blends the gravitas of a classic library (dark green, gold, serif fonts) with the modern functionality of a glassmorphism dashboard.",
+    "vibe": "Intellectual, cinematic, moody, expensive, and clear.",
+    "contrast": "High contrast between the deep dark background and the glowing golden accents."
+  },
+  "colors": {
+    "background_base": "#020b04",
+    "primary": "#051a09",
+    "primary_light": "#0a2e12",
+    "accent_gold": "#c9a227",
+    "accent_gold_hover": "#b08d22",
+    "accent_gold_muted": "rgba(201, 162, 39, 0.2)",
+    "text_primary": "#f4f1e1",
+    "text_secondary": "#a3b3a6",
+    "surface_glass": "rgba(5, 26, 9, 0.6)",
+    "surface_glass_light": "rgba(255, 255, 255, 0.03)",
+    "border_glass": "rgba(201, 162, 39, 0.15)",
+    "border_glass_hover": "rgba(201, 162, 39, 0.4)",
+    "error_red": "#8a2e2e",
+    "success_green": "#2e8a4a"
+  },
+  "typography": {
+    "font_families": {
+      "headings": "'Cinzel', serif",
+      "body_elegant": "'Cormorant Garamond', serif",
+      "ui_functional": "'DM Sans', sans-serif"
+    },
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight font-cinzel text-[#c9a227]",
+      "h2": "text-3xl sm:text-4xl tracking-tight font-cinzel text-white",
+      "h3": "text-xl sm:text-2xl font-cinzel text-[#c9a227]",
+      "body_lg": "text-lg sm:text-xl font-cormorant leading-relaxed text-[#f4f1e1]",
+      "body": "text-base font-cormorant leading-relaxed text-[#a3b3a6]",
+      "ui_text": "text-sm font-dm-sans text-[#f4f1e1]",
+      "ui_label": "text-xs font-dm-sans tracking-widest uppercase text-[#c9a227]/80"
+    }
+  },
+  "layout_and_spacing": {
+    "container": "max-w-7xl mx-auto px-6 sm:px-8 lg:px-12",
+    "spacing_scale": "Use generous spacing. gap-8 to gap-12 between major sections. p-8 inside cards.",
+    "grids": {
+      "featured_books": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6",
+      "categories": "grid grid-cols-1 md:grid-cols-3 gap-8",
+      "subjects_list": "grid grid-cols-1 md:grid-cols-2 gap-4"
+    }
+  },
+  "components": {
+    "header": {
+      "style": "fixed top-0 w-full z-50 backdrop-blur-2xl bg-[#020b04]/80 border-b border-[#c9a227]/20",
+      "nav_links": "font-dm-sans text-sm tracking-wide text-[#f4f1e1] hover:text-[#c9a227] transition-colors"
+    },
+    "hero": {
+      "background_overlay": "absolute inset-0 bg-gradient-to-b from-[#020b04]/60 via-[#051a09]/80 to-[#020b04]",
+      "content_alignment": "flex flex-col items-center justify-center text-center max-w-4xl mx-auto pt-32 pb-20",
+      "cta_button": "px-8 py-4 bg-[#c9a227] text-[#020b04] font-dm-sans font-bold rounded-sm hover:bg-[#b08d22] transition-all transform hover:-translate-y-1 shadow-[0_0_20px_rgba(201,162,39,0.3)]"
+    },
+    "glass_card": {
+      "classes": "relative overflow-hidden rounded-lg bg-[#ffffff]/[0.02] backdrop-blur-xl border border-[#c9a227]/15 p-6 hover:border-[#c9a227]/40 transition-all duration-300",
+      "shadow": "shadow-[0_8px_32px_rgba(0,0,0,0.5)]",
+      "hover_effect": "hover:-translate-y-1"
+    },
+    "modal_hierarchical": {
+      "overlay": "fixed inset-0 z-50 bg-[#020b04]/90 backdrop-blur-sm flex items-center justify-center p-4",
+      "container": "w-full max-w-4xl bg-[#051a09] border border-[#c9a227]/30 rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh]",
+      "header": "p-6 border-b border-[#c9a227]/20 bg-[#020b04]/50",
+      "body": "p-6 overflow-y-auto custom-scrollbar flex-1",
+      "breadcrumb": "flex items-center gap-2 font-dm-sans text-sm text-[#c9a227] mb-6"
+    },
+    "subject_item": {
+      "container": "flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-lg bg-[#ffffff]/[0.03] border border-white/5",
+      "icon_wrapper": "w-12 h-12 rounded-full bg-[#c9a227]/10 flex items-center justify-center text-[#c9a227]",
+      "input": "flex-1 bg-black/40 border border-[#c9a227]/20 rounded px-4 py-2 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227]",
+      "save_button": "px-4 py-2 bg-transparent border border-[#c9a227] text-[#c9a227] rounded text-sm font-dm-sans hover:bg-[#c9a227] hover:text-[#020b04] transition-colors",
+      "go_button": "px-4 py-2 bg-[#c9a227] text-[#020b04] rounded text-sm font-dm-sans font-bold hover:bg-[#b08d22] transition-colors flex items-center gap-2"
+    }
+  },
+  "animations": {
+    "page_load": "Fade in and slight upward translation (Framer Motion: initial={opacity: 0, y: 20} animate={opacity: 1, y: 0})",
+    "modal_enter": "Scale up slightly and fade in (Framer Motion: initial={opacity: 0, scale: 0.95} animate={opacity: 1, scale: 1})",
+    "micro_interactions": "Smooth 200ms ease transitions on all hover states (buttons, cards, links)."
+  },
+  "media": {
+    "images": {
+      "hero_background": {
+        "url": "https://images.pexels.com/photos/35719475/pexels-photo-35719475.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Grand library with staircase and dark ambient lighting",
+        "usage": "Hero section background with heavy dark gradient overlay"
+      },
+      "abstract_gold_texture": {
+        "url": "https://images.pexels.com/photos/4046683/pexels-photo-4046683.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Textured abstract dark green and gold waves",
+        "usage": "Subtle background element or modal background overlay (highly transparent)"
+      },
+      "featured_books_placeholders": [
+        "https://images.unsplash.com/photo-1674154642704-0a4f0bdcb676?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHw0fHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1658827053969-a181495a33f9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1728506972831-193841eb2961?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwyfHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1575873896343-84af1dc92fc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxsaWJyYXJ5JTIwZGFyayUyMHdvb2R8ZW58MHx8fHwxNzc2ODgyMjQyfDA&ixlib=rb-4.1.0&q=85"
+      ]
+    }
+  },
+  "instructions_to_main_agent": [
+    "Load fonts (Cinzel, Cormorant Garamond, DM Sans) via Google Fonts in index.html.",
+    "Implement the UI using pure HTML/Tailwind for structural and marketing elements (Hero, Grids, Layouts) to allow custom glassmorphism styling without Shadcn's rigid card defaults.",
+    "Use Shadcn UI primarily for complex interactives if needed, but customize their styling heavily to match the dark green/gold glassmorphism theme.",
+    "Data structure for Modal Navigation: Nivel (Primaria, Secundaria, Media) -> Grado (1 to 11 depending on Nivel) -> Materias (Matemáticas, Ciencias, Literatura, Historia, etc).",
+    "MongoDB Integration: Create simple FastAPI endpoints to GET and POST google drive URLs for a specific grade/subject combination. Keep it open (no auth).",
+    "Ensure all interactive elements (buttons, inputs, cards) have role-based `data-testid` attributes (e.g., `data-testid=\"save-drive-link-btn\"`).",
+    "Use Lucide-React for icons, specifically targeting academic and tech icons (Library, BookOpen, ChevronRight, ExternalLink, Save).",
+    "Maintain strict accessibility for text contrast over the dark green background. Do not let text become illegible due to blur or low opacity.",
+    "Do not use generic blue or purple colors. Stick strictly to the #051a09 (Dark Green) and #c9a227 (Gold) palette."
+  ]
+}
