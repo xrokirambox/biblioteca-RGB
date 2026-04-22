@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,7 +6,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import Dict
 import uuid
 from datetime import datetime, timezone
 
@@ -19,54 +19,83 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+# ---------- Models ----------
+class LinkCreate(BaseModel):
+    grado_id: str
+    materia_id: str
+    url: str
+
+
+class LinkRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    grado_id: str
+    materia_id: str
+    url: str
+    updated_at: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
 
-# Add your routes to the router instead of directly to app
+# ---------- Routes ----------
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Biblioteca Escolar RGB API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@api_router.get("/links")
+async def get_all_links() -> Dict[str, Dict[str, str]]:
+    """Return a nested dict: { grado_id: { materia_id: url } }"""
+    cursor = db.library_links.find({}, {"_id": 0})
+    result: Dict[str, Dict[str, str]] = {}
+    async for doc in cursor:
+        g = doc["grado_id"]
+        m = doc["materia_id"]
+        result.setdefault(g, {})[m] = doc["url"]
+    return result
 
-# Include the router in the main app
+
+@api_router.get("/links/{grado_id}")
+async def get_grado_links(grado_id: str) -> Dict[str, str]:
+    cursor = db.library_links.find({"grado_id": grado_id}, {"_id": 0})
+    out: Dict[str, str] = {}
+    async for doc in cursor:
+        out[doc["materia_id"]] = doc["url"]
+    return out
+
+
+@api_router.post("/links", response_model=LinkRecord)
+async def save_link(payload: LinkCreate):
+    url = payload.url.strip()
+    if not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
+        raise HTTPException(status_code=400, detail="URL inválida")
+
+    record = LinkRecord(
+        grado_id=payload.grado_id,
+        materia_id=payload.materia_id,
+        url=url,
+    )
+    doc = record.model_dump()
+    await db.library_links.update_one(
+        {"grado_id": payload.grado_id, "materia_id": payload.materia_id},
+        {"$set": doc},
+        upsert=True,
+    )
+    return record
+
+
+@api_router.delete("/links/{grado_id}/{materia_id}")
+async def delete_link(grado_id: str, materia_id: str):
+    res = await db.library_links.delete_one(
+        {"grado_id": grado_id, "materia_id": materia_id}
+    )
+    return {"deleted": res.deleted_count}
+
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -77,12 +106,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
