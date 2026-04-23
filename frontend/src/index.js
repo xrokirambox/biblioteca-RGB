@@ -8,4 +8,6 @@ root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
-);
+);git add .
+git commit -m "fix: remove trailing comma in ReactDOM render"
+git push
