@@ -49,22 +49,33 @@ async def root():
 
 @api_router.get("/links")
 async def get_all_links() -> Dict[str, Dict[str, str]]:
-    """Return a nested dict: { grado_id: { materia_id: url } }"""
-    cursor = db.library_links.find({}, {"_id": 0})
+    cursor = db.links.find({}, {"_id": 0})
     result: Dict[str, Dict[str, str]] = {}
+
     async for doc in cursor:
-        g = doc["grado_id"]
-        m = doc["materia_id"]
-        result.setdefault(g, {})[m] = doc["url"]
+        g = doc.get("grado") or doc.get("grado_id")
+        m = doc.get("materia") or doc.get("materia_id")
+        url = doc.get("url")
+
+        if g and m and url:
+            result.setdefault(g, {})[m] = url
+
     return result
+
 
 
 @api_router.get("/links/{grado_id}")
 async def get_grado_links(grado_id: str) -> Dict[str, str]:
-    cursor = db.library_links.find({"grado_id": grado_id}, {"_id": 0})
+    cursor = db.links.find({"grado_id": grado_id}, {"_id": 0})
     out: Dict[str, str] = {}
+
     async for doc in cursor:
-        out[doc["materia_id"]] = doc["url"]
+        m = doc.get("materia") or doc.get("materia_id")
+        url = doc.get("url")
+
+        if m and url:
+            out[m] = url
+
     return out
 
 
@@ -80,7 +91,7 @@ async def save_link(payload: LinkCreate):
         url=url,
     )
     doc = record.model_dump()
-    await db.library_links.update_one(
+    await db.links.update_one(
         {"grado_id": payload.grado_id, "materia_id": payload.materia_id},
         {"$set": doc},
         upsert=True,
@@ -90,7 +101,7 @@ async def save_link(payload: LinkCreate):
 
 @api_router.delete("/links/{grado_id}/{materia_id}")
 async def delete_link(grado_id: str, materia_id: str):
-    res = await db.library_links.delete_one(
+    res = await db.links.delete_one(
         {"grado_id": grado_id, "materia_id": materia_id}
     )
     return {"deleted": res.deleted_count}
