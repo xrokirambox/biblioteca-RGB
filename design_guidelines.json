@@ -102,16 +102,5 @@
         "https://images.unsplash.com/photo-1575873896343-84af1dc92fc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxsaWJyYXJ5JTIwZGFyayUyMHdvb2R8ZW58MHx8fHwxNzc2ODgyMjQyfDA&ixlib=rb-4.1.0&q=85"
       ]
     }
-  },
-  "instructions_to_main_agent": [
-    "Load fonts (Cinzel, Cormorant Garamond, DM Sans) via Google Fonts in index.html.",
-    "Implement the UI using pure HTML/Tailwind for structural and marketing elements (Hero, Grids, Layouts) to allow custom glassmorphism styling without Shadcn's rigid card defaults.",
-    "Use Shadcn UI primarily for complex interactives if needed, but customize their styling heavily to match the dark green/gold glassmorphism theme.",
-    "Data structure for Modal Navigation: Nivel (Primaria, Secundaria, Media) -> Grado (1 to 11 depending on Nivel) -> Materias (Matemáticas, Ciencias, Literatura, Historia, etc).",
-    "MongoDB Integration: Create simple FastAPI endpoints to GET and POST google drive URLs for a specific grade/subject combination. Keep it open (no auth).",
-    "Ensure all interactive elements (buttons, inputs, cards) have role-based `data-testid` attributes (e.g., `data-testid=\"save-drive-link-btn\"`).",
-    "Use Lucide-React for icons, specifically targeting academic and tech icons (Library, BookOpen, ChevronRight, ExternalLink, Save).",
-    "Maintain strict accessibility for text contrast over the dark green background. Do not let text become illegible due to blur or low opacity.",
-    "Do not use generic blue or purple colors. Stick strictly to the #051a09 (Dark Green) and #c9a227 (Gold) palette."
-  ]
+  }
 }
