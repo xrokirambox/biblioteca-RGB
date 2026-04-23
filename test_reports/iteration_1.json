@@ -15,7 +15,7 @@
   ],
   "action_items": [],
   "critical_code_review_comments": [
-    "server.py line 116: @app.on_event('shutdown') is deprecated in modern FastAPI; consider migrating to lifespan context manager.",
+    "main.py line 116: @app.on_event('shutdown') is deprecated in modern FastAPI; consider migrating to lifespan context manager.",
     "POST /api/links accepts URLs starting with '/' (relative paths) which deviates from spec saying only http/https; harmless but worth noting.",
     "DELETE returns {deleted: 0} with status 200 when resource does not exist; consider 404 for stricter REST semantics (current behavior is fine for an idempotent UI delete).",
     "Frontend Header testid is 'app-header' and Footer is 'app-footer' (not site-header/site-footer) - just naming, no bug.",
