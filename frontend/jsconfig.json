@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "mongodb+srv://<db_username>:<db_password>@bibliotecaescolarrgb.ngdnqcy.mongodb.net/?appName=BibliotecaEscolarRGB",
     "paths": {
-      "./*": ["src/*"]
+      "../*": ["src/*"]
     }
   },
   "include": ["src"]

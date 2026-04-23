@@ -22,7 +22,7 @@ export const CTABanner = ({ onOpenLibrary }) => {
               <span className="text-[#c9a227] italic font-cormorant">grado y materia</span>
             </h2>
             <p className="mt-6 font-cormorant text-xl text-[#a3b3a6] max-w-2xl mx-auto">
-              Guarda enlaces de Google Drive y accede desde cualquier dispositivo.
+              accede desde cualquier dispositivo.
             </p>
             <button
               onClick={onOpenLibrary}
