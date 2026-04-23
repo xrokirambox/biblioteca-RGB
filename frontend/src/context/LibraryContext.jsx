@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-
+const API = `${process.env.REACT_APP_API_URL}/api`;
+const API = `${process.env.REACT_APP_API_URL || "http://localhost:8000"}/api`;
 const LibraryContext = createContext(null);
 
 export function LibraryProvider({ children }) {
