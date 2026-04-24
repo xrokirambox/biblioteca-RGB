@@ -11,6 +11,7 @@ export function LibraryProvider({ children }) {
   const [level, setLevel] = useState(0); // 0: Niveles, 1: Grados, 2: Materias
   const [nivelId, setNivelId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Links: { [gradoId]: { [materiaId]: url } }
   const [links, setLinks] = useState({});
