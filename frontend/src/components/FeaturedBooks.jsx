@@ -66,11 +66,17 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
                 style={{ animationDelay: `${idx * 0.05}s` }}
               >
                 <div className="relative aspect-[3/4] overflow-hidden">
-                  <img
-                    src={b.cover}
-                    alt={b.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                  {b.cover ? (
+                    <img
+                      src={b.cover}
+                      alt={b.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#051a09] flex items-center justify-center">
+                      <ExternalLink className="w-10 h-10 text-[#c9a227]/30" />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#020b04] via-[#020b04]/40 to-transparent" />
                   <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#020b04]/80 border border-[#c9a227]/30 font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]">
                     {b.category}
