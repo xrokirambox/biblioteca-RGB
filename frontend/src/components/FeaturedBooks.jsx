@@ -1,23 +1,24 @@
 import React, { useMemo, useState } from "react";
-import { FEATURED_BOOKS } from "../data/books";
+import { useLibrary } from "../context/LibraryContext";
 import { CATEGORIAS } from "../data/materias";
 import { ExternalLink } from "lucide-react";
 
 export const FeaturedBooks = ({ searchQuery = "" }) => {
+  const { books } = useLibrary();
   const [filter, setFilter] = useState("all");
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return FEATURED_BOOKS.filter((b) => {
+    return books.filter((b) => {
       const matchCat = filter === "all" ? true : b.category === filter;
       const matchQ =
         !q ||
-        b.title.toLowerCase().includes(q) ||
-        b.author.toLowerCase().includes(q) ||
-        b.category.toLowerCase().includes(q);
+        (b.title || "").toLowerCase().includes(q) ||
+        (b.author || "").toLowerCase().includes(q) ||
+        (b.category || "").toLowerCase().includes(q);
       return matchCat && matchQ;
     });
-  }, [filter, searchQuery]);
+  }, [books, filter, searchQuery]);
 
   return (
     <section id="destacados" data-testid="featured-books-section" className="py-24 relative">

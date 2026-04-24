@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
+import { AuthProvider } from "./context/AuthContext";
 import { LibraryProvider, useLibrary } from "./context/LibraryContext";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
@@ -11,6 +12,8 @@ import { FeaturedBooks } from "./components/FeaturedBooks";
 import { CTABanner } from "./components/CTABanner";
 import { Footer } from "./components/Footer";
 import { LibraryModal } from "./components/LibraryModal";
+import { AdminLogin } from "./components/AdminLogin";
+import { AdminBadge } from "./components/AdminBadge";
 
 const HomeInner = () => {
   const { openModal } = useLibrary();
@@ -28,31 +31,35 @@ const HomeInner = () => {
       </main>
       <Footer />
       <LibraryModal />
+      <AdminLogin />
+      <AdminBadge />
     </div>
   );
 };
 
 function App() {
   return (
-    <LibraryProvider>
-      <Toaster
-        position="top-right"
-        theme="dark"
-        toastOptions={{
-          style: {
-            background: "#051a09",
-            color: "#f4f1e1",
-            border: "1px solid rgba(201,162,39,0.3)",
-            fontFamily: "'DM Sans', sans-serif",
-          },
-        }}
-      />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomeInner />} />
-        </Routes>
-      </BrowserRouter>
-    </LibraryProvider>
+    <AuthProvider>
+      <LibraryProvider>
+        <Toaster
+          position="top-right"
+          theme="dark"
+          toastOptions={{
+            style: {
+              background: "#051a09",
+              color: "#f4f1e1",
+              border: "1px solid rgba(201,162,39,0.3)",
+              fontFamily: "'DM Sans', sans-serif",
+            },
+          }}
+        />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomeInner />} />
+          </Routes>
+        </BrowserRouter>
+      </LibraryProvider>
+    </AuthProvider>
   );
 }
 

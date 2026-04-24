@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { Library, Menu, X } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Library, Menu, X, LogOut, Shield } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner";
 
 const NAV_LINKS = [
   { id: "inicio", label: "Inicio", href: "#inicio" },
@@ -10,6 +12,33 @@ const NAV_LINKS = [
 
 export const Header = ({ onOpenLibrary }) => {
   const [open, setOpen] = useState(false);
+  const { isAdmin, setLoginOpen, logout } = useAuth();
+  const clickCount = useRef(0);
+  const clickTimer = useRef(null);
+
+  // Discrete admin access:
+  // - Ctrl/Cmd + click on the logo → opens the admin login
+  // - Triple click on the logo (within 800 ms) → opens the admin login
+  const handleLogoClick = (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      setLoginOpen(true);
+      return;
+    }
+    clickCount.current += 1;
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    clickTimer.current = setTimeout(() => { clickCount.current = 0; }, 800);
+    if (clickCount.current >= 3) {
+      e.preventDefault();
+      clickCount.current = 0;
+      setLoginOpen(true);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Sesión cerrada");
+  };
 
   return (
     <header
@@ -17,8 +46,13 @@ export const Header = ({ onOpenLibrary }) => {
       className="fixed top-0 w-full z-40 backdrop-blur-2xl bg-[#020b04]/80 border-b border-[#c9a227]/20"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-20">
-        {/* Logo */}
-        <a href="#inicio" className="flex items-center gap-3 group" data-testid="header-logo">
+        <a
+          href="#inicio"
+          className="flex items-center gap-3 group select-none"
+          data-testid="header-logo"
+          onClick={handleLogoClick}
+          title="Inicio"
+        >
           <div className="w-11 h-11 rounded-full border border-[#c9a227]/50 bg-[#051a09] flex items-center justify-center shadow-[0_0_20px_rgba(201,162,39,0.2)] group-hover:shadow-[0_0_28px_rgba(201,162,39,0.45)] transition-shadow">
             <Library className="w-5 h-5 text-[#c9a227]" />
           </div>
@@ -30,7 +64,6 @@ export const Header = ({ onOpenLibrary }) => {
           </div>
         </a>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-10">
           {NAV_LINKS.map((l) => (
             <a
@@ -42,6 +75,16 @@ export const Header = ({ onOpenLibrary }) => {
               {l.label}
             </a>
           ))}
+          {isAdmin ? (
+            <button
+              onClick={handleLogout}
+              data-testid="header-logout-btn"
+              className="btn-outline-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-dm-sans font-semibold tracking-widest uppercase"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Salir
+            </button>
+          ) : null}
           <button
             onClick={onOpenLibrary}
             data-testid="header-open-library-btn"
@@ -51,7 +94,6 @@ export const Header = ({ onOpenLibrary }) => {
           </button>
         </nav>
 
-        {/* Mobile */}
         <button
           className="md:hidden text-[#c9a227] p-2"
           onClick={() => setOpen((v) => !v)}
@@ -75,6 +117,15 @@ export const Header = ({ onOpenLibrary }) => {
               {l.label}
             </a>
           ))}
+          {isAdmin && (
+            <button
+              onClick={() => { setOpen(false); handleLogout(); }}
+              className="btn-outline-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-dm-sans font-semibold tracking-widest uppercase"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Salir
+            </button>
+          )}
           <button
             onClick={() => { setOpen(false); onOpenLibrary(); }}
             data-testid="mobile-open-library-btn"
@@ -82,6 +133,16 @@ export const Header = ({ onOpenLibrary }) => {
           >
             Abrir Biblioteca
           </button>
+        </div>
+      )}
+
+      {isAdmin && (
+        <div
+          data-testid="admin-mode-banner"
+          className="bg-[#c9a227]/15 border-t border-[#c9a227]/30 py-1.5 text-center font-dm-sans text-[10px] tracking-[0.3em] uppercase text-[#c9a227] flex items-center justify-center gap-2"
+        >
+          <Shield className="w-3 h-3" />
+          Modo administrador activo
         </div>
       )}
     </header>

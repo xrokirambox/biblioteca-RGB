@@ -4,9 +4,10 @@ import {
   X, ChevronRight, ChevronLeft, Sprout, BookOpenText, GraduationCap, Library,
   Sigma, BookOpen, Leaf, Globe2, Languages, Palette, Dumbbell, HeartHandshake,
   FlaskConical, Atom, TestTube2, ScrollText, Map, Cpu, FunctionSquare, Brain, LineChart,
-  Save, ExternalLink, Check, Trash2,
+  Save, ExternalLink, Check, Trash2, Lock,
 } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
+import { useAuth } from "../context/AuthContext";
 import { NIVELES, getNivelById, getGradoById } from "../data/niveles";
 import { MATERIAS } from "../data/materias";
 import { toast } from "sonner";
@@ -116,6 +117,7 @@ const GradoView = () => {
 
 const MateriaItem = ({ gradoId, materia }) => {
   const { links, saveLink, removeLink } = useLibrary();
+  const { isAdmin } = useAuth();
   const savedUrl = links[gradoId]?.[materia.id] || "";
   const [url, setUrl] = useState(savedUrl);
   const [saving, setSaving] = useState(false);
@@ -136,7 +138,7 @@ const MateriaItem = ({ gradoId, materia }) => {
       await saveLink(gradoId, materia.id, url);
       toast.success(`Enlace guardado para ${materia.name}`);
     } catch (e) {
-      toast.error("No se pudo guardar el enlace");
+      toast.error(e.response?.data?.detail || "No se pudo guardar el enlace");
     } finally {
       setSaving(false);
     }
@@ -152,6 +154,45 @@ const MateriaItem = ({ gradoId, materia }) => {
     }
   };
 
+  // ---- Public (non-admin) view ----
+  if (!isAdmin) {
+    return (
+      <div
+        data-testid={`materia-item-${materia.id}`}
+        className={`flex items-center gap-4 p-4 rounded-lg bg-white/[0.02] border border-white/5 ${canGo ? "hover:border-[#c9a227]/40" : ""} transition-colors`}
+      >
+        <div className="w-11 h-11 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/25 flex items-center justify-center flex-shrink-0">
+          <Icon className="w-5 h-5 text-[#c9a227]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-cinzel text-base text-[#f4f1e1] truncate">{materia.name}</div>
+          <div className="font-dm-sans text-[10px] tracking-widest uppercase text-[#a3b3a6]">
+            {canGo ? "Recurso disponible" : "Sin recurso aún"}
+          </div>
+        </div>
+        {canGo ? (
+          <a
+            href={savedUrl}
+            target="_blank"
+            rel="noreferrer"
+            data-testid={`materia-go-${materia.id}`}
+            className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center gap-1.5 transition-colors"
+          >
+            Ir <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        ) : (
+          <span
+            data-testid={`materia-empty-${materia.id}`}
+            className="px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase text-[#a3b3a6]/50 border border-white/5"
+          >
+            No disponible
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  // ---- Admin view ----
   return (
     <div
       data-testid={`materia-item-${materia.id}`}
@@ -220,6 +261,7 @@ const MateriaItem = ({ gradoId, materia }) => {
 
 const MateriasView = () => {
   const { gradoId } = useLibrary();
+  const { isAdmin } = useAuth();
   const grado = getGradoById(gradoId);
   const materias = MATERIAS[gradoId] || [];
   if (!grado) return null;
@@ -229,7 +271,9 @@ const MateriasView = () => {
       <div className="mb-6">
         <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{grado.name}</h3>
         <p className="font-cormorant text-lg text-[#a3b3a6]">
-          Gestiona los enlaces de Google&nbsp;Drive para cada materia.
+          {isAdmin
+            ? "Gestiona los enlaces de Google\u00a0Drive para cada materia."
+            : "Consulta los recursos disponibles por materia."}
         </p>
       </div>
       <div className="flex flex-col gap-3" data-testid="materias-list">
