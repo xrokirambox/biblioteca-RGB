@@ -2,14 +2,13 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import axios from "axios";
 import { useAuth } from "./AuthContext";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const LibraryContext = createContext(null);
 
 export function LibraryProvider({ children }) {
   const { authHeader } = useAuth();
 
-  // Modal navigation state
   const [modalOpen, setModalOpen] = useState(false);
   const [level, setLevel] = useState(0);
   const [nivelId, setNivelId] = useState(null);
@@ -46,9 +45,7 @@ export function LibraryProvider({ children }) {
   }, [refreshLinks, refreshBooks]);
 
   const openModal = () => {
-    setLevel(0);
-    setNivelId(null);
-    setGradoId(null);
+    setLevel(0); setNivelId(null); setGradoId(null);
     setModalOpen(true);
   };
   const closeModal = () => setModalOpen(false);

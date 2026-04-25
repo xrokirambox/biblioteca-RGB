@@ -24,20 +24,25 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
+
 # ---------- JWT helpers ----------
 JWT_ALGORITHM = "HS256"
+
 
 def _jwt_secret() -> str:
     return os.environ["JWT_SECRET"]
 
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
 
 def verify_password(plain: str, hashed: str) -> bool:
     try:
         return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
     except Exception:
         return False
+
 
 def create_access_token(user_id: str, email: str, role: str) -> str:
     payload = {
@@ -62,7 +67,9 @@ async def get_current_user(request: Request) -> dict:
         payload = jwt.decode(token, _jwt_secret(), algorithms=[JWT_ALGORITHM])
         if payload.get("type") != "access":
             raise HTTPException(status_code=401, detail="Token inválido")
-        user = await db.users.find_one({"id": payload["sub"]}, {"_id": 0, "password_hash": 0})
+        user = await db.users.find_one(
+            {"id": payload["sub"]}, {"_id": 0, "password_hash": 0}
+        )
         if not user:
             raise HTTPException(status_code=401, detail="Usuario no encontrado")
         return user
@@ -96,7 +103,9 @@ class LinkRecord(BaseModel):
     grado_id: str
     materia_id: str
     url: str
-    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
 
 class BookBase(BaseModel):
@@ -128,13 +137,13 @@ class BookRecord(BookBase):
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
-# ---------- Public routes ----------
+# ---------- Routes ----------
 @api_router.get("/")
 async def root():
     return {"message": "Biblioteca Escolar RGB API"}
 
 
-# ---------- Auth routes ----------
+# ---------- Auth ----------
 @api_router.post("/auth/login")
 async def login(payload: LoginIn, response: Response):
     email = payload.email.lower().strip()
@@ -167,19 +176,29 @@ async def me(user: dict = Depends(get_current_user)):
 # ---------- Links (public GET, admin write) ----------
 @api_router.get("/links")
 async def get_all_links() -> Dict[str, Dict[str, str]]:
-    cursor = db.library_links.find({}, {"_id": 0})
+    """Read from db.links and accommodate legacy field names (grado/materia)."""
+    cursor = db.links.find({}, {"_id": 0})
     result: Dict[str, Dict[str, str]] = {}
     async for doc in cursor:
-        result.setdefault(doc["grado_id"], {})[doc["materia_id"]] = doc["url"]
+        g = doc.get("grado_id") or doc.get("grado")
+        m = doc.get("materia_id") or doc.get("materia")
+        url = doc.get("url")
+        if g and m and url:
+            result.setdefault(g, {})[m] = url
     return result
 
 
 @api_router.get("/links/{grado_id}")
 async def get_grado_links(grado_id: str) -> Dict[str, str]:
-    cursor = db.library_links.find({"grado_id": grado_id}, {"_id": 0})
+    cursor = db.links.find(
+        {"$or": [{"grado_id": grado_id}, {"grado": grado_id}]}, {"_id": 0}
+    )
     out: Dict[str, str] = {}
     async for doc in cursor:
-        out[doc["materia_id"]] = doc["url"]
+        m = doc.get("materia_id") or doc.get("materia")
+        url = doc.get("url")
+        if m and url:
+            out[m] = url
     return out
 
 
@@ -188,50 +207,55 @@ async def save_link(payload: LinkCreate, _admin: dict = Depends(require_admin)):
     url = payload.url.strip()
     if not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
         raise HTTPException(status_code=400, detail="URL inválida")
-    record = LinkRecord(grado_id=payload.grado_id, materia_id=payload.materia_id, url=url)
+    record = LinkRecord(
+        grado_id=payload.grado_id, materia_id=payload.materia_id, url=url
+    )
     doc = record.model_dump()
-    await db.library_links.update_one(
+    await db.links.update_one(
         {"grado_id": payload.grado_id, "materia_id": payload.materia_id},
-        {"$set": doc}, upsert=True,
+        {"$set": doc},
+        upsert=True,
     )
     return record
 
 
 @api_router.delete("/links/{grado_id}/{materia_id}")
 async def delete_link(grado_id: str, materia_id: str, _admin: dict = Depends(require_admin)):
-    res = await db.library_links.delete_one({"grado_id": grado_id, "materia_id": materia_id})
+    res = await db.links.delete_one(
+        {"grado_id": grado_id, "materia_id": materia_id}
+    )
     return {"deleted": res.deleted_count}
 
 
 # ---------- Books (public GET, admin write) ----------
 @api_router.get("/books", response_model=List[BookRecord])
 async def list_books():
-    docs = await db.library_books.find({}, {"_id": 0}).to_list(500)
+    docs = await db.books.find({}, {"_id": 0}).to_list(500)
     return docs
 
 
 @api_router.post("/books", response_model=BookRecord)
 async def create_book(payload: BookCreate, _admin: dict = Depends(require_admin)):
     record = BookRecord(**payload.model_dump())
-    await db.library_books.insert_one(record.model_dump())
+    await db.books.insert_one(record.model_dump())
     return record
 
 
 @api_router.put("/books/{book_id}", response_model=BookRecord)
 async def update_book(book_id: str, payload: BookUpdate, _admin: dict = Depends(require_admin)):
-    existing = await db.library_books.find_one({"id": book_id}, {"_id": 0})
+    existing = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not existing:
         raise HTTPException(status_code=404, detail="Libro no encontrado")
     changes = {k: v for k, v in payload.model_dump().items() if v is not None}
     changes["updated_at"] = datetime.now(timezone.utc).isoformat()
-    await db.library_books.update_one({"id": book_id}, {"$set": changes})
+    await db.books.update_one({"id": book_id}, {"$set": changes})
     merged = {**existing, **changes}
     return merged
 
 
 @api_router.delete("/books/{book_id}")
 async def delete_book(book_id: str, _admin: dict = Depends(require_admin)):
-    res = await db.library_books.delete_one({"id": book_id})
+    res = await db.books.delete_one({"id": book_id})
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Libro no encontrado")
     return {"deleted": 1}
@@ -248,11 +272,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+)
 logger = logging.getLogger(__name__)
 
 
-# ---------- Seed data ----------
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
+
+
+# ---------- Seed ----------
 SEED_BOOKS = [
     {"title": "Cien Años de Soledad", "author": "Gabriel García Márquez", "category": "literatura",
      "cover": "https://images.unsplash.com/photo-1674154642704-0a4f0bdcb676?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHw0fHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
@@ -271,15 +303,13 @@ SEED_BOOKS = [
 
 @app.on_event("startup")
 async def on_startup():
-    # Indexes
     try:
         await db.users.create_index("email", unique=True)
-        await db.library_links.create_index([("grado_id", 1), ("materia_id", 1)], unique=True)
-        await db.library_books.create_index("id", unique=True)
+        await db.links.create_index([("grado_id", 1), ("materia_id", 1)])
+        await db.books.create_index("id", unique=True)
     except Exception as e:
         logger.warning(f"Index creation warning: {e}")
 
-    # Seed admin
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@rgb.edu").lower()
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
     existing = await db.users.find_one({"email": admin_email})
@@ -300,12 +330,11 @@ async def on_startup():
         )
         logger.info(f"Admin password updated: {admin_email}")
 
-    # Seed books if empty
-    count = await db.library_books.count_documents({})
+    count = await db.books.count_documents({})
     if count == 0:
         for b in SEED_BOOKS:
             record = BookRecord(**b)
-            await db.library_books.insert_one(record.model_dump())
+            await db.books.insert_one(record.model_dump())
         logger.info(f"Seeded {len(SEED_BOOKS)} books")
 
 

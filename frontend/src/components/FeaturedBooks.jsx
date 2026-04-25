@@ -33,7 +33,6 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
             </h2>
           </div>
 
-          {/* Filters */}
           <div className="flex flex-wrap gap-2" data-testid="category-filters">
             {CATEGORIAS.map((c) => (
               <button
@@ -90,15 +89,17 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
                   <p className="font-dm-sans text-xs text-[#a3b3a6]/80 leading-relaxed line-clamp-2 mb-4 flex-1">
                     {b.description}
                   </p>
-                  <a
-                    href={b.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    data-testid={`book-link-${b.id}`}
-                    className="inline-flex items-center gap-2 font-dm-sans text-xs tracking-widest uppercase text-[#c9a227] hover:gap-3 transition-all"
-                  >
-                    Leer más <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                  {b.url ? (
+                    <a
+                      href={b.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      data-testid={`book-link-${b.id}`}
+                      className="inline-flex items-center gap-2 font-dm-sans text-xs tracking-widest uppercase text-[#c9a227] hover:gap-3 transition-all"
+                    >
+                      Leer más <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  ) : null}
                 </div>
               </article>
             ))}

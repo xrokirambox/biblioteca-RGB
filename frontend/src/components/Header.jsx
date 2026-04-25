@@ -17,8 +17,8 @@ export const Header = ({ onOpenLibrary }) => {
   const clickTimer = useRef(null);
 
   // Discrete admin access:
-  // - Ctrl/Cmd + click on the logo → opens the admin login
-  // - Triple click on the logo (within 800 ms) → opens the admin login
+  // - Ctrl/Cmd + click on the logo → opens admin login
+  // - Triple click on the logo (within 800 ms) → opens admin login
   const handleLogoClick = (e) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
@@ -75,7 +75,7 @@ export const Header = ({ onOpenLibrary }) => {
               {l.label}
             </a>
           ))}
-          {isAdmin ? (
+          {isAdmin && (
             <button
               onClick={handleLogout}
               data-testid="header-logout-btn"
@@ -84,7 +84,7 @@ export const Header = ({ onOpenLibrary }) => {
               <LogOut className="w-3.5 h-3.5" />
               Salir
             </button>
-          ) : null}
+          )}
           <button
             onClick={onOpenLibrary}
             data-testid="header-open-library-btn"
@@ -122,8 +122,7 @@ export const Header = ({ onOpenLibrary }) => {
               onClick={() => { setOpen(false); handleLogout(); }}
               className="btn-outline-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-dm-sans font-semibold tracking-widest uppercase"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              Salir
+              <LogOut className="w-3.5 h-3.5" /> Salir
             </button>
           )}
           <button

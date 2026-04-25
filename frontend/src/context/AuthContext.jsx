@@ -1,21 +1,18 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
-// Configure axios to include credentials and attach token
 axios.defaults.withCredentials = true;
 
 const AuthContext = createContext(null);
-
 const TOKEN_KEY = "rgb_admin_token";
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // null | false | {..}  (null = checking, false = not auth)
+  const [user, setUser] = useState(null); // null = checking, false = anon, object = logged
   const [loginOpen, setLoginOpen] = useState(false);
 
   const getToken = () => localStorage.getItem(TOKEN_KEY);
-
   const authHeader = () => {
     const t = getToken();
     return t ? { Authorization: `Bearer ${t}` } : {};
@@ -47,12 +44,7 @@ export function AuthProvider({ children }) {
 
   const isAdmin = !!(user && user.role === "admin");
 
-  const value = {
-    user, isAdmin,
-    loginOpen, setLoginOpen,
-    login, logout, authHeader,
-  };
-
+  const value = { user, isAdmin, loginOpen, setLoginOpen, login, logout, authHeader };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

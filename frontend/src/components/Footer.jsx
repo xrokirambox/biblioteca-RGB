@@ -36,17 +36,17 @@ export const Footer = () => {
         <div>
           <h4 className="font-cinzel text-[#c9a227] text-sm tracking-widest uppercase mb-5">Contacto</h4>
           <ul className="space-y-3 font-dm-sans text-sm text-[#a3b3a6]">
-            <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> contacto@rgb.edu</li>
+            <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> classroom@rgb.edu.co</li>
             <li className="flex items-center gap-2"><BookMarked className="w-4 h-4" /> Recursos educativos</li>
-            <li className="flex items-center gap-2"><Github className="w-4 h-4" /> Código abierto</li>
+            <li className="flex items-center gap-2"><Github className="w-4 h-4" /> xrokirambox</li>
           </ul>
         </div>
       </div>
 
       <div className="divider-gold" />
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-[#a3b3a6] font-dm-sans text-xs">
-        <div>© {new Date().getFullYear()} Biblioteca Escolar RGB. Todos los derechos reservados.</div>
-        <div className="tracking-widest uppercase">Hecho con elegancia</div>
+        <div>© {new Date().getFullYear()} Biblioteca Escolar RGB. Todos los derechos reservados(julian guardiola).</div>
+        <div className="tracking-widest uppercase">Hecho a la medida</div>
       </div>
     </footer>
   );

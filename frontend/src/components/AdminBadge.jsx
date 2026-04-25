@@ -3,13 +3,11 @@ import { Shield, BookOpen } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { BooksManager } from "./BooksManager";
 
-// Floating FAB visible only to admins — opens the BooksManager.
-// Non-admins see a tiny discrete lock icon that opens the login modal.
 export const AdminBadge = () => {
   const { isAdmin, user, setLoginOpen } = useAuth();
   const [booksOpen, setBooksOpen] = useState(false);
 
-  if (user === null) return null; // still checking
+  if (user === null) return null;
 
   if (!isAdmin) {
     return (

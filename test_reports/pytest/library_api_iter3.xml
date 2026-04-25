@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="7" failures="0" skipped="0" tests="7" time="0.920" timestamp="2026-04-25T05:48:14.869986+00:00" hostname="agent-env-c9650339-b3fb-41aa-81ae-3535e48eae68"><testcase classname="backend.tests.test_library_api" name="test_root" time="0.097"><error message="failed on setup with &quot;requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError(&quot;HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)&quot;))&quot;">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:204: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:60: in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:974: in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:488: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:464: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1093: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:759: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:211: in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+E   urllib3.exceptions.NameResolutionError: HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:645: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:535: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_library_api.py:20: in cleanup
+    requests.delete(f"{API}/links/{GRADO}/{m}")
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:592: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:706: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:678: in send
+    raise ConnectionError(e, request=request)
+E   requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))</error></testcase><testcase classname="backend.tests.test_library_api" name="test_get_all_links_returns_dict" time="0.000"><error message="failed on setup with &quot;requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError(&quot;HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)&quot;))&quot;">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:204: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:60: in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:974: in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:488: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:464: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1093: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:759: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:211: in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+E   urllib3.exceptions.NameResolutionError: HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:645: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:535: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_library_api.py:20: in cleanup
+    requests.delete(f"{API}/links/{GRADO}/{m}")
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:592: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:706: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:678: in send
+    raise ConnectionError(e, request=request)
+E   requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))</error></testcase><testcase classname="backend.tests.test_library_api" name="test_post_invalid_url_returns_400" time="0.000"><error message="failed on setup with &quot;requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError(&quot;HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)&quot;))&quot;">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:204: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:60: in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:974: in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:488: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:464: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1093: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:759: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:211: in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+E   urllib3.exceptions.NameResolutionError: HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:645: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:535: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_library_api.py:20: in cleanup
+    requests.delete(f"{API}/links/{GRADO}/{m}")
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:592: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:706: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:678: in send
+    raise ConnectionError(e, request=request)
+E   requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))</error></testcase><testcase classname="backend.tests.test_library_api" name="test_post_valid_url_and_persistence" time="0.000"><error message="failed on setup with &quot;requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError(&quot;HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)&quot;))&quot;">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:204: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:60: in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:974: in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:488: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:464: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1093: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:759: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:211: in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+E   urllib3.exceptions.NameResolutionError: HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:645: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:535: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_library_api.py:20: in cleanup
+    requests.delete(f"{API}/links/{GRADO}/{m}")
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:592: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:706: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:678: in send
+    raise ConnectionError(e, request=request)
+E   requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))</error></testcase><testcase classname="backend.tests.test_library_api" name="test_upsert_does_not_duplicate" time="0.000"><error message="failed on setup with &quot;requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError(&quot;HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)&quot;))&quot;">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:204: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:60: in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:974: in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:488: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:464: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1093: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:759: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:211: in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+E   urllib3.exceptions.NameResolutionError: HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:645: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:535: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_library_api.py:20: in cleanup
+    requests.delete(f"{API}/links/{GRADO}/{m}")
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:592: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:706: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:678: in send
+    raise ConnectionError(e, request=request)
+E   requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))</error></testcase><testcase classname="backend.tests.test_library_api" name="test_delete_link" time="0.000"><error message="failed on setup with &quot;requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError(&quot;HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)&quot;))&quot;">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:204: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:60: in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:974: in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:488: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:464: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1093: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:759: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:211: in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+E   urllib3.exceptions.NameResolutionError: HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:645: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:535: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_library_api.py:20: in cleanup
+    requests.delete(f"{API}/links/{GRADO}/{m}")
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:592: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:706: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:678: in send
+    raise ConnectionError(e, request=request)
+E   requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))</error></testcase><testcase classname="backend.tests.test_library_api" name="test_delete_nonexistent_returns_zero" time="0.000"><error message="failed on setup with &quot;requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError(&quot;HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)&quot;))&quot;">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:204: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:60: in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:974: in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:488: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:464: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1093: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:759: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:211: in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+E   urllib3.exceptions.NameResolutionError: HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:645: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:535: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_library_api.py:20: in cleanup
+    requests.delete(f"{API}/links/{GRADO}/{m}")
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:592: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:706: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:678: in send
+    raise ConnectionError(e, request=request)
+E   requests.exceptions.ConnectionError: HTTPSConnectionPool(host='learning-hub-550.preview.agent.com', port=443): Max retries exceeded with url: /api/links/g1/test_matematicas (Caused by NameResolutionError("HTTPSConnection(host='learning-hub-550.preview.agent.com', port=443): Failed to resolve 'learning-hub-550.preview.agent.com' ([Errno -2] Name or service not known)"))</error></testcase></testsuite></testsuites>
