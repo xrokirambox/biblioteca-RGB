@@ -38,7 +38,7 @@ export const StaffPanel = ({ open, onClose }) => {
         data-testid="staff-panel-modal"
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-[#c9a227]/20 bg-[#020b04]/60 flex items-center gap-4">
+       <div className="px-6 py-3 border-b border-[#c9a227]/20 bg-[#020b04]/60 flex items-center gap-4">
           <div className="w-10 h-10 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/30 flex items-center justify-center">
             <LayoutDashboard className="w-4 h-4 text-[#c9a227]" />
           </div>
@@ -63,7 +63,7 @@ export const StaffPanel = ({ open, onClose }) => {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 data-testid={`staff-tab-${t.id}`}
-                className={`relative px-4 py-3 inline-flex items-center gap-2 font-dm-sans text-xs tracking-widest uppercase transition-colors ${
+                className={`relative px-4 py-2 inline-flex items-center gap-2 font-dm-sans text-xs tracking-widest uppercase transition-colors ${
                   active ? "text-[#c9a227]" : "text-[#a3b3a6] hover:text-[#f4f1e1]"
                 }`}
               >
