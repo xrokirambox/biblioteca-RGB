@@ -97,7 +97,7 @@ export const BooksManager = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <div className="font-cinzel text-lg text-[#f4f1e1]">Gestión de libros</div>
           <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#a3b3a6]">{books.length} en catálogo</div>

@@ -76,7 +76,7 @@ export const StaffPanel = ({ open, onClose }) => {
         </div>
 
         {/* Body */}
-        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+        <div className="px-6 py-4 overflow-y-auto custom-scrollbar flex-1">
           {tab === "books" && <BooksManager />}
           {tab === "users" && <UsersManager />}
           {tab === "audit" && <AuditLog />}
