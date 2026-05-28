@@ -1,20 +1,21 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
 
-//const API = `${process.env.REACT_APP_API_URL || "http://localhost:8000"}/api`;
-const API = "https://biblioteca-backend-3l9s.onrender.com/api";
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
+
 const LibraryContext = createContext(null);
 
 export function LibraryProvider({ children }) {
-  // Navigation state for the modal
+  const { authHeader } = useAuth();
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [level, setLevel] = useState(0); // 0: Niveles, 1: Grados, 2: Materias
+  const [level, setLevel] = useState(0);
   const [nivelId, setNivelId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
 
-  // Links: { [gradoId]: { [materiaId]: url } }
   const [links, setLinks] = useState({});
+  const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const refreshLinks = useCallback(async () => {
@@ -29,18 +30,22 @@ export function LibraryProvider({ children }) {
     }
   }, []);
 
+  const refreshBooks = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API}/books`);
+      setBooks(res.data || []);
+    } catch (e) {
+      console.error("Error loading books", e);
+    }
+  }, []);
+
   useEffect(() => {
     refreshLinks();
-  }, [refreshLinks]);
+    refreshBooks();
+  }, [refreshLinks, refreshBooks]);
 
-  const openModal = () => {
-    setLevel(0);
-    setNivelId(null);
-    setGradoId(null);
-    setModalOpen(true);
-  };
+  const openModal = () => { setLevel(0); setNivelId(null); setGradoId(null); setModalOpen(true); };
   const closeModal = () => setModalOpen(false);
-
   const goToNivel = (id) => { setNivelId(id); setLevel(1); };
   const goToGrado = (id) => { setGradoId(id); setLevel(2); };
   const goBack = () => {
@@ -48,12 +53,13 @@ export function LibraryProvider({ children }) {
     else if (level === 1) { setLevel(0); setNivelId(null); }
   };
 
+  // Links (staff)
   const saveLink = async (gradoIdArg, materiaId, url) => {
-    const res = await axios.post(`${API}/links`, {
-      grado_id: gradoIdArg,
-      materia_id: materiaId,
-      url,
-    });
+    const res = await axios.post(
+      `${API}/links`,
+      { grado_id: gradoIdArg, materia_id: materiaId, url },
+      { headers: authHeader() }
+    );
     setLinks((prev) => ({
       ...prev,
       [gradoIdArg]: { ...(prev[gradoIdArg] || {}), [materiaId]: res.data.url },
@@ -62,7 +68,7 @@ export function LibraryProvider({ children }) {
   };
 
   const removeLink = async (gradoIdArg, materiaId) => {
-    await axios.delete(`${API}/links/${gradoIdArg}/${materiaId}`);
+    await axios.delete(`${API}/links/${gradoIdArg}/${materiaId}`, { headers: authHeader() });
     setLinks((prev) => {
       const next = { ...prev };
       if (next[gradoIdArg]) {
@@ -74,10 +80,27 @@ export function LibraryProvider({ children }) {
     });
   };
 
+  // Books (staff)
+  const createBook = async (payload) => {
+    const res = await axios.post(`${API}/books`, payload, { headers: authHeader() });
+    setBooks((prev) => [...prev, res.data]);
+    return res.data;
+  };
+  const updateBook = async (id, payload) => {
+    const res = await axios.put(`${API}/books/${id}`, payload, { headers: authHeader() });
+    setBooks((prev) => prev.map((b) => (b.id === id ? res.data : b)));
+    return res.data;
+  };
+  const deleteBook = async (id) => {
+    await axios.delete(`${API}/books/${id}`, { headers: authHeader() });
+    setBooks((prev) => prev.filter((b) => b.id !== id));
+  };
+
   const value = {
-    modalOpen, level, nivelId, gradoId, links, loading,
+    modalOpen, level, nivelId, gradoId, links, books, loading,
     openModal, closeModal, goToNivel, goToGrado, goBack,
     saveLink, removeLink, refreshLinks,
+    createBook, updateBook, deleteBook, refreshBooks,
   };
 
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;
