@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import axios from "axios";
 import { useAuth } from "./AuthContext";
 
-const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
+const API = `${process.env.REACT_APP_API_URL || ""}/api`;
 
 const LibraryContext = createContext(null);
 
