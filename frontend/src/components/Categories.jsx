@@ -2,11 +2,7 @@ import React from "react";
 import { NIVELES } from "../data/niveles";
 import { Sprout, BookOpenText, GraduationCap, ArrowUpRight } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
-const { setIsAdmin } = useLibrary();
 
-<button onClick={() => setIsAdmin(true)}>
-  Activar Admin
-</button>
 
 const ICONS = { Sprout, BookOpenText, GraduationCap };
 
