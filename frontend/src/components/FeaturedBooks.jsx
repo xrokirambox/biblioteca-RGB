@@ -1,24 +1,23 @@
 import React, { useMemo, useState } from "react";
-import { useLibrary } from "../context/LibraryContext";
+import { FEATURED_BOOKS } from "../data/books";
 import { CATEGORIAS } from "../data/materias";
 import { ExternalLink } from "lucide-react";
 
 export const FeaturedBooks = ({ searchQuery = "" }) => {
-  const { books } = useLibrary();
   const [filter, setFilter] = useState("all");
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return books.filter((b) => {
+    return FEATURED_BOOKS.filter((b) => {
       const matchCat = filter === "all" ? true : b.category === filter;
       const matchQ =
         !q ||
-        (b.title || "").toLowerCase().includes(q) ||
-        (b.author || "").toLowerCase().includes(q) ||
-        (b.category || "").toLowerCase().includes(q);
+        b.title.toLowerCase().includes(q) ||
+        b.author.toLowerCase().includes(q) ||
+        b.category.toLowerCase().includes(q);
       return matchCat && matchQ;
     });
-  }, [books, filter, searchQuery]);
+  }, [filter, searchQuery]);
 
   return (
     <section id="destacados" data-testid="featured-books-section" className="py-24 relative">
@@ -33,6 +32,7 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
             </h2>
           </div>
 
+          {/* Filters */}
           <div className="flex flex-wrap gap-2" data-testid="category-filters">
             {CATEGORIAS.map((c) => (
               <button
@@ -65,17 +65,11 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
                 style={{ animationDelay: `${idx * 0.05}s` }}
               >
                 <div className="relative aspect-[3/4] overflow-hidden">
-                  {b.cover ? (
-                    <img
-                      src={b.cover}
-                      alt={b.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-[#051a09] flex items-center justify-center">
-                      <ExternalLink className="w-10 h-10 text-[#c9a227]/30" />
-                    </div>
-                  )}
+                  <img
+                    src={b.cover}
+                    alt={b.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#020b04] via-[#020b04]/40 to-transparent" />
                   <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#020b04]/80 border border-[#c9a227]/30 font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]">
                     {b.category}
@@ -89,17 +83,15 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
                   <p className="font-dm-sans text-xs text-[#a3b3a6]/80 leading-relaxed line-clamp-2 mb-4 flex-1">
                     {b.description}
                   </p>
-                  {b.url ? (
-                    <a
-                      href={b.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      data-testid={`book-link-${b.id}`}
-                      className="inline-flex items-center gap-2 font-dm-sans text-xs tracking-widest uppercase text-[#c9a227] hover:gap-3 transition-all"
-                    >
-                      Leer más <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  ) : null}
+                  <a
+                    href={b.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid={`book-link-${b.id}`}
+                    className="inline-flex items-center gap-2 font-dm-sans text-xs tracking-widest uppercase text-[#c9a227] hover:gap-3 transition-all"
+                  >
+                    Leer más <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </article>
             ))}
