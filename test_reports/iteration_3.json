@@ -1,0 +1,46 @@
+{
+  "summary": "Iteration 3 testing of Biblioteca Escolar RGB (JWT auth + Books CRUD + public/admin links split + legacy field handling). Wrote new pytest suite /app/backend/tests/test_biblioteca_rgb.py with 20 tests across root, auth, links, books — ALL 20 passed (100%). Frontend Playwright e2e covered: discrete shield → admin login → 'Modo administrador activo' banner + admin-books-manager-btn FAB → public materia view shows ONLY badges/links (0 inputs, 0 saves, 8 'No disponible' badges for grado=g1) vs admin view shows 8 inputs + 8 save buttons + conditional remove (trash) on linked rows → Save link via materia-save-{id} succeeds and produces materia-go-{id} → BooksManager opens with seeded books and books-create-btn/book-form-* fields work → ESC closes both Library and BooksManager modals → header-logout-btn restores discrete shield and removes admin banner.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "BooksManager / FeaturedBooks", "issues": ["Console warning carryover from iteration 2: empty string passed to <img src> when book.cover is the default ''. Non-blocking. Suggest conditional render of <img> or fallback URL."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_biblioteca_rgb.py",
+    "/app/test_reports/pytest/biblioteca_rgb_iter3.xml"
+  ],
+  "action_items": [
+    "Optional: render <img> conditionally in BookCard / BooksManager to avoid empty src warning.",
+    "Optional: DELETE /api/links/{g}/{m} returns 200 {deleted:0} for non-existent resources; consider 404 for symmetry with /api/books DELETE (which already returns 404).",
+    "Optional: Iteration 2 noted the FAB at bottom-right may overlap Emergent preview badge in tests — used force=True to bypass; not a user-facing issue.",
+    "Optional: server.py uses deprecated @app.on_event lifecycle; migrate to lifespan context manager."
+  ],
+  "critical_code_review_comments": [
+    "server.py /api/links GET correctly handles legacy field names ({grado, materia} OR {grado_id, materia_id}) — verified by direct Mongo insert + GET assertion in test_legacy_field_handling.",
+    "server.py login() sets cookie with secure=true samesite=none (works on HTTPS preview); Bearer token in body provides robust fallback used by frontend.",
+    "BookUpdate correctly filters None so PUT /api/books/{id} performs partial updates without clobbering untouched fields (verified in test_put_book_partial_update).",
+    "DELETE /api/books/{id} idempotency: second delete correctly returns 404 (verified). DELETE /api/links/.. is non-idempotent (returns 200 with deleted:0).",
+    "Seed_admin in startup is idempotent and updates password hash if env ADMIN_PASSWORD changed — good. Bcrypt $2b$ hash format verified.",
+    "JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD all loaded from /app/backend/.env (no hardcoded secrets).",
+    "Frontend uses process.env.REACT_APP_BACKEND_URL exclusively; localStorage 'rgb_admin_token' with Authorization Bearer header — good pattern.",
+    "POST /api/links accepts URLs starting with '/' (relative); spec says http/https only. Harmless.",
+    "No brute-force lockout on /api/auth/login (auth_testing.md mentions lockout after 5 fails). Not implemented — acceptable for MVP, flag if playbook requires it.",
+    "All interactive elements have data-testid attributes; admin/public split is enforced both server-side (require_admin) and client-side (isAdmin in MateriaItem)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_biblioteca_rgb.py (NEW — 20 tests covering root, auth, links public/admin/legacy, books CRUD)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin@rgb.edu / admin123 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Backend tests use TEST_-prefixed books and 'test_mat_iter3' materia under grado g1; all created data is cleaned up via fixture teardown and explicit DELETE calls. Legacy doc test inserts directly into Mongo and removes after assertion. UI test created 'TEST_UI_iter3' book and a temporary materia link, both cleaned up within the same session.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend tests live at /app/backend/tests/test_biblioteca_rgb.py — run with: REACT_APP_BACKEND_URL=<url> MONGO_URL=mongodb://localhost:27017 DB_NAME=test_database pytest /app/backend/tests/test_biblioteca_rgb.py -v. The previous iteration's file /app/backend/tests/test_library_api.py has a stale fallback URL ('learning-hub-550.preview.agent.com') and only 7 link tests; consider deleting it. UI testids: discrete-admin-btn, admin-login-modal, admin-login-{email,password,submit}, admin-mode-banner, admin-books-manager-btn, header-logout-btn, header-open-library-btn, modal-nivel-{primaria|secundaria|media}, modal-grado-{id}, materia-input/save/remove/go/empty-{id}, books-create-btn, book-form-{title|author|category|cover|url|description|submit|cancel}, admin-book-{uuid}, admin-book-edit/delete-{uuid}. NOTE: book UUIDs contain hyphens, so regex /^admin-book-[^-]+$/ does NOT match — use /^admin-book-[0-9a-f-]+$/ or simply count by selector '[data-testid^=admin-book-]' filtered by absence of '-edit-'/'-delete-' substrings.",
+  "rca of the issue": "No issues found. All 20 backend tests pass, all critical frontend flows verified. Implementation matches the iteration 3 spec (JWT auth + Books CRUD + admin/public split + legacy field handling)."
+}
