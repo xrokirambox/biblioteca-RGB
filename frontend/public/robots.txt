@@ -1,0 +1,32 @@
+# Biblioteca RGB - robots.txt
+# Última actualización: 2026-06-02
+
+User-agent: *
+Allow: /
+Disallow: /api/auth/
+Disallow: /api/users/
+Disallow: /api/audit/
+Disallow: /*.json$
+Disallow: /node_modules/
+Disallow: /test_reports/
+Disallow: /build/
+
+# Crawl delay
+Crawl-delay: 1
+
+# Google (optimizado)
+User-agent: Googlebot
+Crawl-delay: 0
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Crawl-delay: 1
+
+# Bloquear bots malos
+User-agent: AhrefsBot
+User-agent: SemrushBot
+Disallow: /
+
+# Sitemaps
+Sitemap: https://biblioteca-rgb.edu.co/sitemap.xml

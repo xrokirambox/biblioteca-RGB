@@ -22,11 +22,15 @@ const HomeInner = () => {
   return (
     <div className="App relative">
       <Header onOpenLibrary={openModal} />
-      <main>
+      <main role="main">
         <Hero onOpenLibrary={openModal} />
         <SearchSection onSearch={setSearchQuery} />
-        <Categories />
-        <FeaturedBooks searchQuery={searchQuery} />
+        <section id="categorias" aria-labelledby="categorias-heading">
+          <Categories />
+        </section>
+        <section id="destacados" aria-labelledby="destacados-heading">
+          <FeaturedBooks searchQuery={searchQuery} />
+        </section>
         <CTABanner onOpenLibrary={openModal} />
       </main>
       <Footer />
