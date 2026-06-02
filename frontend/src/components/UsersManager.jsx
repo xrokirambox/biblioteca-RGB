@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Plus, Save, Trash2, Edit3, Loader2, Users as UsersIcon, ShieldCheck, ShieldAlert } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { ProfilePhotoUploader } from "./ProfilePhotoUploader";
 import { toast } from "sonner";
 
 const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
@@ -145,6 +146,18 @@ export const UsersManager = () => {
     }
   };
 
+  const handlePhotoUpdate = async (photoUrl) => {
+    if (!editing) return;
+    setBusy(true);
+    try {
+      const res = await axios.put(`${API}/users/${editing.id}`, { profile_photo_url: photoUrl }, { headers: authHeader() });
+      setUsers((u) => u.map((x) => (x.id === editing.id ? res.data : x)));
+      setEditing(res.data);
+    } catch (e) {
+      toast.error(e.response?.data?.detail || "No se pudo actualizar foto");
+    } finally { setBusy(false); }
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
@@ -164,8 +177,11 @@ export const UsersManager = () => {
         <UserForm onSubmit={handleCreate} onCancel={() => setMode("list")} submitting={busy} canChangeRole={canChangeRoles} />
       )}
       {mode === "edit" && editing && (
-        <UserForm initial={editing} onSubmit={handleUpdate} onCancel={() => { setMode("list"); setEditing(null); }}
-          submitting={busy} canChangeRole={canChangeRoles} />
+        <>
+          <UserForm initial={editing} onSubmit={handleUpdate} onCancel={() => { setMode("list"); setEditing(null); }}
+            submitting={busy} canChangeRole={canChangeRoles} />
+          <ProfilePhotoUploader user={editing} onPhotoUpdate={handlePhotoUpdate} uploading={busy} />
+        </>
       )}
 
       {loading ? (
