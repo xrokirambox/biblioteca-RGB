@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Library, Menu, X, LogOut, Shield } from "lucide-react";
+import { Menu, X, LogOut, Shield } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { UserAvatar } from "./UserAvatar";
 import { toast } from "sonner";
@@ -31,10 +31,10 @@ export const Header = ({ onOpenLibrary }) => {
     <header data-testid="app-header" className="fixed top-0 w-full z-40 backdrop-blur-2xl bg-[#020b04]/80 border-b border-[#c9a227]/20">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-20">
         <a href="#inicio" className="flex items-center gap-3 group select-none" data-testid="header-logo" onClick={handleLogoClick} title="Inicio">
-          <div className="w-11 h-11 rounded-full border border-[#c9a227]/50 bg-[#051a09] flex items-center justify-center shadow-[0_0_20px_rgba(201,162,39,0.2)] group-hover:shadow-[0_0_28px_rgba(201,162,39,0.45)] transition-shadow">
-            <Library className="w-5 h-5 text-[#c9a227]" />
+          <div className="w-12 h-12 rounded-full overflow-hidden border border-[#c9a227]/50 bg-[#051a09] flex items-center justify-center shadow-[0_0_20px_rgba(201,162,39,0.2)] group-hover:shadow-[0_0_28px_rgba(201,162,39,0.45)] transition-shadow">
+            <img src="/logo.png" alt="RGB" className="w-full h-full object-cover" />
           </div>
-          <div className="leading-tight">
+          <div className="leading-tight hidden sm:block">
             <div className="font-cinzel text-[#c9a227] text-lg tracking-wider">RGB</div>
             <div className="font-dm-sans text-[10px] uppercase tracking-[0.2em] text-[#a3b3a6]">Biblioteca Escolar</div>
           </div>
