@@ -119,6 +119,7 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
     role: Optional[str] = None
     password: Optional[str] = None
+    profile_photo_url: Optional[str] = None
 
 
 class LinkCreate(BaseModel):
@@ -259,6 +260,8 @@ async def update_user(user_id: str, payload: UserUpdate, current: dict = Depends
     if payload.role is not None: changes["role"] = payload.role
     if payload.password is not None and payload.password.strip():
         changes["password_hash"] = hash_password(payload.password)
+    if payload.profile_photo_url is not None:
+        changes["profile_photo_url"] = payload.profile_photo_url.strip() if payload.profile_photo_url else None
     if not changes:
         return {**existing, "password_hash": None}
     await db.users.update_one({"id": user_id}, {"$set": changes})

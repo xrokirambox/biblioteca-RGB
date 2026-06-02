@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Library, Menu, X, LogOut, Shield } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { UserAvatar } from "./UserAvatar";
 import { toast } from "sonner";
 
 const NAV_LINKS = [
@@ -12,7 +13,7 @@ const NAV_LINKS = [
 
 export const Header = ({ onOpenLibrary }) => {
   const [open, setOpen] = useState(false);
-  const { isStaff, role, setLoginOpen, logout } = useAuth();
+  const { isStaff, user, role, setLoginOpen, logout } = useAuth();
   const clickCount = useRef(0);
   const clickTimer = useRef(null);
 
@@ -46,6 +47,15 @@ export const Header = ({ onOpenLibrary }) => {
               {l.label}
             </a>
           ))}
+          {isStaff && user && (
+            <div className="flex items-center gap-3 pl-6 border-l border-[#c9a227]/20">
+              <UserAvatar user={user} size="sm" />
+              <div className="flex flex-col text-left">
+                <span className="font-dm-sans text-xs text-[#f4f1e1]">{user.name}</span>
+                <span className="font-dm-sans text-[10px] text-[#a3b3a6] uppercase tracking-widest">{user.role}</span>
+              </div>
+            </div>
+          )}
           {isStaff && (
             <button onClick={handleLogout} data-testid="header-logout-btn"
               className="btn-outline-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-dm-sans font-semibold tracking-widest uppercase">
