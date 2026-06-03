@@ -3,14 +3,14 @@ import logging
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from backend.settings import settings
-from backend.services import seed_data
-from backend.routers.auth import router as auth_router
-from backend.routers.users import router as users_router
-from backend.routers.links import router as links_router
-from backend.routers.books import router as books_router
-from backend.routers.categories import router as categories_router
-from backend.routers.audit import router as audit_router
+from .settings import settings
+from .services import seed_data
+from .routers.auth import router as auth_router
+from .routers.users import router as users_router
+from .routers.links import router as links_router
+from .routers.books import router as books_router
+from .routers.categories import router as categories_router
+from .routers.audit import router as audit_router
 
 logger = logging.getLogger(__name__)
 
