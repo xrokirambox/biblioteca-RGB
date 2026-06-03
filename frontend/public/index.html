@@ -1,113 +1,25 @@
 <!doctype html>
-<html lang="es-CO">
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
-        
-        <!-- SEO Meta Tags -->
-        <meta name="description" content="Biblioteca RGB: Plataforma digital educativa para organizar, compartir y acceder a recursos educativos por grado, materia y categoría. Ideal para escuelas, docentes y estudiantes." />
-        <meta name="keywords" content="biblioteca digital, recursos educativos, plataforma escolar, libros, materiales didácticos, educación, escuela" />
-        <meta name="author" content="Biblioteca RGB" />
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-        <meta name="language" content="es" />
-        <meta name="revisit-after" content="7 days" />
-        
-        <!-- Canonical -->
-        <link rel="canonical" href="https://biblioteca-rgb.edu.co/" />
-        
-        <!-- Open Graph (Social Media) -->
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://biblioteca-rgb.edu.co/" />
-        <meta property="og:title" content="Biblioteca RGB - Plataforma de Recursos Educativos Digitales" />
-        <meta property="og:description" content="Gestiona y accede a recursos educativos organizados por grado y materia. Plataforma colaborativa para escuelas y docentes." />
-        <meta property="og:image" content="https://biblioteca-rgb.edu.co/logo.png" />
-        <meta property="og:site_name" content="Biblioteca RGB" />
-        <meta property="og:locale" content="es_CO" />
-        
-        <!-- Twitter Card -->
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://biblioteca-rgb.edu.co/" />
-        <meta name="twitter:title" content="Biblioteca RGB - Recursos Educativos Digitales" />
-        <meta name="twitter:description" content="Plataforma digital para organizar y compartir recursos educativos por grado y materia." />
-        <meta name="twitter:image" content="https://biblioteca-rgb.edu.co/logo.png" />
-        
-        <!-- Favicon y Icons -->
         <link rel="icon" type="image/png" href="%PUBLIC_URL%/logo.png" />
         <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
-        
-        <!-- Font Optimization -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        
-        <!-- Preload Critical Resources -->
-        <link rel="preload" href="%PUBLIC_URL%/logo.png" as="image" type="image/png" />
-        
-        <title>Biblioteca RGB - Plataforma de Recursos Educativos Digitales para Escuelas</title>
-        
-        <!-- Error handling script -->
+        <title>Biblioteca Escolar RGB</title>
         <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
         
     </head>
     <body>
-        <noscript>Para usar Biblioteca RGB necesitas habilitar JavaScript en tu navegador. Esta plataforma de recursos educativos requiere JavaScript para funcionar correctamente.</noscript>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
 
-        <!-- JSON-LD Schema Markup -->
-        <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "EducationalOrganization",
-            "name": "Biblioteca RGB",
-            "url": "https://biblioteca-rgb.edu.co",
-            "description": "Plataforma digital de biblioteca para escuelas que organiza recursos educativos por grado y materia",
-            "logo": "https://biblioteca-rgb.edu.co/logo.png",
-            "image": "https://biblioteca-rgb.edu.co/logo.png",
-            "contactPoint": {
-                "@type": "ContactPoint",
-                "contactType": "Customer Service",
-                "email": "classroom@rgb.edu.co"
-            },
-            "sameAs": [
-                "https://github.com/xrokirambox"
-            ],
-            "areaServed": "CO",
-            "serviceType": "Educational Platform"
-        }
-        </script>
-
-        <!-- Organization Schema -->
-        <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Biblioteca RGB",
-            "url": "https://biblioteca-rgb.edu.co",
-            "description": "Plataforma educativa digital para gestión de recursos escolares",
-            "logo": "https://biblioteca-rgb.edu.co/logo.png"
-        }
-        </script>
-
-        <!-- BreadcrumbList Schema -->
-        <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Inicio",
-                    "item": "https://biblioteca-rgb.edu.co/"
-                }
-            ]
-        }
-        </script>
-        
-        <!-- Analytics Script (Deferred) -->
-        <script defer>
+       
+        <script>
             !(function (t, e) {
                 var o, n, p, r;
                 e.__SV ||
@@ -171,7 +83,7 @@
             })(document, window.posthog || []);
             posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
                 api_host: "https://us.i.posthog.com",
-                person_profiles: "identified_only",
+                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
                 session_recording: {
                     recordCrossOriginIframes: true,
                     capturePerformance: false,
