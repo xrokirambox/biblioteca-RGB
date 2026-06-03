@@ -11,9 +11,11 @@ import jwt
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic import BaseModel, EmailStr, Field
-from pydantic_settings import BaseSettings
-from pydantic import ConfigDict
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
+try:
+    from pydantic_settings import BaseSettings
+except Exception:
+    from pydantic import BaseSettings
 
 logger = logging.getLogger(__name__)
 
