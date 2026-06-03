@@ -16,6 +16,7 @@ export function LibraryProvider({ children }) {
 
   const [links, setLinks] = useState({});
   const [books, setBooks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const refreshLinks = useCallback(async () => {
@@ -39,10 +40,20 @@ export function LibraryProvider({ children }) {
     }
   }, []);
 
+  const refreshCategories = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API}/categories`);
+      setCategories(res.data || []);
+    } catch (e) {
+      console.error("Error loading categories", e);
+    }
+  }, []);
+
   useEffect(() => {
     refreshLinks();
     refreshBooks();
-  }, [refreshLinks, refreshBooks]);
+    refreshCategories();
+  }, [refreshLinks, refreshBooks, refreshCategories]);
 
   const openModal = () => { setLevel(0); setNivelId(null); setGradoId(null); setModalOpen(true); };
   const closeModal = () => setModalOpen(false);
@@ -96,11 +107,29 @@ export function LibraryProvider({ children }) {
     setBooks((prev) => prev.filter((b) => b.id !== id));
   };
 
+  const createCategory = async (payload) => {
+    const res = await axios.post(`${API}/categories`, payload, { headers: authHeader() });
+    setCategories((prev) => [...prev, res.data]);
+    return res.data;
+  };
+
+  const updateCategory = async (id, payload) => {
+    const res = await axios.put(`${API}/categories/${id}`, payload, { headers: authHeader() });
+    setCategories((prev) => prev.map((c) => (c.id === id ? res.data : c)));
+    return res.data;
+  };
+
+  const deleteCategory = async (id) => {
+    await axios.delete(`${API}/categories/${id}`, { headers: authHeader() });
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+  };
+
   const value = {
-    modalOpen, level, nivelId, gradoId, links, books, loading,
+    modalOpen, level, nivelId, gradoId, links, books, categories, loading,
     openModal, closeModal, goToNivel, goToGrado, goBack,
     saveLink, removeLink, refreshLinks,
     createBook, updateBook, deleteBook, refreshBooks,
+    createCategory, updateCategory, deleteCategory, refreshCategories,
   };
 
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;

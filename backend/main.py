@@ -139,6 +139,12 @@ class LinkRecord(BaseModel):
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
+def slugify(text: str) -> str:
+    return "-".join(
+        text.lower().strip().replace("ñ", "n").replace("ç", "c").split()
+    ).replace("/", "-").replace("_", "-")
+
+
 class BookBase(BaseModel):
     title: str
     author: str = ""
@@ -164,6 +170,33 @@ class BookUpdate(BaseModel):
 class BookRecord(BookBase):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+class CategoryCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    audience: str = "general"
+    status: str = "show"
+
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    audience: Optional[str] = None
+    status: Optional[str] = None
+
+
+class CategoryRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str = ""
+    audience: str = "general"
+    status: str = "show"
     created_by: str = ""
     updated_by: str = ""
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -341,6 +374,75 @@ async def delete_link(grado_id: str, materia_id: str, current: dict = Depends(re
     return {"deleted": res.deleted_count}
 
 
+# ---------- Categories (public GET, staff write) ----------
+@api_router.get("/categories", response_model=List[CategoryRecord])
+async def list_categories() -> List[CategoryRecord]:
+    docs = await db.categories.find({}, {"_id": 0}).to_list(500)
+    return docs
+
+
+@api_router.post("/categories", response_model=CategoryRecord)
+async def create_category(payload: CategoryCreate, current: dict = Depends(require_staff)):
+    category_id = slugify(payload.name)
+    if not category_id:
+        raise HTTPException(status_code=400, detail="Nombre de categoría inválido")
+    existing = await db.categories.find_one({"id": category_id}, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=409, detail="Ya existe una categoría con ese nombre")
+    if payload.status not in ("show", "hide"):
+        raise HTTPException(status_code=400, detail="Estado inválido")
+    if payload.audience not in ("general", "estudiantes", "profesores"):
+        raise HTTPException(status_code=400, detail="Audiencia inválida")
+    record = CategoryRecord(
+        id=category_id,
+        name=payload.name.strip(),
+        description=payload.description or "",
+        audience=payload.audience,
+        status=payload.status,
+        created_by=current["id"],
+        updated_by=current["id"],
+    )
+    await db.categories.insert_one(record.model_dump())
+    await audit(current, "create", "category", category_id, {"name": record.name, "status": record.status})
+    return record
+
+
+@api_router.put("/categories/{category_id}", response_model=CategoryRecord)
+async def update_category(category_id: str, payload: CategoryUpdate, current: dict = Depends(require_staff)):
+    existing = await db.categories.find_one({"id": category_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    changes: Dict[str, Any] = {}
+    if payload.name is not None:
+        changes["name"] = payload.name.strip()
+    if payload.description is not None:
+        changes["description"] = payload.description
+    if payload.audience is not None:
+        if payload.audience not in ("general", "estudiantes", "profesores"):
+            raise HTTPException(status_code=400, detail="Audiencia inválida")
+        changes["audience"] = payload.audience
+    if payload.status is not None:
+        if payload.status not in ("show", "hide"):
+            raise HTTPException(status_code=400, detail="Estado inválido")
+        changes["status"] = payload.status
+    if not changes:
+        return {**existing}
+    changes["updated_at"] = datetime.now(timezone.utc).isoformat()
+    changes["updated_by"] = current["id"]
+    await db.categories.update_one({"id": category_id}, {"$set": changes})
+    merged = {**existing, **changes}
+    await audit(current, "update", "category", category_id, changes)
+    return merged
+
+
+@api_router.delete("/categories/{category_id}")
+async def delete_category(category_id: str, current: dict = Depends(require_staff)):
+    res = await db.categories.delete_one({"id": category_id})
+    if res.deleted_count:
+        await audit(current, "delete", "category", category_id)
+    return {"deleted": res.deleted_count}
+
+
 # ---------- Books (public GET, staff write) ----------
 @api_router.get("/books", response_model=List[BookRecord])
 async def list_books():
@@ -449,6 +551,7 @@ async def on_startup():
         await db.users.create_index("email", unique=True)
         await db.users.create_index("id", unique=True)
         await db.links.create_index([("grado_id", 1), ("materia_id", 1)])
+        await db.categories.create_index("id", unique=True)
         await db.books.create_index("id", unique=True)
         await db.audit_log.create_index([("timestamp", -1)])
     except Exception as e:
