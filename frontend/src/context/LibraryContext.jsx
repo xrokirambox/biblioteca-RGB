@@ -1,14 +1,9 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import axios from "axios";
-import { useAuth } from "./AuthContext";
-
-const API = `${process.env.REACT_APP_API_URL || ""}/api`;
+import { api } from "../lib/api";
 
 const LibraryContext = createContext(null);
 
 export function LibraryProvider({ children }) {
-  const { authHeader } = useAuth();
-
   const [modalOpen, setModalOpen] = useState(false);
   const [level, setLevel] = useState(0);
   const [nivelId, setNivelId] = useState(null);
@@ -22,7 +17,7 @@ export function LibraryProvider({ children }) {
   const refreshLinks = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/links`);
+      const res = await api.get("/links");
       setLinks(res.data || {});
     } catch (e) {
       console.error("Error loading links", e);
@@ -33,7 +28,7 @@ export function LibraryProvider({ children }) {
 
   const refreshBooks = useCallback(async () => {
     try {
-      const res = await axios.get(`${API}/books`);
+      const res = await api.get("/books");
       setBooks(res.data || []);
     } catch (e) {
       console.error("Error loading books", e);
@@ -42,7 +37,7 @@ export function LibraryProvider({ children }) {
 
   const refreshCategories = useCallback(async () => {
     try {
-      const res = await axios.get(`${API}/categories`);
+      const res = await api.get("/categories");
       setCategories(res.data || []);
     } catch (e) {
       console.error("Error loading categories", e);
@@ -68,8 +63,7 @@ export function LibraryProvider({ children }) {
   const saveLink = async (gradoIdArg, materiaId, url) => {
     const res = await axios.post(
       `${API}/links`,
-      { grado_id: gradoIdArg, materia_id: materiaId, url },
-      { headers: authHeader() }
+      { grado_id: gradoIdArg, materia_id: materiaId, url }
     );
     setLinks((prev) => ({
       ...prev,
@@ -79,7 +73,7 @@ export function LibraryProvider({ children }) {
   };
 
   const removeLink = async (gradoIdArg, materiaId) => {
-    await axios.delete(`${API}/links/${gradoIdArg}/${materiaId}`, { headers: authHeader() });
+    await api.delete(`/links/${gradoIdArg}/${materiaId}`);
     setLinks((prev) => {
       const next = { ...prev };
       if (next[gradoIdArg]) {
@@ -93,34 +87,34 @@ export function LibraryProvider({ children }) {
 
   // Books (staff)
   const createBook = async (payload) => {
-    const res = await axios.post(`${API}/books`, payload, { headers: authHeader() });
+    const res = await api.post("/books", payload);
     setBooks((prev) => [...prev, res.data]);
     return res.data;
   };
   const updateBook = async (id, payload) => {
-    const res = await axios.put(`${API}/books/${id}`, payload, { headers: authHeader() });
+    const res = await api.put(`/books/${id}`, payload);
     setBooks((prev) => prev.map((b) => (b.id === id ? res.data : b)));
     return res.data;
   };
   const deleteBook = async (id) => {
-    await axios.delete(`${API}/books/${id}`, { headers: authHeader() });
+    await api.delete(`/books/${id}`);
     setBooks((prev) => prev.filter((b) => b.id !== id));
   };
 
   const createCategory = async (payload) => {
-    const res = await axios.post(`${API}/categories`, payload, { headers: authHeader() });
+    const res = await api.post("/categories", payload);
     setCategories((prev) => [...prev, res.data]);
     return res.data;
   };
 
   const updateCategory = async (id, payload) => {
-    const res = await axios.put(`${API}/categories/${id}`, payload, { headers: authHeader() });
+    const res = await api.put(`/categories/${id}`, payload);
     setCategories((prev) => prev.map((c) => (c.id === id ? res.data : c)));
     return res.data;
   };
 
   const deleteCategory = async (id) => {
-    await axios.delete(`${API}/categories/${id}`, { headers: authHeader() });
+    await api.delete(`/categories/${id}`);
     setCategories((prev) => prev.filter((c) => c.id !== id));
   };
 
