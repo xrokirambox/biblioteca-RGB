@@ -1,4 +1,9 @@
-from pydantic import BaseSettings, Field
+try:
+    from pydantic_settings import BaseSettings
+    from pydantic import Field
+except Exception:
+    # Fallback for older pydantic versions where BaseSettings still lived in pydantic
+    from pydantic import BaseSettings, Field
 from typing import List
 
 
