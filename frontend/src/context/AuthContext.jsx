@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
   useEffect(() => { fetchMe(); }, [fetchMe]);
 
     const login = async (email, password) => {
-        const res = await api.post(\"/auth/login\", { email, password });
+        const res = await api.post("/auth/login",{ email, password });
         if (res.data?.token) setAuthToken(res.data.token);
         setUser(res.data);
         return res.data;
@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
 
       const logout = async () => {
         try {
-          await api.post(\"/auth/logout\");
+           await api.post("/auth/logout");
         } catch (_) {}
         setAuthToken(null);
         setUser(false);
