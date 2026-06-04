@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, BookOpen, Users, History, LayoutDashboard } from "lucide-react";
+import { X, BookOpen, Users, History, LayoutDashboard, Layers } from "lucide-react";
 import { BooksManager } from "./BooksManager";
 import { UsersManager } from "./UsersManager";
 import { AuditLog } from "./AuditLog";
+import { CategoriesManager } from "./CategoriesManager";
 import { useAuth } from "../context/AuthContext";
 
 const TABS = [
   { id: "books", label: "Libros", icon: BookOpen },
   { id: "users", label: "Usuarios", icon: Users },
+  { id: "categories", label: "Salones", icon: Layers },
   { id: "audit", label: "Auditoría", icon: History },
 ];
 
@@ -79,6 +81,7 @@ export const StaffPanel = ({ open, onClose }) => {
         <div className="px-6 py-4 overflow-y-auto custom-scrollbar flex-1">
           {tab === "books" && <BooksManager />}
           {tab === "users" && <UsersManager />}
+          {tab === "categories" && <CategoriesManager />}
           {tab === "audit" && <AuditLog />}
         </div>
       </div>

@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import { api } from "../lib/api";
 import { Plus, Save, Trash2, Edit3, Loader2, Users as UsersIcon, ShieldCheck, ShieldAlert } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { ProfilePhotoUploader } from "./ProfilePhotoUploader";
 import { toast } from "sonner";
-
-const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const ROLES = [
   { id: "admin", label: "Administrador" },
@@ -87,7 +85,7 @@ const RoleBadge = ({ role }) => {
 };
 
 export const UsersManager = () => {
-  const { user, authHeader, canChangeRoles, canDeleteUsers } = useAuth();
+  const { user, canChangeRoles, canDeleteUsers } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState("list");
@@ -97,12 +95,12 @@ export const UsersManager = () => {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/users`, { headers: authHeader() });
+      const res = await api.get(`/users`);
       setUsers(res.data || []);
     } catch (e) {
       toast.error(e.response?.data?.detail || "No se pudo cargar usuarios");
     } finally { setLoading(false); }
-  }, [authHeader]);
+  }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
 
@@ -110,7 +108,7 @@ export const UsersManager = () => {
     if (!form.email || !form.password) return toast.error("Correo y contraseña son obligatorios");
     setBusy(true);
     try {
-      const res = await axios.post(`${API}/users`, form, { headers: authHeader() });
+      const res = await api.post(`/users`, form);
       setUsers((u) => [...u, res.data]);
       toast.success("Usuario creado");
       setMode("list");
@@ -125,7 +123,7 @@ export const UsersManager = () => {
       const payload = { name: form.name };
       if (canChangeRoles) payload.role = form.role;
       if (form.password) payload.password = form.password;
-      const res = await axios.put(`${API}/users/${editing.id}`, payload, { headers: authHeader() });
+      const res = await api.put(`/users/${editing.id}`, payload);
       setUsers((u) => u.map((x) => (x.id === editing.id ? res.data : x)));
       toast.success("Usuario actualizado");
       setMode("list"); setEditing(null);
@@ -138,7 +136,7 @@ export const UsersManager = () => {
     if (u.id === user?.id) return toast.error("No puedes eliminarte a ti mismo");
     if (!window.confirm(`¿Eliminar al usuario ${u.email}?`)) return;
     try {
-      await axios.delete(`${API}/users/${u.id}`, { headers: authHeader() });
+      await api.delete(`/users/${u.id}`);
       setUsers((arr) => arr.filter((x) => x.id !== u.id));
       toast.success("Usuario eliminado");
     } catch (e) {
@@ -150,7 +148,7 @@ export const UsersManager = () => {
     if (!editing) return;
     setBusy(true);
     try {
-      const res = await axios.put(`${API}/users/${editing.id}`, { profile_photo_url: photoUrl }, { headers: authHeader() });
+      const res = await api.put(`/users/${editing.id}`, { profile_photo_url: photoUrl });
       setUsers((u) => u.map((x) => (x.id === editing.id ? res.data : x)));
       setEditing(res.data);
     } catch (e) {

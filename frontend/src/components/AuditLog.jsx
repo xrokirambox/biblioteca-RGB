@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import { api } from "../lib/api";
 import { Loader2, History, Filter, Plus, Edit3, Trash2, LogIn, LogOut } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
-
-const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const ACTION_ICONS = {
   create: Plus, update: Edit3, delete: Trash2, login: LogIn, logout: LogOut,
@@ -30,7 +27,6 @@ const formatDate = (iso) => {
 };
 
 export const AuditLog = () => {
-  const { authHeader } = useAuth();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [resourceFilter, setResourceFilter] = useState("all");
@@ -39,12 +35,12 @@ export const AuditLog = () => {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/audit?limit=200`, { headers: authHeader() });
+      const res = await api.get(`/audit?limit=200`);
       setEntries(res.data || []);
     } catch (e) {
       toast.error(e.response?.data?.detail || "No se pudo cargar el log");
     } finally { setLoading(false); }
-  }, [authHeader]);
+  }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
 
