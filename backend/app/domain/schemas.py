@@ -1,23 +1,31 @@
+"\"\"\"Pydantic models — request/response schemas.\"\"\"
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from typing import Any, Dict, Optional
 import uuid
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def new_id() -> str:
+    return str(uuid.uuid4())
+
+
+# ---------- Auth ----------
 class LoginIn(BaseModel):
     email: EmailStr
     password: str
 
 
+# ---------- Users ----------
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-    name: str = ""
-    role: str = "rector"
+    name: str = \"\"
+    role: str = \"rector\"
 
 
 class UserUpdate(BaseModel):
@@ -28,14 +36,14 @@ class UserUpdate(BaseModel):
 
 
 class UserOut(BaseModel):
-    model_config = ConfigDict(extra="ignore")
+    model_config = ConfigDict(extra=\"ignore\")
     id: str
     email: EmailStr
-    name: str
+    name: str = \"\"
     role: str
     profile_photo_url: Optional[str] = None
     created_at: str
-    created_by: str
+    created_by: str = \"\"
     updated_at: Optional[str] = None
     updated_by: Optional[str] = None
 
@@ -44,6 +52,7 @@ class UserWithToken(UserOut):
     token: str
 
 
+# ---------- Links ----------
 class LinkCreate(BaseModel):
     grado_id: str
     materia_id: str
@@ -51,23 +60,24 @@ class LinkCreate(BaseModel):
 
 
 class LinkRecord(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    model_config = ConfigDict(extra=\"ignore\")
+    id: str = Field(default_factory=new_id)
     grado_id: str
     materia_id: str
     url: str
-    created_by: str = ""
-    updated_by: str = ""
+    created_by: str = \"\"
+    updated_by: str = \"\"
     updated_at: str = Field(default_factory=now_iso)
 
 
+# ---------- Books ----------
 class BookBase(BaseModel):
     title: str
-    author: str = ""
-    category: str = "literatura"
-    cover: str = ""
-    url: str = ""
-    description: str = ""
+    author: str = \"\"
+    category: str = \"literatura\"
+    cover: str = \"\"
+    url: str = \"\"
+    description: str = \"\"
 
 
 class BookCreate(BookBase):
@@ -84,19 +94,20 @@ class BookUpdate(BaseModel):
 
 
 class BookRecord(BookBase):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    created_by: str = ""
-    updated_by: str = ""
+    model_config = ConfigDict(extra=\"ignore\")
+    id: str = Field(default_factory=new_id)
+    created_by: str = \"\"
+    updated_by: str = \"\"
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
 
 
+# ---------- Categories ----------
 class CategoryCreate(BaseModel):
     name: str
-    description: Optional[str] = ""
-    audience: str = "general"
-    status: str = "show"
+    description: Optional[str] = \"\"
+    audience: str = \"general\"
+    status: str = \"show\"
 
 
 class CategoryUpdate(BaseModel):
@@ -107,26 +118,28 @@ class CategoryUpdate(BaseModel):
 
 
 class CategoryRecord(BaseModel):
-    model_config = ConfigDict(extra="ignore")
+    model_config = ConfigDict(extra=\"ignore\")
     id: str
     name: str
-    description: str = ""
-    audience: str = "general"
-    status: str = "show"
-    created_by: str = ""
-    updated_by: str = ""
+    description: str = \"\"
+    audience: str = \"general\"
+    status: str = \"show\"
+    created_by: str = \"\"
+    updated_by: str = \"\"
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
 
 
+# ---------- Audit ----------
 class AuditRecord(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str
+    model_config = ConfigDict(extra=\"ignore\")
+    id: str = Field(default_factory=new_id)
     user_id: str
     user_email: str
     user_role: str
     action: str
     resource_type: str
-    resource_id: str = ""
-    details: Dict[str, str] = Field(default_factory=dict)
+    resource_id: str = \"\"
+    details: Dict[str, Any] = Field(default_factory=dict)
     timestamp: str = Field(default_factory=now_iso)
+"

@@ -61,10 +61,11 @@ export function LibraryProvider({ children }) {
 
   // Links (staff)
   const saveLink = async (gradoIdArg, materiaId, url) => {
-    const res = await axios.post(
-      `${API}/links`,
-      { grado_id: gradoIdArg, materia_id: materiaId, url }
-    );
+    const res = await api.post(\"/links\", {
+      grado_id: gradoIdArg,
+      materia_id: materiaId,
+      url,
+    });
     setLinks((prev) => ({
       ...prev,
       [gradoIdArg]: { ...(prev[gradoIdArg] || {}), [materiaId]: res.data.url },

@@ -17,18 +17,20 @@ export function AuthProvider({ children }) {
 
   useEffect(() => { fetchMe(); }, [fetchMe]);
 
-  const login = async (email, password) => {
-    const res = await api.post("/auth/login", { email, password });
-    setUser(res.data);
-    return res.data;
-  };
+    const login = async (email, password) => {
+        const res = await api.post(\"/auth/login\", { email, password });
+        if (res.data?.token) setAuthToken(res.data.token);
+        setUser(res.data);
+        return res.data;
+      };
 
-  const logout = async () => {
-    try {
-      await api.post("/auth/logout");
-    } catch (_) {}
-    setUser(false);
-  };
+      const logout = async () => {
+        try {
+          await api.post(\"/auth/logout\");
+        } catch (_) {}
+        setAuthToken(null);
+        setUser(false);
+      };
 
   const role = user?.role || null;
   const isAdmin = role === "admin";
