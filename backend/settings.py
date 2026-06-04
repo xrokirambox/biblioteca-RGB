@@ -9,7 +9,7 @@ from typing import List
 
 class Settings(BaseSettings):
     mongo_url: str = Field(..., env="MONGO_URL")
-    db_name: str = Field(..., env="DB_NAME")
+    db_name: str = Field(..., env="biblioteca")
     jwt_secret: str = Field(..., env="JWT_SECRET")
     cors_origins: str = Field("", env="CORS_ORIGINS")
     admin_email: str = Field("admin@rgb.edu", env="ADMIN_EMAIL")
