@@ -23,12 +23,11 @@ def create_access_token(user_id: str, email: str, role: str) -> str:
         "sub": user_id,
         "email": email,
         "role": role,
-        "exp": int(time.time()) + settings.jwt_expiry_hours * 3600,
+        "exp": int(time.time()) + settings.jwt_expire_hours * 3600,  # FIX: expiry→expire
         "type": "access",
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
 
 
 def decode_access_token(token: str) -> dict:
-    """Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure."""
     return jwt.decode(token, settings.jwt_secret, algorithms=[JWT_ALGORITHM])

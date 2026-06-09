@@ -17,7 +17,7 @@ async def login(payload: LoginIn, response: Response, request: Request):
         httponly=True,
         secure=settings.secure_cookies,
         samesite="none" if settings.secure_cookies else "lax",
-        max_age=settings.jwt_expiry_hours * 3600,
+        max_age=settings.jwt_expire_hours * 3600,  # FIX: expiry→expire
         path="/",
     )
     return result
