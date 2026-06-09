@@ -12,7 +12,7 @@ async def list_users(_staff=Depends(require_staff)):
     return await user_service.list_users()
 
 
-@router.post("")
+@router.post("", status_code=200)  # forzar 200
 async def create_user(payload: UserCreate, current=Depends(require_staff)):
     return await user_service.create_user(payload, current)
 
