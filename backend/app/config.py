@@ -1,33 +1,57 @@
 from typing import List
 
 try:
-    from pydantic_settings import BaseSettings
-    from pydantic import Field
-except Exception:  # pragma: no cover
-    from pydantic import BaseSettings, Field
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+    PYDANTIC_V2 = True
+except ImportError:
+    from pydantic import BaseSettings
+    SettingsConfigDict = None
+    PYDANTIC_V2 = False
 
 
 class Settings(BaseSettings):
-    mongo_url: str = Field(..., env="MONGO_URL")
-    db_name: str = Field(..., env="DB_NAME")
-    jwt_secret: str = Field(..., env="JWT_SECRET")
-    cors_origins: str = Field("*", env="CORS_ORIGINS")
-    admin_email: str = Field("admin@rgb.edu", env="ADMIN_EMAIL")
-    admin_password: str = Field("admin123", env="ADMIN_PASSWORD")
-    rector_email: str = Field("rector@rgb.edu", env="RECTOR_EMAIL")
-    rector_password: str = Field("rector123", env="RECTOR_PASSWORD")
-    jwt_expire_hours: int = Field(12, env="JWT_EXPIRE_HOURS")
-    secure_cookies: bool = Field(True, env="SECURE_COOKIES")
+    # MongoDB
+    mongo_url: str
+    db_name: str
+
+    # JWT
+    jwt_secret: str
+    jwt_expire_hours: int = 12
+
+    # CORS
+    cors_origins: str = "https://biblioteca-rgb.vercel.app"
+
+    # Cookies
+    secure_cookies: bool = True
+
+    # Admin
+    admin_email: str = "admin@rgb.edu"
+    admin_password: str = "admin123"
+
+    # Rector
+    rector_email: str = "rector@rgb.edu"
+    rector_password: str = "rector123"
 
     @property
     def cors_origin_list(self) -> List[str]:
         if self.cors_origins.strip() in ("", "*"):
             return ["*"]
-        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+        return [
+            origin.strip()
+            for origin in self.cors_origins.split(",")
+            if origin.strip()
+        ]
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    if PYDANTIC_V2:
+        model_config = SettingsConfigDict(
+            env_file=".env",
+            case_sensitive=False,
+            extra="ignore",
+        )
+    else:
+        class Config:
+            env_file = ".env"
+            case_sensitive = False
 
 
 settings = Settings()

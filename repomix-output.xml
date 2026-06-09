@@ -178,1092 +178,6 @@ test_reports/pytest/multirole_rgb.xml
 <files>
 This section contains the contents of the repository's files.
 
-<file path="backend/app/__init__.py">
-
-</file>
-
-<file path="backend/app/config.py">
-from typing import List
-
-try:
-    from pydantic_settings import BaseSettings
-    from pydantic import Field
-except Exception:  # pragma: no cover
-    from pydantic import BaseSettings, Field
-
-
-class Settings(BaseSettings):
-    mongo_url: str = Field(..., env="MONGO_URL")
-    db_name: str = Field(..., env="DB_NAME")
-    jwt_secret: str = Field(..., env="JWT_SECRET")
-    cors_origins: str = Field("*", env="CORS_ORIGINS")
-    admin_email: str = Field("admin@rgb.edu", env="ADMIN_EMAIL")
-    admin_password: str = Field("admin123", env="ADMIN_PASSWORD")
-    rector_email: str = Field("rector@rgb.edu", env="RECTOR_EMAIL")
-    rector_password: str = Field("rector123", env="RECTOR_PASSWORD")
-    jwt_expire_hours: int = Field(12, env="JWT_EXPIRE_HOURS")
-    secure_cookies: bool = Field(True, env="SECURE_COOKIES")
-
-    @property
-    def cors_origin_list(self) -> List[str]:
-        if self.cors_origins.strip() in ("", "*"):
-            return ["*"]
-        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-
-
-settings = Settings()
-</file>
-
-<file path="backend/app/core/audit.py">
-from typing import Any, Dict, Optional
-
-from app.db.client import db
-from app.domain.schemas import AuditRecord
-
-
-async def record(user: Dict[str, Any], action: str, resource_type: str,
-                 resource_id: str = "", details: Optional[Dict[str, Any]] = None) -> None:
-    entry = AuditRecord(
-        user_id=user.get("id", ""),
-        user_email=user.get("email", ""),
-        user_role=user.get("role", ""),
-        action=action,
-        resource_type=resource_type,
-        resource_id=resource_id,
-        details=details or {},
-    )
-    await db.audit_log.insert_one(entry.model_dump())
-
-
-async def list_recent(limit: int = 100):
-    limit = max(1, min(limit, 500))
-    return await db.audit_log.find({}, {"_id": 0}).sort("timestamp", -1).to_list(limit)
-</file>
-
-<file path="backend/app/core/deps.py">
-import jwt
-from fastapi import Depends, HTTPException, Request
-from typing import Any, Dict, Iterable
-
-from app.core.security import decode_access_token
-from app.repositories.user_repo import UserRepository
-
-user_repo = UserRepository()
-
-
-async def get_current_user(request: Request) -> Dict[str, Any]:
-    token = request.cookies.get("access_token")
-    if not token:
-        auth = request.headers.get("Authorization", "")
-        if auth.startswith("Bearer "):
-            token = auth[7:]
-    if not token:
-        raise HTTPException(status_code=401, detail="No autenticado")
-    try:
-        payload = decode_access_token(token)
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expirado")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Token inválido")
-    if payload.get("type") != "access":
-        raise HTTPException(status_code=401, detail="Token inválido")
-    user = await user_repo.get_by_id(payload["sub"])
-    if not user:
-        raise HTTPException(status_code=401, detail="Usuario no encontrado")
-    return user
-
-
-def require_roles(*roles: str):
-    """Factory: returns a dependency that allows only the given roles."""
-    allowed = set(roles)
-
-    async def _dep(user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
-        if user.get("role") not in allowed:
-            raise HTTPException(status_code=403, detail="Permisos insuficientes")
-        return user
-
-    return _dep
-
-
-require_admin = require_roles("admin")
-require_staff = require_roles("admin", "rector")
-</file>
-
-<file path="backend/app/core/rate_limit.py">
-import time
-from typing import Dict
-
-from fastapi import HTTPException, Request
-
-WINDOW_SECONDS = 300
-MAX_ATTEMPTS = 5
-
-_cache: Dict[str, Dict[str, float]] = {}
-
-
-def get_client_ip(request: Request) -> str:
-    forwarded = request.headers.get("x-forwarded-for") or request.headers.get("X-Forwarded-For")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    return request.client.host if request.client else "unknown"
-
-
-def enforce(request: Request) -> None:
-    ip = get_client_ip(request)
-    now = time.time()
-    record = _cache.get(ip, {"count": 0, "first": now})
-    if now - record["first"] > WINDOW_SECONDS:
-        record = {"count": 0, "first": now}
-    if record["count"] >= MAX_ATTEMPTS:
-        raise HTTPException(
-            status_code=429,
-            detail="Demasiados intentos de acceso. Intenta de nuevo más tarde.",
-        )
-    record["count"] += 1
-    _cache[ip] = record
-
-
-def clear(request: Request) -> None:
-    _cache.pop(get_client_ip(request), None)
-</file>
-
-<file path="backend/app/core/security.py">
-import time
-import bcrypt
-import jwt
-
-from app.config import settings
-
-JWT_ALGORITHM = "HS256"
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
-
-def verify_password(plain: str, hashed: str) -> bool:
-    try:
-        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
-    except Exception:
-        return False
-
-
-def create_access_token(user_id: str, email: str, role: str) -> str:
-    payload = {
-        "sub": user_id,
-        "email": email,
-        "role": role,
-        "exp": int(time.time()) + settings.jwt_expiry_hours * 3600,
-        "type": "access",
-    }
-    return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
-
-
-def decode_access_token(token: str) -> dict:
-    """Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure."""
-    return jwt.decode(token, settings.jwt_secret, algorithms=[JWT_ALGORITHM])
-</file>
-
-<file path="backend/app/db/client.py">
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from app.config import settings
-
-_client: AsyncIOMotorClient = AsyncIOMotorClient(settings.mongo_url)
-db: AsyncIOMotorDatabase = _client[settings.db_name]
-
-
-async def close_db() -> None:
-    _client.close()
-
-
-async def ensure_indexes() -> None:
-    """Create indexes idempotently. Safe to call multiple times."""
-    await db.users.create_index("email", unique=True)
-    await db.users.create_index("id", unique=True)
-    await db.books.create_index("id", unique=True)
-    await db.links.create_index([("grado_id", 1), ("materia_id", 1)])
-    await db.categories.create_index("id", unique=True)
-    await db.audit_log.create_index([("timestamp", -1)])
-</file>
-
-<file path="backend/app/domain/schemas.py">
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
-import uuid
-
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
-
-def now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def new_id() -> str:
-    return str(uuid.uuid4())
-
-
-# ---------- Auth ----------
-class LoginIn(BaseModel):
-    email: EmailStr
-    password: str
-
-
-# ---------- Users ----------
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
-    name: str = ""
-    role: str = "rector"
-
-
-class UserUpdate(BaseModel):
-    name: Optional[str] = None
-    role: Optional[str] = None
-    password: Optional[str] = None
-    profile_photo_url: Optional[str] = None
-
-
-class UserOut(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str
-    email: EmailStr
-    name: str = ""
-    role: str
-    profile_photo_url: Optional[str] = None
-    created_at: str
-    created_by: str = ""
-    updated_at: Optional[str] = None
-    updated_by: Optional[str] = None
-
-
-class UserWithToken(UserOut):
-    token: str
-
-
-# ---------- Links ----------
-class LinkCreate(BaseModel):
-    grado_id: str
-    materia_id: str
-    url: str
-
-
-class LinkRecord(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=new_id)
-    grado_id: str
-    materia_id: str
-    url: str
-    created_by: str = ""
-    updated_by: str = ""
-    updated_at: str = Field(default_factory=now_iso)
-
-
-# ---------- Books ----------
-class BookBase(BaseModel):
-    title: str
-    author: str = ""
-    category: str = "literatura"
-    cover: str = ""
-    url: str = ""
-    description: str = ""
-
-
-class BookCreate(BookBase):
-    pass
-
-
-class BookUpdate(BaseModel):
-    title: Optional[str] = None
-    author: Optional[str] = None
-    category: Optional[str] = None
-    cover: Optional[str] = None
-    url: Optional[str] = None
-    description: Optional[str] = None
-
-
-class BookRecord(BookBase):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=new_id)
-    created_by: str = ""
-    updated_by: str = ""
-    created_at: str = Field(default_factory=now_iso)
-    updated_at: str = Field(default_factory=now_iso)
-
-
-# ---------- Categories ----------
-class CategoryCreate(BaseModel):
-    name: str
-    description: Optional[str] = ""
-    audience: str = "general"
-    status: str = "show"
-
-
-class CategoryUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    audience: Optional[str] = None
-    status: Optional[str] = None
-
-
-class CategoryRecord(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str
-    name: str
-    description: str = ""
-    audience: str = "general"
-    status: str = "show"
-    created_by: str = ""
-    updated_by: str = ""
-    created_at: str = Field(default_factory=now_iso)
-    updated_at: str = Field(default_factory=now_iso)
-
-
-# ---------- Audit ----------
-class AuditRecord(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=new_id)
-    user_id: str
-    user_email: str
-    user_role: str
-    action: str
-    resource_type: str
-    resource_id: str = ""
-    details: Dict[str, Any] = Field(default_factory=dict)
-    timestamp: str = Field(default_factory=now_iso)
-</file>
-
-<file path="backend/app/repositories/book_repo.py">
-from typing import Any, Dict, List, Optional
-
-from app.db.client import db
-
-
-class BookRepository:
-    collection = db.books
-
-    async def list_all(self) -> List[Dict[str, Any]]:
-        return await self.collection.find({}, {"_id": 0}).to_list(500)
-
-    async def get_by_id(self, book_id: str) -> Optional[Dict[str, Any]]:
-        return await self.collection.find_one({"id": book_id}, {"_id": 0})
-
-    async def insert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
-        await self.collection.insert_one(doc)
-        return {k: v for k, v in doc.items() if k != "_id"}
-
-    async def update(self, book_id: str, changes: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        await self.collection.update_one({"id": book_id}, {"$set": changes})
-        return await self.get_by_id(book_id)
-
-    async def delete(self, book_id: str) -> int:
-        result = await self.collection.delete_one({"id": book_id})
-        return result.deleted_count
-
-    async def count(self) -> int:
-        return await self.collection.count_documents({})
-</file>
-
-<file path="backend/app/repositories/category_repo.py">
-from typing import Any, Dict, List, Optional
-
-from app.db.client import db
-
-
-class CategoryRepository:
-    collection = db.categories
-
-    async def list_all(self) -> List[Dict[str, Any]]:
-        return await self.collection.find({}, {"_id": 0}).to_list(500)
-
-    async def get_by_id(self, category_id: str) -> Optional[Dict[str, Any]]:
-        return await self.collection.find_one({"id": category_id}, {"_id": 0})
-
-    async def insert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
-        await self.collection.insert_one(doc)
-        return doc
-
-    async def update(self, category_id: str, changes: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        await self.collection.update_one({"id": category_id}, {"$set": changes})
-        return await self.get_by_id(category_id)
-
-    async def delete(self, category_id: str) -> int:
-        result = await self.collection.delete_one({"id": category_id})
-        return result.deleted_count
-</file>
-
-<file path="backend/app/repositories/link_repo.py">
-from typing import Any, Dict, List, Optional
-
-from app.db.client import db
-
-
-class LinkRepository:
-    collection = db.links
-
-    async def list_all(self) -> List[Dict[str, Any]]:
-        return await self.collection.find({}, {"_id": 0}).to_list(2000)
-
-    async def list_by_grado(self, grado_id: str) -> List[Dict[str, Any]]:
-        return await self.collection.find(
-            {"$or": [{"grado_id": grado_id}, {"grado": grado_id}]},
-            {"_id": 0},
-        ).to_list(500)
-
-    async def find_one(self, grado_id: str, materia_id: str) -> Optional[Dict[str, Any]]:
-        return await self.collection.find_one(
-            {"grado_id": grado_id, "materia_id": materia_id}, {"_id": 0}
-        )
-
-    async def upsert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
-        await self.collection.update_one(
-            {"grado_id": doc["grado_id"], "materia_id": doc["materia_id"]},
-            {"$set": doc},
-            upsert=True,
-        )
-        return doc
-
-    async def delete(self, grado_id: str, materia_id: str) -> int:
-        result = await self.collection.delete_one(
-            {"grado_id": grado_id, "materia_id": materia_id}
-        )
-        return result.deleted_count
-</file>
-
-<file path="backend/app/repositories/user_repo.py">
-from typing import Any, Dict, List, Optional
-
-from app.db.client import db
-
-
-class UserRepository:
-    collection = db.users
-
-    async def get_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
-        return await self.collection.find_one(
-            {"id": user_id}, {"_id": 0, "password_hash": 0}
-        )
-
-    async def get_by_id_with_hash(self, user_id: str) -> Optional[Dict[str, Any]]:
-        return await self.collection.find_one({"id": user_id}, {"_id": 0})
-
-    async def get_by_email(self, email: str) -> Optional[Dict[str, Any]]:
-        return await self.collection.find_one({"email": email}, {"_id": 0})
-
-    async def list_all(self) -> List[Dict[str, Any]]:
-        return await self.collection.find(
-            {}, {"_id": 0, "password_hash": 0}
-        ).to_list(500)
-
-    async def insert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
-        await self.collection.insert_one(doc)
-        return {k: v for k, v in doc.items() if k != "password_hash"}
-
-    async def update(self, user_id: str, changes: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        await self.collection.update_one({"id": user_id}, {"$set": changes})
-        return await self.get_by_id(user_id)
-
-    async def delete(self, user_id: str) -> int:
-        result = await self.collection.delete_one({"id": user_id})
-        return result.deleted_count
-</file>
-
-<file path="backend/app/routers/audit.py">
-from fastapi import APIRouter, Depends
-
-from app.core.deps import require_staff
-from app.domain.schemas import CategoryCreate, CategoryUpdate
-from app.services import categories_service
-
-router = APIRouter(prefix="/categories", tags=["categories"])
-
-
-@router.get("")
-async def list_categories():
-    return await categories_service.list_categories()
-
-
-@router.post("")
-async def create_category(payload: CategoryCreate, current=Depends(require_staff)):
-    return await categories_service.create_category(payload, current)
-
-
-@router.put("/{category_id}")
-async def update_category(category_id: str, payload: CategoryUpdate, current=Depends(require_staff)):
-    return await categories_service.update_category(category_id, payload, current)
-
-
-@router.delete("/{category_id}")
-async def delete_category(category_id: str, current=Depends(require_staff)):
-    deleted = await categories_service.delete_category(category_id, current)
-    return {"deleted": deleted}
-</file>
-
-<file path="backend/app/routers/auth.py">
-from fastapi import APIRouter, Depends, Request, Response
-
-from app.config import settings
-from app.core.deps import get_current_user
-from app.domain.schemas import LoginIn
-from app.services import auth_service
-
-router = APIRouter(prefix="/auth", tags=["auth"])
-
-
-@router.post("/login")
-async def login(payload: LoginIn, response: Response, request: Request):
-    result = await auth_service.login(payload.email, payload.password, request)
-    response.set_cookie(
-        key="access_token",
-        value=result["token"],
-        httponly=True,
-        secure=settings.secure_cookies,
-        samesite="none" if settings.secure_cookies else "lax",
-        max_age=settings.jwt_expiry_hours * 3600,
-        path="/",
-    )
-    return result
-
-
-@router.post("/logout")
-async def logout(response: Response, request: Request):
-    try:
-        current = await get_current_user(request)
-        await auth_service.logout(current)
-    except Exception:
-        pass
-    response.delete_cookie("access_token", path="/")
-    return {"ok": True}
-
-
-@router.get("/me")
-async def me(user=Depends(get_current_user)):
-    return user
-</file>
-
-<file path="backend/app/routers/books.py">
-from fastapi import APIRouter, Depends
-
-from app.core.deps import require_staff
-from app.domain.schemas import BookCreate, BookUpdate
-from app.services import books_service
-
-router = APIRouter(prefix="/books", tags=["books"])
-
-
-@router.get("")
-async def list_books():
-    return await books_service.list_books()
-
-
-@router.post("")
-async def create_book(payload: BookCreate, current=Depends(require_staff)):
-    return await books_service.create_book(payload, current)
-
-
-@router.put("/{book_id}")
-async def update_book(book_id: str, payload: BookUpdate, current=Depends(require_staff)):
-    return await books_service.update_book(book_id, payload, current)
-
-
-@router.delete("/{book_id}")
-async def delete_book(book_id: str, current=Depends(require_staff)):
-    deleted = await books_service.delete_book(book_id, current)
-    return {"deleted": deleted}
-</file>
-
-<file path="backend/app/routers/categories.py">
-from fastapi import APIRouter, Depends
-
-from app.core.deps import require_staff
-from app.domain.schemas import CategoryCreate, CategoryUpdate
-from app.services import categories_service
-
-router = APIRouter(prefix="/categories", tags=["categories"])
-
-
-@router.get("")
-async def list_categories():
-    return await categories_service.list_categories()
-
-
-@router.post("")
-async def create_category(payload: CategoryCreate, current=Depends(require_staff)):
-    return await categories_service.create_category(payload, current)
-
-
-@router.put("/{category_id}")
-async def update_category(category_id: str, payload: CategoryUpdate, current=Depends(require_staff)):
-    return await categories_service.update_category(category_id, payload, current)
-
-
-@router.delete("/{category_id}")
-async def delete_category(category_id: str, current=Depends(require_staff)):
-    deleted = await categories_service.delete_category(category_id, current)
-    return {"deleted": deleted}
-</file>
-
-<file path="backend/app/routers/links.py">
-from typing import Dict
-
-from fastapi import APIRouter, Depends
-
-from app.core.deps import require_staff
-from app.domain.schemas import LinkCreate
-from app.services import links_service
-
-router = APIRouter(prefix="/links", tags=["links"])
-
-
-@router.get("")
-async def get_all_links() -> Dict[str, Dict[str, str]]:
-    return await links_service.all_links_grouped()
-
-
-@router.get("/{grado_id}")
-async def get_grado_links(grado_id: str) -> Dict[str, str]:
-    return await links_service.links_by_grado(grado_id)
-
-
-@router.post("")
-async def save_link(payload: LinkCreate, current=Depends(require_staff)):
-    return await links_service.save_link(payload, current)
-
-
-@router.delete("/{grado_id}/{materia_id}")
-async def delete_link(grado_id: str, materia_id: str, current=Depends(require_staff)):
-    deleted = await links_service.delete_link(grado_id, materia_id, current)
-    return {"deleted": deleted}
-</file>
-
-<file path="backend/app/routers/user.py">
-from fastapi import APIRouter, Depends
-
-from app.core.deps import require_admin, require_staff
-from app.domain.schemas import UserCreate, UserUpdate
-from app.services import user_service
-
-router = APIRouter(prefix="/users", tags=["users"])
-
-
-@router.get("")
-async def list_users(_staff=Depends(require_staff)):
-    return await user_service.list_users()
-
-
-@router.post("")
-async def create_user(payload: UserCreate, current=Depends(require_staff)):
-    return await user_service.create_user(payload, current)
-
-
-@router.put("/{user_id}")
-async def update_user(
-    user_id: str,
-    payload: UserUpdate,
-    current=Depends(require_staff),
-):
-    return await user_service.update_user(user_id, payload, current)
-
-
-@router.delete("/{user_id}")
-async def delete_user(
-    user_id: str,
-    current=Depends(require_admin),
-):
-    deleted = await user_service.delete_user(user_id, current)
-    return {"deleted": deleted}
-</file>
-
-<file path="backend/app/services/auth_service.py">
-from datetime import datetime, timezone
-from typing import Any, Dict
-import uuid
-
-from fastapi import HTTPException, Request
-
-from app.config import settings
-from app.core import audit, rate_limit
-from app.core.security import create_access_token, hash_password, verify_password
-from app.repositories.user_repo import UserRepository
-
-user_repo = UserRepository()
-
-
-async def login(email: str, password: str, request: Request) -> Dict[str, Any]:
-    rate_limit.enforce(request)
-    user = await user_repo.get_by_email(email.lower().strip())
-    if not user or not verify_password(password, user.get("password_hash", "")):
-        raise HTTPException(status_code=401, detail="Credenciales inválidas")
-    rate_limit.clear(request)
-    token = create_access_token(user["id"], user["email"], user.get("role", "user"))
-    await audit.record(user, "login", "auth")
-    return {**{k: v for k, v in user.items() if k != "password_hash"}, "token": token}
-
-
-async def logout(current: Dict[str, Any]) -> None:
-    await audit.record(current, "logout", "auth")
-
-
-async def ensure_seed_user(email: str, password: str, name: str, role: str) -> None:
-    """Idempotent: create or update the seeded user's password/role to match env."""
-    email = email.lower().strip()
-    existing = await user_repo.get_by_email(email)
-    if not existing:
-        await user_repo.insert({
-            "id": str(uuid.uuid4()),
-            "email": email,
-            "password_hash": hash_password(password),
-            "name": name,
-            "role": role,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": "system",
-        })
-        return
-    needs_update: Dict[str, Any] = {}
-    if not verify_password(password, existing.get("password_hash", "")):
-        needs_update["password_hash"] = hash_password(password)
-    if existing.get("role") != role:
-        needs_update["role"] = role
-    if needs_update:
-        await user_repo.update(existing["id"], needs_update)
-
-
-async def seed_default_users() -> None:
-    await ensure_seed_user(
-        settings.admin_email, settings.admin_password, "Administrador", "admin"
-    )
-    await ensure_seed_user(
-        settings.rector_email, settings.rector_password, "Rector", "rector"
-    )
-</file>
-
-<file path="backend/app/services/books_service.py">
-from datetime import datetime, timezone
-from typing import Any, Dict, List
-
-from fastapi import HTTPException
-
-from app.core import audit
-from app.domain.schemas import BookCreate, BookRecord, BookUpdate
-from app.repositories.book_repo import BookRepository
-
-book_repo = BookRepository()
-
-
-SEED_BOOKS = [
-    {"title": "Cien Años de Soledad", "author": "Gabriel García Márquez", "category": "literatura",
-     "cover": "https://images.unsplash.com/photo-1674154642704-0a4f0bdcb676?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHw0fHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
-     "url": "https://drive.google.com", "description": "La obra cumbre del realismo mágico."},
-    {"title": "Principios de Matemáticas", "author": "Serge Lang", "category": "matematicas",
-     "cover": "https://images.unsplash.com/photo-1658827053969-a181495a33f9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
-     "url": "https://drive.google.com", "description": "Fundamentos del razonamiento matemático moderno."},
-    {"title": "Breve Historia del Tiempo", "author": "Stephen Hawking", "category": "ciencias",
-     "cover": "https://images.unsplash.com/photo-1728506972831-193841eb2961?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwyfHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
-     "url": "https://drive.google.com", "description": "Un viaje por el cosmos y la física contemporánea."},
-    {"title": "Sapiens: De Animales a Dioses", "author": "Yuval Noah Harari", "category": "historia",
-     "cover": "https://images.unsplash.com/photo-1575873896343-84af1dc92fc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxsaWJyYXJ5JTIwZGFyayUyMHdvb2R8ZW58MHx8fHwxNzc2ODgyMjQyfDA&ixlib=rb-4.1.0&q=85",
-     "url": "https://drive.google.com", "description": "La historia de la humanidad en un solo volumen."},
-]
-
-
-async def list_books() -> List[Dict[str, Any]]:
-    return await book_repo.list_all()
-
-
-async def create_book(payload: BookCreate, current: Dict[str, Any]) -> Dict[str, Any]:
-    record = BookRecord(
-        **payload.model_dump(),
-        created_by=current["id"],
-        updated_by=current["id"],
-    )
-    doc = record.model_dump()
-    await book_repo.insert(doc)
-    await audit.record(current, "create", "book", record.id, {"title": record.title})
-    return doc
-
-
-async def update_book(book_id: str, payload: BookUpdate, current: Dict[str, Any]) -> Dict[str, Any]:
-    existing = await book_repo.get_by_id(book_id)
-    if not existing:
-        raise HTTPException(status_code=404, detail="Libro no encontrado")
-    changes = {k: v for k, v in payload.model_dump().items() if v is not None}
-    if not changes:
-        return existing
-    changes["updated_at"] = datetime.now(timezone.utc).isoformat()
-    changes["updated_by"] = current["id"]
-    updated = await book_repo.update(book_id, changes)
-    await audit.record(current, "update", "book", book_id,
-                       {k: v for k, v in changes.items() if k != "updated_at"})
-    return updated
-
-
-async def delete_book(book_id: str, current: Dict[str, Any]) -> int:
-    existing = await book_repo.get_by_id(book_id)
-    if not existing:
-        raise HTTPException(status_code=404, detail="Libro no encontrado")
-    deleted = await book_repo.delete(book_id)
-    await audit.record(current, "delete", "book", book_id,
-                       {"title": existing.get("title", "")})
-    return deleted
-
-
-async def seed_books_if_empty() -> int:
-    if await book_repo.count() > 0:
-        return 0
-    for b in SEED_BOOKS:
-        record = BookRecord(**b, created_by="system", updated_by="system")
-        await book_repo.insert(record.model_dump())
-    return len(SEED_BOOKS)
-</file>
-
-<file path="backend/app/services/categories_service.py">
-from datetime import datetime, timezone
-from typing import Any, Dict, List
-
-from fastapi import HTTPException
-
-from app.core import audit
-from app.domain.schemas import CategoryCreate, CategoryRecord, CategoryUpdate
-from app.repositories.category_repo import CategoryRepository
-
-ALLOWED_STATUS = ("show", "hide")
-ALLOWED_AUDIENCE = ("general", "estudiantes", "profesores")
-
-category_repo = CategoryRepository()
-
-
-def _slug(name: str) -> str:
-    return "-".join(name.lower().strip().split())
-
-
-async def list_categories() -> List[Dict[str, Any]]:
-    return await category_repo.list_all()
-
-
-async def create_category(payload: CategoryCreate, current: Dict[str, Any]) -> Dict[str, Any]:
-    cid = _slug(payload.name)
-    if not cid:
-        raise HTTPException(status_code=400, detail="Nombre de categoría inválido")
-    if payload.status not in ALLOWED_STATUS:
-        raise HTTPException(status_code=400, detail="Estado inválido")
-    if payload.audience not in ALLOWED_AUDIENCE:
-        raise HTTPException(status_code=400, detail="Audiencia inválida")
-    if await category_repo.get_by_id(cid):
-        raise HTTPException(status_code=409, detail="Ya existe una categoría con ese nombre")
-
-    record = CategoryRecord(
-        id=cid,
-        name=payload.name.strip(),
-        description=payload.description or "",
-        audience=payload.audience,
-        status=payload.status,
-        created_by=current["id"],
-        updated_by=current["id"],
-    )
-    doc = record.model_dump()
-    await category_repo.insert(doc)
-    await audit.record(current, "create", "category", cid,
-                       {"name": record.name, "status": record.status})
-    return doc
-
-
-async def update_category(category_id: str, payload: CategoryUpdate,
-                          current: Dict[str, Any]) -> Dict[str, Any]:
-    existing = await category_repo.get_by_id(category_id)
-    if not existing:
-        raise HTTPException(status_code=404, detail="Categoría no encontrada")
-
-    changes: Dict[str, Any] = {}
-    if payload.name is not None:
-        changes["name"] = payload.name.strip()
-    if payload.description is not None:
-        changes["description"] = payload.description
-    if payload.audience is not None:
-        if payload.audience not in ALLOWED_AUDIENCE:
-            raise HTTPException(status_code=400, detail="Audiencia inválida")
-        changes["audience"] = payload.audience
-    if payload.status is not None:
-        if payload.status not in ALLOWED_STATUS:
-            raise HTTPException(status_code=400, detail="Estado inválido")
-        changes["status"] = payload.status
-    if not changes:
-        return existing
-
-    changes["updated_at"] = datetime.now(timezone.utc).isoformat()
-    changes["updated_by"] = current["id"]
-    updated = await category_repo.update(category_id, changes)
-    await audit.record(current, "update", "category", category_id, changes)
-    return updated
-
-
-async def delete_category(category_id: str, current: Dict[str, Any]) -> int:
-    deleted = await category_repo.delete(category_id)
-    if deleted:
-        await audit.record(current, "delete", "category", category_id)
-    return deleted
-</file>
-
-<file path="backend/app/services/links_service.py">
-from typing import Any, Dict
-
-from fastapi import HTTPException
-
-from app.core import audit
-from app.domain.schemas import LinkCreate, LinkRecord
-from app.repositories.link_repo import LinkRepository
-
-link_repo = LinkRepository()
-
-
-async def all_links_grouped() -> Dict[str, Dict[str, str]]:
-    """Return nested dict { grado_id: { materia_id: url } }, handling legacy fields."""
-    docs = await link_repo.list_all()
-    result: Dict[str, Dict[str, str]] = {}
-    for doc in docs:
-        g = doc.get("grado_id") or doc.get("grado")
-        m = doc.get("materia_id") or doc.get("materia")
-        url = doc.get("url")
-        if g and m and url:
-            result.setdefault(g, {})[m] = url
-    return result
-
-
-async def links_by_grado(grado_id: str) -> Dict[str, str]:
-    docs = await link_repo.list_by_grado(grado_id)
-    out: Dict[str, str] = {}
-    for doc in docs:
-        m = doc.get("materia_id") or doc.get("materia")
-        url = doc.get("url")
-        if m and url:
-            out[m] = url
-    return out
-
-
-async def save_link(payload: LinkCreate, current: Dict[str, Any]) -> Dict[str, Any]:
-    url = payload.url.strip()
-    if not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
-        raise HTTPException(status_code=400, detail="URL inválida")
-
-    existing = await link_repo.find_one(payload.grado_id, payload.materia_id)
-    record = LinkRecord(
-        grado_id=payload.grado_id,
-        materia_id=payload.materia_id,
-        url=url,
-        created_by=(existing or {}).get("created_by") or current["id"],
-        updated_by=current["id"],
-    )
-    doc = record.model_dump()
-    await link_repo.upsert(doc)
-    await audit.record(
-        current, "update" if existing else "create", "link",
-        f"{payload.grado_id}/{payload.materia_id}", {"url": url},
-    )
-    return doc
-
-
-async def delete_link(grado_id: str, materia_id: str, current: Dict[str, Any]) -> int:
-    deleted = await link_repo.delete(grado_id, materia_id)
-    if deleted:
-        await audit.record(current, "delete", "link", f"{grado_id}/{materia_id}")
-    return deleted
-</file>
-
-<file path="backend/app/services/user_service.py">
-from datetime import datetime, timezone
-from typing import Any, Dict, List
-import uuid
-
-from fastapi import HTTPException
-
-from app.core import audit
-from app.core.security import hash_password
-from app.domain.schemas import UserCreate, UserUpdate
-from app.repositories.user_repo import UserRepository
-
-ALLOWED_ROLES = ("admin", "rector")
-user_repo = UserRepository()
-
-
-async def list_users() -> List[Dict[str, Any]]:
-    return await user_repo.list_all()
-
-
-async def create_user(payload: UserCreate, current: Dict[str, Any]) -> Dict[str, Any]:
-    if payload.role not in ALLOWED_ROLES:
-        raise HTTPException(status_code=400, detail="Rol inválido (admin|rector)")
-    if current["role"] == "rector" and payload.role != "rector":
-        raise HTTPException(
-            status_code=403,
-            detail="Un rector solo puede crear usuarios con rol 'rector'",
-        )
-    email = payload.email.lower().strip()
-    if await user_repo.get_by_email(email):
-        raise HTTPException(status_code=409, detail="El correo ya existe")
-
-    doc = {
-        "id": str(uuid.uuid4()),
-        "email": email,
-        "password_hash": hash_password(payload.password),
-        "name": payload.name or email.split("@")[0],
-        "role": payload.role,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current["id"],
-    }
-    await user_repo.insert(doc)
-    await audit.record(current, "create", "user", doc["id"],
-                       {"email": email, "role": payload.role})
-    safe = {k: v for k, v in doc.items() if k != "password_hash"}
-    return safe
-
-
-async def update_user(user_id: str, payload: UserUpdate,
-                      current: Dict[str, Any]) -> Dict[str, Any]:
-    existing = await user_repo.get_by_id(user_id)
-    if not existing:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    if payload.role is not None:
-        if current["role"] != "admin":
-            raise HTTPException(status_code=403, detail="Solo admin puede cambiar roles")
-        if payload.role not in ALLOWED_ROLES:
-            raise HTTPException(status_code=400, detail="Rol inválido (admin|rector)")
-
-    changes: Dict[str, Any] = {}
-    if payload.name is not None:
-        changes["name"] = payload.name
-    if payload.role is not None:
-        changes["role"] = payload.role
-    if payload.password is not None and payload.password.strip():
-        changes["password_hash"] = hash_password(payload.password)
-    if payload.profile_photo_url is not None:
-        changes["profile_photo_url"] = payload.profile_photo_url or None
-
-    if not changes:
-        return existing
-
-    changes["updated_at"] = datetime.now(timezone.utc).isoformat()
-    changes["updated_by"] = current["id"]
-    updated = await user_repo.update(user_id, changes)
-    await audit.record(
-        current, "update", "user", user_id,
-        {k: ("***" if k == "password_hash" else v) for k, v in changes.items()},
-    )
-    return updated
-
-
-async def delete_user(user_id: str, current: Dict[str, Any]) -> int:
-    if user_id == current["id"]:
-        raise HTTPException(status_code=400, detail="No puedes eliminar tu propio usuario")
-    deleted = await user_repo.delete(user_id)
-    if deleted == 0:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    await audit.record(current, "delete", "user", user_id)
-    return deleted
-</file>
-
 <file path="backend/render.yaml">
 services:
   - type: web
@@ -1271,48 +185,6 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
-</file>
-
-<file path="backend/start_debug.py">
-import os
-import sys
-import traceback
-from pprint import pprint
-
-print("=== START DEBUG ===")
-print("Working dir:", os.getcwd())
-print("Sys.path:")
-pprint(sys.path)
-
-CRITICAL = ["MONGO_URL", "DB_NAME", "JWT_SECRET", "CORS_ORIGINS", "SECURE_COOKIES", "PORT"]
-print("nEnvironment (presence only, secrets masked):")
-for k in CRITICAL:
-    v = os.environ.get(k)
-    print(f"  {k}:", "SET" if v else "MISSING")
-
-try:
-    # Ensure repo root is on path
-    root = os.path.dirname(os.path.abspath(__file__))
-    if root not in sys.path:
-        sys.path.insert(0, root)
-    print("nImporting backend.main...")
-    from backend.main import app
-    print("Imported backend.main -> app OK")
-except Exception:
-    print("Failed to import backend.main:", file=sys.stderr)
-    traceback.print_exc()
-    sys.exit(1)
-
-try:
-    import uvicorn
-
-    port = int(os.environ.get("PORT", 8000))
-    print(f"nStarting uvicorn on 0.0.0.0:{port}... (this will block)")
-    uvicorn.run(app, host="0.0.0.0", port=port)
-except Exception:
-    print("Uvicorn run failed:", file=sys.stderr)
-    traceback.print_exc()
-    sys.exit(1)
 </file>
 
 <file path="frontend/build/asset-manifest.json">
@@ -3355,8 +2227,1136 @@ E     ? ^^^^)</failure></testcase><testcase classname="backend.tests.test_multir
 	name = julian
 </file>
 
+<file path="backend/app/__init__.py">
+
+</file>
+
+<file path="backend/app/config.py">
+from typing import List
+
+try:
+    from pydantic_settings import BaseSettings
+    from pydantic import Field
+except Exception:  # pragma: no cover
+    from pydantic import BaseSettings, Field
+
+
+class Settings(BaseSettings):
+    mongo_url: str = Field(..., env="MONGO_URL")
+    db_name: str = Field(..., env="DB_NAME")
+    jwt_secret: str = Field(..., env="JWT_SECRET")
+    cors_origins: str = Field("*", env="CORS_ORIGINS")
+    admin_email: str = Field("admin@rgb.edu", env="ADMIN_EMAIL")
+    admin_password: str = Field("admin123", env="ADMIN_PASSWORD")
+    rector_email: str = Field("rector@rgb.edu", env="RECTOR_EMAIL")
+    rector_password: str = Field("rector123", env="RECTOR_PASSWORD")
+    jwt_expire_hours: int = Field(12, env="JWT_EXPIRE_HOURS")
+    secure_cookies: bool = Field(True, env="SECURE_COOKIES")
+
+    @property
+    def cors_origin_list(self) -> List[str]:
+        if self.cors_origins.strip() in ("", "*"):
+            return ["*"]
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
+
+
+settings = Settings()
+</file>
+
+<file path="backend/app/core/audit.py">
+from typing import Any, Dict, Optional
+
+from app.db.client import db
+from app.domain.schemas import AuditRecord
+
+
+async def record(user: Dict[str, Any], action: str, resource_type: str,
+                 resource_id: str = "", details: Optional[Dict[str, Any]] = None) -> None:
+    entry = AuditRecord(
+        user_id=user.get("id", ""),
+        user_email=user.get("email", ""),
+        user_role=user.get("role", ""),
+        action=action,
+        resource_type=resource_type,
+        resource_id=resource_id,
+        details=details or {},
+    )
+    await db.audit_log.insert_one(entry.model_dump())
+
+
+async def list_recent(limit: int = 100):
+    limit = max(1, min(limit, 500))
+    return await db.audit_log.find({}, {"_id": 0}).sort("timestamp", -1).to_list(limit)
+</file>
+
+<file path="backend/app/core/deps.py">
+import jwt
+from fastapi import Depends, HTTPException, Request
+from typing import Any, Dict, Iterable
+
+from app.core.security import decode_access_token
+from app.repositories.user_repo import UserRepository
+
+user_repo = UserRepository()
+
+
+async def get_current_user(request: Request) -> Dict[str, Any]:
+    token = request.cookies.get("access_token")
+    if not token:
+        auth = request.headers.get("Authorization", "")
+        if auth.startswith("Bearer "):
+            token = auth[7:]
+    if not token:
+        raise HTTPException(status_code=401, detail="No autenticado")
+    try:
+        payload = decode_access_token(token)
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expirado")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Token inválido")
+    if payload.get("type") != "access":
+        raise HTTPException(status_code=401, detail="Token inválido")
+    user = await user_repo.get_by_id(payload["sub"])
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuario no encontrado")
+    return user
+
+
+def require_roles(*roles: str):
+    """Factory: returns a dependency that allows only the given roles."""
+    allowed = set(roles)
+
+    async def _dep(user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
+        if user.get("role") not in allowed:
+            raise HTTPException(status_code=403, detail="Permisos insuficientes")
+        return user
+
+    return _dep
+
+
+require_admin = require_roles("admin")
+require_staff = require_roles("admin", "rector")
+</file>
+
+<file path="backend/app/core/rate_limit.py">
+import time
+from typing import Dict
+
+from fastapi import HTTPException, Request
+
+WINDOW_SECONDS = 300
+MAX_ATTEMPTS = 5
+
+_cache: Dict[str, Dict[str, float]] = {}
+
+
+def get_client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for") or request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def enforce(request: Request) -> None:
+    ip = get_client_ip(request)
+    now = time.time()
+    record = _cache.get(ip, {"count": 0, "first": now})
+    if now - record["first"] > WINDOW_SECONDS:
+        record = {"count": 0, "first": now}
+    if record["count"] >= MAX_ATTEMPTS:
+        raise HTTPException(
+            status_code=429,
+            detail="Demasiados intentos de acceso. Intenta de nuevo más tarde.",
+        )
+    record["count"] += 1
+    _cache[ip] = record
+
+
+def clear(request: Request) -> None:
+    _cache.pop(get_client_ip(request), None)
+</file>
+
+<file path="backend/app/core/security.py">
+import time
+import bcrypt
+import jwt
+
+from app.config import settings
+
+JWT_ALGORITHM = "HS256"
+
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    try:
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    except Exception:
+        return False
+
+
+def create_access_token(user_id: str, email: str, role: str) -> str:
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "role": role,
+        "exp": int(time.time()) + settings.jwt_expiry_hours * 3600,
+        "type": "access",
+    }
+    return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    """Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure."""
+    return jwt.decode(token, settings.jwt_secret, algorithms=[JWT_ALGORITHM])
+</file>
+
+<file path="backend/app/db/client.py">
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from app.config import settings
+
+_client: AsyncIOMotorClient = AsyncIOMotorClient(settings.mongo_url)
+db: AsyncIOMotorDatabase = _client[settings.db_name]
+
+
+async def close_db() -> None:
+    _client.close()
+
+
+async def ensure_indexes() -> None:
+    """Create indexes idempotently. Safe to call multiple times."""
+    await db.users.create_index("email", unique=True)
+    await db.users.create_index("id", unique=True)
+    await db.books.create_index("id", unique=True)
+    await db.links.create_index([("grado_id", 1), ("materia_id", 1)])
+    await db.categories.create_index("id", unique=True)
+    await db.audit_log.create_index([("timestamp", -1)])
+</file>
+
+<file path="backend/app/domain/schemas.py">
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional
+import uuid
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def new_id() -> str:
+    return str(uuid.uuid4())
+
+
+# ---------- Auth ----------
+class LoginIn(BaseModel):
+    email: EmailStr
+    password: str
+
+
+# ---------- Users ----------
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    name: str = ""
+    role: str = "rector"
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    role: Optional[str] = None
+    password: Optional[str] = None
+    profile_photo_url: Optional[str] = None
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    email: EmailStr
+    name: str = ""
+    role: str
+    profile_photo_url: Optional[str] = None
+    created_at: str
+    created_by: str = ""
+    updated_at: Optional[str] = None
+    updated_by: Optional[str] = None
+
+
+class UserWithToken(UserOut):
+    token: str
+
+
+# ---------- Links ----------
+class LinkCreate(BaseModel):
+    grado_id: str
+    materia_id: str
+    url: str
+
+
+class LinkRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=new_id)
+    grado_id: str
+    materia_id: str
+    url: str
+    created_by: str = ""
+    updated_by: str = ""
+    updated_at: str = Field(default_factory=now_iso)
+
+
+# ---------- Books ----------
+class BookBase(BaseModel):
+    title: str
+    author: str = ""
+    category: str = "literatura"
+    cover: str = ""
+    url: str = ""
+    description: str = ""
+
+
+class BookCreate(BookBase):
+    pass
+
+
+class BookUpdate(BaseModel):
+    title: Optional[str] = None
+    author: Optional[str] = None
+    category: Optional[str] = None
+    cover: Optional[str] = None
+    url: Optional[str] = None
+    description: Optional[str] = None
+
+
+class BookRecord(BookBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=new_id)
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: str = Field(default_factory=now_iso)
+    updated_at: str = Field(default_factory=now_iso)
+
+
+# ---------- Categories ----------
+class CategoryCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    audience: str = "general"
+    status: str = "show"
+
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    audience: Optional[str] = None
+    status: Optional[str] = None
+
+
+class CategoryRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    name: str
+    description: str = ""
+    audience: str = "general"
+    status: str = "show"
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: str = Field(default_factory=now_iso)
+    updated_at: str = Field(default_factory=now_iso)
+
+
+# ---------- Audit ----------
+class AuditRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=new_id)
+    user_id: str
+    user_email: str
+    user_role: str
+    action: str
+    resource_type: str
+    resource_id: str = ""
+    details: Dict[str, Any] = Field(default_factory=dict)
+    timestamp: str = Field(default_factory=now_iso)
+</file>
+
+<file path="backend/app/repositories/book_repo.py">
+from typing import Any, Dict, List, Optional
+
+from app.db.client import db
+
+
+class BookRepository:
+    collection = db.books
+
+    async def list_all(self) -> List[Dict[str, Any]]:
+        return await self.collection.find({}, {"_id": 0}).to_list(500)
+
+    async def get_by_id(self, book_id: str) -> Optional[Dict[str, Any]]:
+        return await self.collection.find_one({"id": book_id}, {"_id": 0})
+
+    async def insert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
+        await self.collection.insert_one(doc)
+        return {k: v for k, v in doc.items() if k != "_id"}
+
+    async def update(self, book_id: str, changes: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        await self.collection.update_one({"id": book_id}, {"$set": changes})
+        return await self.get_by_id(book_id)
+
+    async def delete(self, book_id: str) -> int:
+        result = await self.collection.delete_one({"id": book_id})
+        return result.deleted_count
+
+    async def count(self) -> int:
+        return await self.collection.count_documents({})
+</file>
+
+<file path="backend/app/repositories/category_repo.py">
+from typing import Any, Dict, List, Optional
+
+from app.db.client import db
+
+
+class CategoryRepository:
+    collection = db.categories
+
+    async def list_all(self) -> List[Dict[str, Any]]:
+        return await self.collection.find({}, {"_id": 0}).to_list(500)
+
+    async def get_by_id(self, category_id: str) -> Optional[Dict[str, Any]]:
+        return await self.collection.find_one({"id": category_id}, {"_id": 0})
+
+    async def insert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
+        await self.collection.insert_one(doc)
+        return doc
+
+    async def update(self, category_id: str, changes: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        await self.collection.update_one({"id": category_id}, {"$set": changes})
+        return await self.get_by_id(category_id)
+
+    async def delete(self, category_id: str) -> int:
+        result = await self.collection.delete_one({"id": category_id})
+        return result.deleted_count
+</file>
+
+<file path="backend/app/repositories/link_repo.py">
+from typing import Any, Dict, List, Optional
+
+from app.db.client import db
+
+
+class LinkRepository:
+    collection = db.links
+
+    async def list_all(self) -> List[Dict[str, Any]]:
+        return await self.collection.find({}, {"_id": 0}).to_list(2000)
+
+    async def list_by_grado(self, grado_id: str) -> List[Dict[str, Any]]:
+        return await self.collection.find(
+            {"$or": [{"grado_id": grado_id}, {"grado": grado_id}]},
+            {"_id": 0},
+        ).to_list(500)
+
+    async def find_one(self, grado_id: str, materia_id: str) -> Optional[Dict[str, Any]]:
+        return await self.collection.find_one(
+            {"grado_id": grado_id, "materia_id": materia_id}, {"_id": 0}
+        )
+
+    async def upsert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
+        await self.collection.update_one(
+            {"grado_id": doc["grado_id"], "materia_id": doc["materia_id"]},
+            {"$set": doc},
+            upsert=True,
+        )
+        return doc
+
+    async def delete(self, grado_id: str, materia_id: str) -> int:
+        result = await self.collection.delete_one(
+            {"grado_id": grado_id, "materia_id": materia_id}
+        )
+        return result.deleted_count
+</file>
+
+<file path="backend/app/repositories/user_repo.py">
+from typing import Any, Dict, List, Optional
+
+from app.db.client import db
+
+
+class UserRepository:
+    collection = db.users
+
+    async def get_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
+        return await self.collection.find_one(
+            {"id": user_id}, {"_id": 0, "password_hash": 0}
+        )
+
+    async def get_by_id_with_hash(self, user_id: str) -> Optional[Dict[str, Any]]:
+        return await self.collection.find_one({"id": user_id}, {"_id": 0})
+
+    async def get_by_email(self, email: str) -> Optional[Dict[str, Any]]:
+        return await self.collection.find_one({"email": email}, {"_id": 0})
+
+    async def list_all(self) -> List[Dict[str, Any]]:
+        return await self.collection.find(
+            {}, {"_id": 0, "password_hash": 0}
+        ).to_list(500)
+
+    async def insert(self, doc: Dict[str, Any]) -> Dict[str, Any]:
+        await self.collection.insert_one(doc)
+        return {k: v for k, v in doc.items() if k != "password_hash"}
+
+    async def update(self, user_id: str, changes: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        await self.collection.update_one({"id": user_id}, {"$set": changes})
+        return await self.get_by_id(user_id)
+
+    async def delete(self, user_id: str) -> int:
+        result = await self.collection.delete_one({"id": user_id})
+        return result.deleted_count
+</file>
+
+<file path="backend/app/routers/audit.py">
+from fastapi import APIRouter, Depends
+
+from app.core.deps import require_staff
+from app.domain.schemas import CategoryCreate, CategoryUpdate
+from app.services import categories_service
+
+router = APIRouter(prefix="/categories", tags=["categories"])
+
+
+@router.get("")
+async def list_categories():
+    return await categories_service.list_categories()
+
+
+@router.post("")
+async def create_category(payload: CategoryCreate, current=Depends(require_staff)):
+    return await categories_service.create_category(payload, current)
+
+
+@router.put("/{category_id}")
+async def update_category(category_id: str, payload: CategoryUpdate, current=Depends(require_staff)):
+    return await categories_service.update_category(category_id, payload, current)
+
+
+@router.delete("/{category_id}")
+async def delete_category(category_id: str, current=Depends(require_staff)):
+    deleted = await categories_service.delete_category(category_id, current)
+    return {"deleted": deleted}
+</file>
+
+<file path="backend/app/routers/auth.py">
+from fastapi import APIRouter, Depends, Request, Response
+
+from app.config import settings
+from app.core.deps import get_current_user
+from app.domain.schemas import LoginIn
+from app.services import auth_service
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/login")
+async def login(payload: LoginIn, response: Response, request: Request):
+    result = await auth_service.login(payload.email, payload.password, request)
+    response.set_cookie(
+        key="access_token",
+        value=result["token"],
+        httponly=True,
+        secure=settings.secure_cookies,
+        samesite="none" if settings.secure_cookies else "lax",
+        max_age=settings.jwt_expiry_hours * 3600,
+        path="/",
+    )
+    return result
+
+
+@router.post("/logout")
+async def logout(response: Response, request: Request):
+    try:
+        current = await get_current_user(request)
+        await auth_service.logout(current)
+    except Exception:
+        pass
+    response.delete_cookie("access_token", path="/")
+    return {"ok": True}
+
+
+@router.get("/me")
+async def me(user=Depends(get_current_user)):
+    return user
+</file>
+
+<file path="backend/app/routers/books.py">
+from fastapi import APIRouter, Depends
+
+from app.core.deps import require_staff
+from app.domain.schemas import BookCreate, BookUpdate
+from app.services import books_service
+
+router = APIRouter(prefix="/books", tags=["books"])
+
+
+@router.get("")
+async def list_books():
+    return await books_service.list_books()
+
+
+@router.post("")
+async def create_book(payload: BookCreate, current=Depends(require_staff)):
+    return await books_service.create_book(payload, current)
+
+
+@router.put("/{book_id}")
+async def update_book(book_id: str, payload: BookUpdate, current=Depends(require_staff)):
+    return await books_service.update_book(book_id, payload, current)
+
+
+@router.delete("/{book_id}")
+async def delete_book(book_id: str, current=Depends(require_staff)):
+    deleted = await books_service.delete_book(book_id, current)
+    return {"deleted": deleted}
+</file>
+
+<file path="backend/app/routers/categories.py">
+from fastapi import APIRouter, Depends
+
+from app.core.deps import require_staff
+from app.domain.schemas import CategoryCreate, CategoryUpdate
+from app.services import categories_service
+
+router = APIRouter(prefix="/categories", tags=["categories"])
+
+
+@router.get("")
+async def list_categories():
+    return await categories_service.list_categories()
+
+
+@router.post("")
+async def create_category(payload: CategoryCreate, current=Depends(require_staff)):
+    return await categories_service.create_category(payload, current)
+
+
+@router.put("/{category_id}")
+async def update_category(category_id: str, payload: CategoryUpdate, current=Depends(require_staff)):
+    return await categories_service.update_category(category_id, payload, current)
+
+
+@router.delete("/{category_id}")
+async def delete_category(category_id: str, current=Depends(require_staff)):
+    deleted = await categories_service.delete_category(category_id, current)
+    return {"deleted": deleted}
+</file>
+
+<file path="backend/app/routers/links.py">
+from typing import Dict
+
+from fastapi import APIRouter, Depends
+
+from app.core.deps import require_staff
+from app.domain.schemas import LinkCreate
+from app.services import links_service
+
+router = APIRouter(prefix="/links", tags=["links"])
+
+
+@router.get("")
+async def get_all_links() -> Dict[str, Dict[str, str]]:
+    return await links_service.all_links_grouped()
+
+
+@router.get("/{grado_id}")
+async def get_grado_links(grado_id: str) -> Dict[str, str]:
+    return await links_service.links_by_grado(grado_id)
+
+
+@router.post("")
+async def save_link(payload: LinkCreate, current=Depends(require_staff)):
+    return await links_service.save_link(payload, current)
+
+
+@router.delete("/{grado_id}/{materia_id}")
+async def delete_link(grado_id: str, materia_id: str, current=Depends(require_staff)):
+    deleted = await links_service.delete_link(grado_id, materia_id, current)
+    return {"deleted": deleted}
+</file>
+
+<file path="backend/app/routers/user.py">
+from fastapi import APIRouter, Depends
+
+from app.core.deps import require_admin, require_staff
+from app.domain.schemas import UserCreate, UserUpdate
+from app.services import user_service
+
+router = APIRouter(prefix="/users", tags=["users"])
+
+
+@router.get("")
+async def list_users(_staff=Depends(require_staff)):
+    return await user_service.list_users()
+
+
+@router.post("")
+async def create_user(payload: UserCreate, current=Depends(require_staff)):
+    return await user_service.create_user(payload, current)
+
+
+@router.put("/{user_id}")
+async def update_user(
+    user_id: str,
+    payload: UserUpdate,
+    current=Depends(require_staff),
+):
+    return await user_service.update_user(user_id, payload, current)
+
+
+@router.delete("/{user_id}")
+async def delete_user(
+    user_id: str,
+    current=Depends(require_admin),
+):
+    deleted = await user_service.delete_user(user_id, current)
+    return {"deleted": deleted}
+</file>
+
+<file path="backend/app/services/auth_service.py">
+from datetime import datetime, timezone
+from typing import Any, Dict
+import uuid
+
+from fastapi import HTTPException, Request
+
+from app.config import settings
+from app.core import audit, rate_limit
+from app.core.security import create_access_token, hash_password, verify_password
+from app.repositories.user_repo import UserRepository
+
+user_repo = UserRepository()
+
+
+async def login(email: str, password: str, request: Request) -> Dict[str, Any]:
+    rate_limit.enforce(request)
+    user = await user_repo.get_by_email(email.lower().strip())
+    if not user or not verify_password(password, user.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Credenciales inválidas")
+    rate_limit.clear(request)
+    token = create_access_token(user["id"], user["email"], user.get("role", "user"))
+    await audit.record(user, "login", "auth")
+    return {**{k: v for k, v in user.items() if k != "password_hash"}, "token": token}
+
+
+async def logout(current: Dict[str, Any]) -> None:
+    await audit.record(current, "logout", "auth")
+
+
+async def ensure_seed_user(email: str, password: str, name: str, role: str) -> None:
+    """Idempotent: create or update the seeded user's password/role to match env."""
+    email = email.lower().strip()
+    existing = await user_repo.get_by_email(email)
+    if not existing:
+        await user_repo.insert({
+            "id": str(uuid.uuid4()),
+            "email": email,
+            "password_hash": hash_password(password),
+            "name": name,
+            "role": role,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": "system",
+        })
+        return
+    needs_update: Dict[str, Any] = {}
+    if not verify_password(password, existing.get("password_hash", "")):
+        needs_update["password_hash"] = hash_password(password)
+    if existing.get("role") != role:
+        needs_update["role"] = role
+    if needs_update:
+        await user_repo.update(existing["id"], needs_update)
+
+
+async def seed_default_users() -> None:
+    await ensure_seed_user(
+        settings.admin_email, settings.admin_password, "Administrador", "admin"
+    )
+    await ensure_seed_user(
+        settings.rector_email, settings.rector_password, "Rector", "rector"
+    )
+</file>
+
+<file path="backend/app/services/books_service.py">
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+
+from fastapi import HTTPException
+
+from app.core import audit
+from app.domain.schemas import BookCreate, BookRecord, BookUpdate
+from app.repositories.book_repo import BookRepository
+
+book_repo = BookRepository()
+
+
+SEED_BOOKS = [
+    {"title": "Cien Años de Soledad", "author": "Gabriel García Márquez", "category": "literatura",
+     "cover": "https://images.unsplash.com/photo-1674154642704-0a4f0bdcb676?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHw0fHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
+     "url": "https://drive.google.com", "description": "La obra cumbre del realismo mágico."},
+    {"title": "Principios de Matemáticas", "author": "Serge Lang", "category": "matematicas",
+     "cover": "https://images.unsplash.com/photo-1658827053969-a181495a33f9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
+     "url": "https://drive.google.com", "description": "Fundamentos del razonamiento matemático moderno."},
+    {"title": "Breve Historia del Tiempo", "author": "Stephen Hawking", "category": "ciencias",
+     "cover": "https://images.unsplash.com/photo-1728506972831-193841eb2961?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwyfHxhbnRpcXVlJTIwYm9vayUyMGNvdmVyJTIwZGFya3xlbnwwfHx8fDE3NzY4ODIyMjd8MA&ixlib=rb-4.1.0&q=85",
+     "url": "https://drive.google.com", "description": "Un viaje por el cosmos y la física contemporánea."},
+    {"title": "Sapiens: De Animales a Dioses", "author": "Yuval Noah Harari", "category": "historia",
+     "cover": "https://images.unsplash.com/photo-1575873896343-84af1dc92fc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxsaWJyYXJ5JTIwZGFyayUyMHdvb2R8ZW58MHx8fHwxNzc2ODgyMjQyfDA&ixlib=rb-4.1.0&q=85",
+     "url": "https://drive.google.com", "description": "La historia de la humanidad en un solo volumen."},
+]
+
+
+async def list_books() -> List[Dict[str, Any]]:
+    return await book_repo.list_all()
+
+
+async def create_book(payload: BookCreate, current: Dict[str, Any]) -> Dict[str, Any]:
+    record = BookRecord(
+        **payload.model_dump(),
+        created_by=current["id"],
+        updated_by=current["id"],
+    )
+    doc = record.model_dump()
+    await book_repo.insert(doc)
+    await audit.record(current, "create", "book", record.id, {"title": record.title})
+    return doc
+
+
+async def update_book(book_id: str, payload: BookUpdate, current: Dict[str, Any]) -> Dict[str, Any]:
+    existing = await book_repo.get_by_id(book_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Libro no encontrado")
+    changes = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if not changes:
+        return existing
+    changes["updated_at"] = datetime.now(timezone.utc).isoformat()
+    changes["updated_by"] = current["id"]
+    updated = await book_repo.update(book_id, changes)
+    await audit.record(current, "update", "book", book_id,
+                       {k: v for k, v in changes.items() if k != "updated_at"})
+    return updated
+
+
+async def delete_book(book_id: str, current: Dict[str, Any]) -> int:
+    existing = await book_repo.get_by_id(book_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Libro no encontrado")
+    deleted = await book_repo.delete(book_id)
+    await audit.record(current, "delete", "book", book_id,
+                       {"title": existing.get("title", "")})
+    return deleted
+
+
+async def seed_books_if_empty() -> int:
+    if await book_repo.count() > 0:
+        return 0
+    for b in SEED_BOOKS:
+        record = BookRecord(**b, created_by="system", updated_by="system")
+        await book_repo.insert(record.model_dump())
+    return len(SEED_BOOKS)
+</file>
+
+<file path="backend/app/services/categories_service.py">
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+
+from fastapi import HTTPException
+
+from app.core import audit
+from app.domain.schemas import CategoryCreate, CategoryRecord, CategoryUpdate
+from app.repositories.category_repo import CategoryRepository
+
+ALLOWED_STATUS = ("show", "hide")
+ALLOWED_AUDIENCE = ("general", "estudiantes", "profesores")
+
+category_repo = CategoryRepository()
+
+
+def _slug(name: str) -> str:
+    return "-".join(name.lower().strip().split())
+
+
+async def list_categories() -> List[Dict[str, Any]]:
+    return await category_repo.list_all()
+
+
+async def create_category(payload: CategoryCreate, current: Dict[str, Any]) -> Dict[str, Any]:
+    cid = _slug(payload.name)
+    if not cid:
+        raise HTTPException(status_code=400, detail="Nombre de categoría inválido")
+    if payload.status not in ALLOWED_STATUS:
+        raise HTTPException(status_code=400, detail="Estado inválido")
+    if payload.audience not in ALLOWED_AUDIENCE:
+        raise HTTPException(status_code=400, detail="Audiencia inválida")
+    if await category_repo.get_by_id(cid):
+        raise HTTPException(status_code=409, detail="Ya existe una categoría con ese nombre")
+
+    record = CategoryRecord(
+        id=cid,
+        name=payload.name.strip(),
+        description=payload.description or "",
+        audience=payload.audience,
+        status=payload.status,
+        created_by=current["id"],
+        updated_by=current["id"],
+    )
+    doc = record.model_dump()
+    await category_repo.insert(doc)
+    await audit.record(current, "create", "category", cid,
+                       {"name": record.name, "status": record.status})
+    return doc
+
+
+async def update_category(category_id: str, payload: CategoryUpdate,
+                          current: Dict[str, Any]) -> Dict[str, Any]:
+    existing = await category_repo.get_by_id(category_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+
+    changes: Dict[str, Any] = {}
+    if payload.name is not None:
+        changes["name"] = payload.name.strip()
+    if payload.description is not None:
+        changes["description"] = payload.description
+    if payload.audience is not None:
+        if payload.audience not in ALLOWED_AUDIENCE:
+            raise HTTPException(status_code=400, detail="Audiencia inválida")
+        changes["audience"] = payload.audience
+    if payload.status is not None:
+        if payload.status not in ALLOWED_STATUS:
+            raise HTTPException(status_code=400, detail="Estado inválido")
+        changes["status"] = payload.status
+    if not changes:
+        return existing
+
+    changes["updated_at"] = datetime.now(timezone.utc).isoformat()
+    changes["updated_by"] = current["id"]
+    updated = await category_repo.update(category_id, changes)
+    await audit.record(current, "update", "category", category_id, changes)
+    return updated
+
+
+async def delete_category(category_id: str, current: Dict[str, Any]) -> int:
+    deleted = await category_repo.delete(category_id)
+    if deleted:
+        await audit.record(current, "delete", "category", category_id)
+    return deleted
+</file>
+
+<file path="backend/app/services/links_service.py">
+from typing import Any, Dict
+
+from fastapi import HTTPException
+
+from app.core import audit
+from app.domain.schemas import LinkCreate, LinkRecord
+from app.repositories.link_repo import LinkRepository
+
+link_repo = LinkRepository()
+
+
+async def all_links_grouped() -> Dict[str, Dict[str, str]]:
+    """Return nested dict { grado_id: { materia_id: url } }, handling legacy fields."""
+    docs = await link_repo.list_all()
+    result: Dict[str, Dict[str, str]] = {}
+    for doc in docs:
+        g = doc.get("grado_id") or doc.get("grado")
+        m = doc.get("materia_id") or doc.get("materia")
+        url = doc.get("url")
+        if g and m and url:
+            result.setdefault(g, {})[m] = url
+    return result
+
+
+async def links_by_grado(grado_id: str) -> Dict[str, str]:
+    docs = await link_repo.list_by_grado(grado_id)
+    out: Dict[str, str] = {}
+    for doc in docs:
+        m = doc.get("materia_id") or doc.get("materia")
+        url = doc.get("url")
+        if m and url:
+            out[m] = url
+    return out
+
+
+async def save_link(payload: LinkCreate, current: Dict[str, Any]) -> Dict[str, Any]:
+    url = payload.url.strip()
+    if not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
+        raise HTTPException(status_code=400, detail="URL inválida")
+
+    existing = await link_repo.find_one(payload.grado_id, payload.materia_id)
+    record = LinkRecord(
+        grado_id=payload.grado_id,
+        materia_id=payload.materia_id,
+        url=url,
+        created_by=(existing or {}).get("created_by") or current["id"],
+        updated_by=current["id"],
+    )
+    doc = record.model_dump()
+    await link_repo.upsert(doc)
+    await audit.record(
+        current, "update" if existing else "create", "link",
+        f"{payload.grado_id}/{payload.materia_id}", {"url": url},
+    )
+    return doc
+
+
+async def delete_link(grado_id: str, materia_id: str, current: Dict[str, Any]) -> int:
+    deleted = await link_repo.delete(grado_id, materia_id)
+    if deleted:
+        await audit.record(current, "delete", "link", f"{grado_id}/{materia_id}")
+    return deleted
+</file>
+
+<file path="backend/app/services/user_service.py">
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+import uuid
+
+from fastapi import HTTPException
+
+from app.core import audit
+from app.core.security import hash_password
+from app.domain.schemas import UserCreate, UserUpdate
+from app.repositories.user_repo import UserRepository
+
+ALLOWED_ROLES = ("admin", "rector")
+user_repo = UserRepository()
+
+
+async def list_users() -> List[Dict[str, Any]]:
+    return await user_repo.list_all()
+
+
+async def create_user(payload: UserCreate, current: Dict[str, Any]) -> Dict[str, Any]:
+    if payload.role not in ALLOWED_ROLES:
+        raise HTTPException(status_code=400, detail="Rol inválido (admin|rector)")
+    if current["role"] == "rector" and payload.role != "rector":
+        raise HTTPException(
+            status_code=403,
+            detail="Un rector solo puede crear usuarios con rol 'rector'",
+        )
+    email = payload.email.lower().strip()
+    if await user_repo.get_by_email(email):
+        raise HTTPException(status_code=409, detail="El correo ya existe")
+
+    doc = {
+        "id": str(uuid.uuid4()),
+        "email": email,
+        "password_hash": hash_password(payload.password),
+        "name": payload.name or email.split("@")[0],
+        "role": payload.role,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": current["id"],
+    }
+    await user_repo.insert(doc)
+    await audit.record(current, "create", "user", doc["id"],
+                       {"email": email, "role": payload.role})
+    safe = {k: v for k, v in doc.items() if k != "password_hash"}
+    return safe
+
+
+async def update_user(user_id: str, payload: UserUpdate,
+                      current: Dict[str, Any]) -> Dict[str, Any]:
+    existing = await user_repo.get_by_id(user_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if payload.role is not None:
+        if current["role"] != "admin":
+            raise HTTPException(status_code=403, detail="Solo admin puede cambiar roles")
+        if payload.role not in ALLOWED_ROLES:
+            raise HTTPException(status_code=400, detail="Rol inválido (admin|rector)")
+
+    changes: Dict[str, Any] = {}
+    if payload.name is not None:
+        changes["name"] = payload.name
+    if payload.role is not None:
+        changes["role"] = payload.role
+    if payload.password is not None and payload.password.strip():
+        changes["password_hash"] = hash_password(payload.password)
+    if payload.profile_photo_url is not None:
+        changes["profile_photo_url"] = payload.profile_photo_url or None
+
+    if not changes:
+        return existing
+
+    changes["updated_at"] = datetime.now(timezone.utc).isoformat()
+    changes["updated_by"] = current["id"]
+    updated = await user_repo.update(user_id, changes)
+    await audit.record(
+        current, "update", "user", user_id,
+        {k: ("***" if k == "password_hash" else v) for k, v in changes.items()},
+    )
+    return updated
+
+
+async def delete_user(user_id: str, current: Dict[str, Any]) -> int:
+    if user_id == current["id"]:
+        raise HTTPException(status_code=400, detail="No puedes eliminar tu propio usuario")
+    deleted = await user_repo.delete(user_id)
+    if deleted == 0:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    await audit.record(current, "delete", "user", user_id)
+    return deleted
+</file>
+
 <file path="backend/runtime.txt">
 python-3.11.9
+</file>
+
+<file path="backend/start_debug.py">
+import os
+import sys
+import traceback
+from pprint import pprint
+
+print("=== START DEBUG ===")
+print("Working dir:", os.getcwd())
+print("Sys.path:")
+pprint(sys.path)
+
+CRITICAL = ["MONGO_URL", "DB_NAME", "JWT_SECRET", "CORS_ORIGINS", "SECURE_COOKIES", "PORT"]
+print("nEnvironment (presence only, secrets masked):")
+for k in CRITICAL:
+    v = os.environ.get(k)
+    print(f"  {k}:", "SET" if v else "MISSING")
+
+try:
+    # Ensure repo root is on path
+    root = os.path.dirname(os.path.abspath(__file__))
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    print("nImporting backend.main...")
+    from backend.main import app
+    print("Imported backend.main -> app OK")
+except Exception:
+    print("Failed to import backend.main:", file=sys.stderr)
+    traceback.print_exc()
+    sys.exit(1)
+
+try:
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 8000))
+    print(f"nStarting uvicorn on 0.0.0.0:{port}... (this will block)")
+    uvicorn.run(app, host="0.0.0.0", port=port)
+except Exception:
+    print("Uvicorn run failed:", file=sys.stderr)
+    traceback.print_exc()
+    sys.exit(1)
 </file>
 
 <file path="design_guidelines.json">
@@ -8465,75 +8465,6 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
 };
 </file>
 
-<file path="backend/server.py">
-import logging
-
-from fastapi import APIRouter, FastAPI
-from starlette.middleware.cors import CORSMiddleware
-
-from app.config import settings
-from app.db.client import close_db, ensure_indexes
-from app.routers import audit, auth, books, categories, links, user
-from app.services import auth_service, books_service
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
-
-app = FastAPI(title="Biblioteca Escolar RGB API", version="2.0.0")
-
-
-# All HTTP routes are mounted under /api (Kubernetes ingress requirement).
-api_router = APIRouter(prefix="/api")
-
-
-@api_router.get("/")
-async def root():
-    return {"message": "Biblioteca Escolar RGB API", "version": "2.0.0"}
-
-
-@api_router.get("/health")
-async def health():
-    return {"status": "ok"}
-
-
-api_router.include_router(auth.router)
-api_router.include_router(user.router)
-api_router.include_router(books.router)
-api_router.include_router(links.router)
-api_router.include_router(categories.router)
-api_router.include_router(audit.router)
-
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=settings.cors_origin_list,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.on_event("startup")
-async def on_startup() -> None:
-    try:
-        await ensure_indexes()
-    except Exception as exc:
-        logger.warning("Index creation warning: %s", exc)
-    await auth_service.seed_default_users()
-    seeded = await books_service.seed_books_if_empty()
-    if seeded:
-        logger.info("Seeded %d initial books", seeded)
-
-
-@app.on_event("shutdown")
-async def on_shutdown() -> None:
-    await close_db()
-</file>
-
 <file path="frontend/jsconfig.json">
 {
   "compilerOptions": {
@@ -8714,6 +8645,75 @@ export const useAuth = () => {
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
+</file>
+
+<file path="backend/server.py">
+import logging
+
+from fastapi import APIRouter, FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
+from app.config import settings
+from app.db.client import close_db, ensure_indexes
+from app.routers import audit, auth, books, categories, links, user
+from app.services import auth_service, books_service
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="Biblioteca Escolar RGB API", version="2.0.0")
+
+
+# All HTTP routes are mounted under /api (Kubernetes ingress requirement).
+api_router = APIRouter(prefix="/api")
+
+
+@api_router.get("/")
+async def root():
+    return {"message": "Biblioteca Escolar RGB API", "version": "2.0.0"}
+
+
+@api_router.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
+api_router.include_router(auth.router)
+api_router.include_router(user.router)
+api_router.include_router(books.router)
+api_router.include_router(links.router)
+api_router.include_router(categories.router)
+api_router.include_router(audit.router)
+
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=settings.cors_origin_list,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.on_event("startup")
+async def on_startup() -> None:
+    try:
+        await ensure_indexes()
+    except Exception as exc:
+        logger.warning("Index creation warning: %s", exc)
+    await auth_service.seed_default_users()
+    seeded = await books_service.seed_books_if_empty()
+    if seeded:
+        logger.info("Seeded %d initial books", seeded)
+
+
+@app.on_event("shutdown")
+async def on_shutdown() -> None:
+    await close_db()
 </file>
 
 <file path="frontend/public/index.html">
