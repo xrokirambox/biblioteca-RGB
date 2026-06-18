@@ -1,16 +1,58 @@
 import React from "react";
-import { NIVELES } from "../data/niveles";
-import { Sprout, BookOpenText, GraduationCap, ArrowUpRight, Users } from "lucide-react";
+import { ArrowUpRight, Users, BookOpen, BookOpenText, GraduationCap, Sprout } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 
-const ICONS = { Sprout, BookOpenText, GraduationCap, Users };
+const ICONS = {
+  BookOpen, BookOpenText, GraduationCap, Sprout, Users,
+  ArrowUpRight, Library, School, Folder, FileText, Link2,
+  Sigma, Leaf, Globe2, Languages, Palette, Dumbbell, HeartHandshake,
+  FlaskConical, Atom, TestTube2, ScrollText, Map, Cpu, FunctionSquare,
+  Brain, LineChart, Layers, Network, Award, Star, Bookmark,
+  BookMarked, BookX, BookCheck, PenTool, Ruler, Calculator,
+  Compass, Music, Monitor, Code, Code2, Database, Grid,
+  Layout, List, CheckSquare, Clipboard, FileCode, Hash, Binary,
+  Share2, Shield, Lock, Key, Unlock, Zap, Sun, Moon, Cloud,
+  Wind, Droplets, Thermometer, Microscope, Telescope, Satellite,
+  Rocket, Plane, Car, Train, Truck, Ship, Anchor, Flag, MapPin,
+  Navigation, Globe, Earth, Home, Building, Building2, Warehouse,
+  Landmark, TreePine, Flower, Mountain,
+  Waves, Umbrella, Snowflake, Flame,
+  FireExtinguisher, Siren, AlertTriangle, AlertCircle, Info,
+  HelpCircle, Question, CheckCircle, XCircle, MinusCircle, PlusCircle,
+  PlayCircle, PauseCircle, StopCircle, SkipForward, SkipBack, Rewind,
+  FastForward, Repeat, Shuffle, Volume, Volume1, Volume2, VolumeX,
+  Mic, MicOff, Headphones, Speaker, Watch, Clock, AlarmClock, Timer,
+  Hourglass, Calendar, CalendarCheck, CalendarX, CalendarPlus,
+  CalendarMinus, CalendarClock, Pin, PinOff, MapPinned, Locate,
+  Crosshair, Target, Radar, Scan, ScanLine, ScanFace, ScanEye,
+  ScanSearch, Fingerprint, ScanText, Barcode, QrCode, Ticket,
+  TicketCheck, User, UserCheck, UserPlus, Mail, Phone, MessageCircle,
+  MessageSquare, Bell, Search, Filter, SortAsc, BarChart, PieChart,
+  TrendingUp, Activity, Heart, ThumbsUp, Eye, Printer, Download,
+  Upload, Paperclip, Tag, Tags, Circle, Square, Triangle, Hexagon,
+  Octagon, Diamond, Crown, Trophy, Medal, Gift, ShoppingCart, Wallet,
+  CreditCard, Receipt, Package, Box, Archive, Trash, RefreshCw,
+  RotateCcw, Undo, Redo, Scissors, Copy, ClipboardList, ClipboardCheck,
+  FilePlus, FileMinus, FileEdit, ExternalLink, LogIn, LogOut, Settings,
+  Sliders, ToggleLeft, ToggleRight, Wifi, Bluetooth, Cast, Airplay,
+  Radio, Tv, MonitorPlay, Film, Video, Camera, Image, Images, Aperture,
+  Focus, ZoomIn, ZoomOut, Maximize, Minimize, Move, AlignLeft,
+  AlignCenter, AlignRight, AlignJustify, Bold, Italic, Underline,
+  Strikethrough, Heading, Type, Quote, Terminal, Bug, GitBranch,
+  GitCommit, GitMerge, GitPullRequest, Github, Gitlab, Chrome,
+  Castle, Church, Hospital, Hotel, Store, DivideCircle,
+};
+
+function getIcon(name) {
+  return ICONS[name] || BookOpen;
+}
 
 export const Categories = () => {
-  const { openModal, goToNivel, categories } = useLibrary();
+  const { openModal, goToHierCat, hierarchyTree, categories } = useLibrary();
 
-  const handleClick = (nivelId) => {
+  const handleClick = (catId) => {
     openModal();
-    setTimeout(() => goToNivel(nivelId), 10);
+    setTimeout(() => goToHierCat(catId), 10);
   };
 
   const visibleCategories = (categories || []).filter((category) => category.status === "show");
@@ -29,13 +71,13 @@ export const Categories = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {NIVELES.map((nivel, idx) => {
-            const Icon = ICONS[nivel.icon] || BookOpenText;
+          {hierarchyTree.map((category, idx) => {
+            const Icon = getIcon(category.icon);
             return (
               <button
-                key={nivel.id}
-                onClick={() => handleClick(nivel.id)}
-                data-testid={`nivel-card-${nivel.id}`}
+                key={category.id}
+                onClick={() => handleClick(category.id)}
+                data-testid={`nivel-card-${category.id}`}
                 className="group text-left glass rounded-lg p-8 relative overflow-hidden hover:border-[#c9a227]/50 transition-all duration-300 hover:-translate-y-1 animate-fade-up"
                 style={{ animationDelay: `${idx * 0.08}s` }}
               >
@@ -49,23 +91,29 @@ export const Categories = () => {
                     <Icon className="w-6 h-6 text-[#c9a227]" />
                   </div>
 
-                  <h3 className="font-cinzel text-3xl text-[#f4f1e1] mb-2">{nivel.name}</h3>
+                  <h3 className="font-cinzel text-3xl text-[#f4f1e1] mb-2">{category.name}</h3>
                   <div className="font-dm-sans text-xs tracking-[0.25em] uppercase text-[#c9a227] mb-5">
-                    {nivel.subtitle}
+                    {category.subcategories?.length || 0} grados disponibles
                   </div>
                   <p className="font-cormorant text-lg text-[#a3b3a6] leading-relaxed">
-                    {nivel.description}
+                    {category.description || "Explora los grados y materias disponibles."}
                   </p>
 
                   <div className="mt-8 flex items-center gap-2 text-[#c9a227]/80 font-dm-sans text-xs tracking-wider uppercase">
                     <span className="h-px w-8 bg-[#c9a227]/60" />
-                    {nivel.grados.length} grados disponibles
+                    {category.subcategories?.length || 0} grados
                   </div>
                 </div>
               </button>
             );
           })}
         </div>
+
+        {hierarchyTree.length === 0 && (
+          <div className="text-center py-16 font-cormorant text-xl text-[#a3b3a6]">
+            No hay niveles configurados. El staff puede crear la jerarquía desde el panel de administración.
+          </div>
+        )}
 
         {visibleCategories.length > 0 && (
           <div className="mt-16">

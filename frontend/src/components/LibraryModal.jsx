@@ -1,41 +1,78 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  X, ChevronRight, ChevronLeft, Sprout, BookOpenText, GraduationCap, Library,
-  Sigma, BookOpen, Leaf, Globe2, Languages, Palette, Dumbbell, HeartHandshake,
-  FlaskConical, Atom, TestTube2, ScrollText, Map, Cpu, FunctionSquare, Brain, LineChart,
-  Save, ExternalLink, Check, Trash2,
-} from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Library, BookOpen, ExternalLink, Save, Check, Trash2, Loader as Loader2, Folder, FileText, Link2, GraduationCap, Sprout, BookOpenText, Sigma, Leaf, Globe as Globe2, Languages, Palette, Dumbbell, HeartHandshake, FlaskConical, Atom, TestTube as TestTube2, ScrollText, Map, Cpu, SquareFunction as FunctionSquare, Brain, ChartLine as LineChart, Layers, Network, School, Award, Star, Bookmark, BookMarked, BookX, BookCheck, PenTool, Ruler, Calculator, Compass, Music, Monitor, Code, Database, Grid2x2 as Grid, LayoutGrid as Layout, List, SquareCheck as CheckSquare, Clipboard, FileCode, Hash, Binary, GitBranch, GitCommitVertical as GitCommit, GitMerge, GitPullRequest, GitFork as Github, Rabbit as Gitlab, Metronome as Chrome, Globe, Hop as Home, Building, Building2, Warehouse, Landmark, TreePine, Flower, Mountain, Umbrella, Snowflake, Flame, TriangleAlert as AlertTriangle, CircleAlert as AlertCircle, Info, Circle as HelpCircle, CircleCheck as CheckCircle, Circle as XCircle, CircleMinus as MinusCircle, CirclePlus as PlusCircle, CirclePlay as PlayCircle, CirclePause as PauseCircle, CircleStop as StopCircle, SkipForward, SkipBack, Rewind, FastForward, Repeat, Shuffle, Volume, Volume1, Volume2, VolumeX, Mic, MicOff, Headphones, Speaker, Watch, Clock, AlarmClock, Timer, Hourglass, Calendar, CalendarCheck, CalendarX, CalendarPlus, CalendarMinus, CalendarClock, Pin, PinOff, MapPinned, Locate, Crosshair, Target, Radar, Scan, ScanLine, ScanFace, ScanEye, ScanSearch, FingerprintPattern as Fingerprint, ScanText, Barcode, QrCode, Ticket, TicketCheck, Users, User, UserCheck, UserPlus, Mail, Phone, MessageCircle, MessageSquare, Bell, Search, ListFilter as Filter, ListSortAscending as SortAsc, ChartBar as BarChart, ChartPie as PieChart, TrendingUp, Activity, Heart, ThumbsUp, Eye, Printer, Download, Upload, Paperclip, Tag, Tags, Circle, Square, Triangle, Hexagon, Octagon, Diamond, Crown, Trophy, Medal, Gift, ShoppingCart, Wallet, CreditCard, Receipt, Package, Box, Archive, Trash, RefreshCw, RotateCcw, Undo, Redo, Scissors, Copy, ClipboardList, ClipboardCheck, FilePlus, FileMinus, File as FileEdit, LogIn, LogOut, Settings, FileSliders as Sliders, ToggleLeft, ToggleRight, Wifi, Bluetooth, Cast, Airplay, Radio, Tv, MonitorPlay, Film, Video, Camera, Image, Images, Aperture, Focus, ZoomIn, ZoomOut, Maximize, Minimize, Move, ChevronLeft as AlignLeft, TextAlignCenter as AlignCenter, Highlighter as AlignRight, TextAlignJustify as AlignJustify, Bold, Italic, Underline, Strikethrough, Heading, Type, Quote, Terminal, Bug, Castle, Church, Hospital, Hotel, Store, CircleDivide as DivideCircle } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 import { useAuth } from "../context/AuthContext";
-import { NIVELES, getNivelById, getGradoById } from "../data/niveles";
-import { MATERIAS } from "../data/materias";
 import { toast } from "sonner";
 
-const NIVEL_ICONS = { Sprout, BookOpenText, GraduationCap };
-const MATERIA_ICONS = {
-  Sigma, BookOpen, Leaf, Globe2, Languages, Palette, Dumbbell, HeartHandshake,
-  FlaskConical, Atom, TestTube2, ScrollText, Map, Cpu, FunctionSquare, Brain, LineChart,
+const ALL_ICONS = {
+  ArrowUpRight, BookOpen, BookOpenText, GraduationCap, Sprout, Folder,
+  FileText, Link2, Sigma, FlaskConical, Atom, TestTube2,
+  Globe2, Languages, Palette, Dumbbell, HeartHandshake,
+  ScrollText, Map, Cpu, FunctionSquare, Brain, LineChart,
+  Leaf, Library, School, Award, Star, Bookmark, BookMarked,
+  BookX, BookCheck, PenTool, Ruler, Calculator, Compass,
+  Music, Monitor, Code, Database, Layers, Grid,
+  Layout, List, CheckSquare, Clipboard, FileCode, Hash, Binary,
+  Network, Shield, Lock, Key, Unlock, Zap,
+  Sun, Moon, Cloud, Wind, Droplets, Thermometer, Microscope,
+  Telescope, Satellite, Rocket, Plane, Car, Train, Truck,
+  Ship, Anchor, Flag, MapPin, Navigation, Globe,
+  Users, User, UserCheck, UserPlus, Mail, Phone, MessageCircle,
+  MessageSquare, Bell, Search, Filter, SortAsc, BarChart,
+  PieChart, TrendingUp, Activity, Heart, ThumbsUp, Eye,
+  Printer, Download, Upload, Paperclip, Tag, Tags, Circle,
+  Square, Triangle, Hexagon, Octagon, Diamond, Crown,
+  Trophy, Medal, Gift, ShoppingCart, Wallet, CreditCard,
+  Receipt, Package, Box, Archive, Trash,
+  RefreshCw, RotateCcw, Undo, Redo, Scissors, Copy,
+  ClipboardList, ClipboardCheck, FilePlus, FileMinus, FileEdit,
+  ExternalLink, LogIn, LogOut, Settings, Sliders, ToggleLeft,
+  ToggleRight, Wifi, Bluetooth, Cast, Airplay, Radio,
+  Tv, MonitorPlay, Film, Video, Camera, Image, Images,
+  Aperture, Focus, ZoomIn, ZoomOut, Maximize, Minimize,
+  Move, AlignLeft, AlignCenter, AlignRight, AlignJustify,
+  Bold, Italic, Underline, Strikethrough, Heading, Type,
+  Quote, Terminal, Bug, GitBranch, GitCommit,
+  GitMerge, GitPullRequest, Github, Gitlab, Chrome, Globe,
+  Home, Building, Building2, Warehouse, Landmark,
+  Castle, Church, Hospital, Hotel, Store, DivideCircle,
+  TreePine, Flower, Mountain, Umbrella, Snowflake, Flame,
+  FireExtinguisher, Siren, AlertTriangle, AlertCircle, Info,
+  HelpCircle, CheckCircle, XCircle, MinusCircle, PlusCircle,
+  PlayCircle, PauseCircle, StopCircle, SkipForward, SkipBack,
+  Rewind, FastForward, Repeat, Shuffle, Volume, Volume1,
+  Volume2, VolumeX, Mic, MicOff, Headphones, Speaker,
+  Watch, Clock, AlarmClock, Timer, Hourglass, Calendar,
+  CalendarCheck, CalendarX, CalendarPlus, CalendarMinus, CalendarClock,
+  Pin, PinOff, MapPinned, Locate, Crosshair, Target,
+  Radar, Scan, ScanLine, ScanFace, ScanEye, ScanSearch,
+  Fingerprint, ScanText, Barcode, QrCode, Ticket, TicketCheck,
 };
 
+function getIcon(name) {
+  return ALL_ICONS[name] || BookOpen;
+}
+
 const Breadcrumb = () => {
-  const { level, nivelId, gradoId, goBack } = useLibrary();
-  const nivel = nivelId ? getNivelById(nivelId) : null;
-  const grado = gradoId ? getGradoById(gradoId) : null;
+  const { level, hierCatId, hierSubId, goBackHierarchy, hierarchyTree } = useLibrary();
+  const category = hierCatId ? hierarchyTree.find((c) => c.id === hierCatId) : null;
+  const subcategory = hierSubId ? category?.subcategories?.find((s) => s.id === hierSubId) : null;
+
   return (
     <div className="flex items-center gap-2 font-dm-sans text-xs sm:text-sm tracking-wide" data-testid="modal-breadcrumb">
       <Library className="w-4 h-4 text-[#c9a227]" />
       <span className="text-[#a3b3a6]">Biblioteca</span>
-      {nivel && (<>
+      {category && (<>
         <ChevronRight className="w-3.5 h-3.5 text-[#c9a227]/60" />
-        <span className={level === 1 ? "text-[#c9a227]" : "text-[#a3b3a6]"}>{nivel.name}</span>
+        <span className={level === 1 ? "text-[#c9a227]" : "text-[#a3b3a6]"}>{category.name}</span>
       </>)}
-      {grado && (<>
+      {subcategory && (<>
         <ChevronRight className="w-3.5 h-3.5 text-[#c9a227]/60" />
-        <span className="text-[#c9a227]">{grado.name}</span>
+        <span className="text-[#c9a227]">{subcategory.name}</span>
       </>)}
       {level > 0 && (
-        <button onClick={goBack} data-testid="modal-back-btn"
+        <button onClick={goBackHierarchy} data-testid="modal-back-btn"
           className="ml-auto inline-flex items-center gap-1 text-[#c9a227] hover:text-[#f4f1e1] transition">
           <ChevronLeft className="w-4 h-4" /> Atrás
         </button>
@@ -44,55 +81,68 @@ const Breadcrumb = () => {
   );
 };
 
-const NivelView = () => {
-  const { goToNivel } = useLibrary();
+const CategoryView = () => {
+  const { hierarchyTree, goToHierCat } = useLibrary();
+
   return (
     <div className="animate-fade-in">
       <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">Selecciona un nivel</h3>
       <p className="font-cormorant text-lg text-[#a3b3a6] mb-8">Elige el nivel académico para explorar sus grados.</p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {NIVELES.map((n) => {
-          const Icon = NIVEL_ICONS[n.icon] || BookOpenText;
-          return (
-            <button key={n.id} onClick={() => goToNivel(n.id)} data-testid={`modal-nivel-${n.id}`}
-              className="group text-left glass rounded-lg p-6 hover:border-[#c9a227]/50 hover:-translate-y-1 transition-all">
-              <div className="w-12 h-12 rounded-full bg-[#c9a227]/10 flex items-center justify-center border border-[#c9a227]/30 mb-4">
-                <Icon className="w-5 h-5 text-[#c9a227]" />
-              </div>
-              <div className="font-cinzel text-xl text-[#f4f1e1] mb-1">{n.name}</div>
-              <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#c9a227] mb-3">{n.subtitle}</div>
-              <div className="font-cormorant text-base text-[#a3b3a6]">{n.grados.length} grados</div>
-            </button>
-          );
-        })}
-      </div>
+      {hierarchyTree.length === 0 ? (
+        <div className="text-center py-12 font-cormorant text-lg text-[#a3b3a6]">
+          No hay niveles configurados. El staff puede crear la jerarquía desde el panel de administración.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {hierarchyTree.map((category) => {
+            const Icon = getIcon(category.icon);
+            return (
+              <button key={category.id} onClick={() => goToHierCat(category.id)} data-testid={`modal-nivel-${category.id}`}
+                className="group text-left glass rounded-lg p-6 hover:border-[#c9a227]/50 hover:-translate-y-1 transition-all">
+                <div className="w-12 h-12 rounded-full bg-[#c9a227]/10 flex items-center justify-center border border-[#c9a227]/30 mb-4">
+                  <Icon className="w-5 h-5 text-[#c9a227]" />
+                </div>
+                <div className="font-cinzel text-xl text-[#f4f1e1] mb-1">{category.name}</div>
+                <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#c9a227] mb-3">
+                  {category.subcategories?.length || 0} grados
+                </div>
+                <div className="font-cormorant text-base text-[#a3b3a6]">
+                  {category.description || "Explora los grados disponibles."}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
 
-const GradoView = () => {
-  const { nivelId, goToGrado, links } = useLibrary();
-  const nivel = getNivelById(nivelId);
-  if (!nivel) return null;
+const SubcategoryView = () => {
+  const { hierCatId, goToHierSub, hierarchyTree } = useLibrary();
+  const category = hierarchyTree.find((c) => c.id === hierCatId);
+  if (!category) return null;
+
   return (
     <div className="animate-fade-in">
-      <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{nivel.name}</h3>
+      <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{category.name}</h3>
       <p className="font-cormorant text-lg text-[#a3b3a6] mb-8">Selecciona un grado para ver sus materias.</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {nivel.grados.map((g) => {
-          const savedCount = Object.keys(links[g.id] || {}).length;
+        {(category.subcategories || []).map((sub) => {
+          const Icon = getIcon(sub.icon);
+          const savedCount = sub.materias?.filter((m) => m.url)?.length || 0;
           return (
-            <button key={g.id} onClick={() => goToGrado(g.id)} data-testid={`modal-grado-${g.id}`}
+            <button key={sub.id} onClick={() => goToHierSub(sub.id)} data-testid={`modal-grado-${sub.id}`}
               className="group glass rounded-lg p-5 hover:border-[#c9a227]/50 hover:-translate-y-1 transition-all text-left">
               <div className="flex items-baseline justify-between mb-3">
-                <div className="font-cinzel text-3xl text-[#c9a227]">{g.short}</div>
+                <div className="font-cinzel text-3xl text-[#c9a227]">{sub.name.slice(0, 3)}</div>
                 {savedCount > 0 && (
                   <div className="px-2 py-0.5 rounded-full bg-[#c9a227]/15 border border-[#c9a227]/30 text-[#c9a227] font-dm-sans text-[10px] tracking-wider">
                     {savedCount}
                   </div>
                 )}
               </div>
-              <div className="font-dm-sans text-xs tracking-widest uppercase text-[#a3b3a6]">{g.name}</div>
+              <div className="font-dm-sans text-xs tracking-widest uppercase text-[#a3b3a6]">{sub.name}</div>
             </button>
           );
         })}
@@ -101,31 +151,42 @@ const GradoView = () => {
   );
 };
 
-const MateriaItem = ({ gradoId, materia }) => {
-  const { links, saveLink, removeLink } = useLibrary();
+const MateriaItem = ({ subcategoryId, materia }) => {
+  const { updateHierarchyMateria } = useLibrary();
   const { isStaff } = useAuth();
-  const savedUrl = links[gradoId]?.[materia.id] || "";
-  const [url, setUrl] = useState(savedUrl);
+  const [url, setUrl] = useState(materia.url || "");
   const [saving, setSaving] = useState(false);
-  const Icon = MATERIA_ICONS[materia.icon] || BookOpen;
+  const Icon = getIcon(materia.icon);
 
-  useEffect(() => { setUrl(savedUrl); }, [savedUrl]);
+  useEffect(() => { setUrl(materia.url || ""); }, [materia.url]);
 
   const isValid = url && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"));
-  const canGo = !!savedUrl;
+  const canGo = !!materia.url;
 
   const handleSave = async () => {
     if (!isValid) return toast.error("Ingresa una URL válida (http, https o /).");
-    try { setSaving(true); await saveLink(gradoId, materia.id, url); toast.success(`Enlace guardado para ${materia.name}`); }
-    catch (e) { toast.error(e.response?.data?.detail || "No se pudo guardar"); }
-    finally { setSaving(false); }
-  };
-  const handleRemove = async () => {
-    try { await removeLink(gradoId, materia.id); setUrl(""); toast.success("Enlace eliminado"); }
-    catch { toast.error("No se pudo eliminar"); }
+    try {
+      setSaving(true);
+      await updateHierarchyMateria(materia.id, { url });
+      toast.success(`Enlace guardado para ${materia.name}`);
+    } catch (e) {
+      toast.error(e.response?.data?.detail || "No se pudo guardar");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  // Public view (no staff)
+  const handleRemove = async () => {
+    try {
+      await updateHierarchyMateria(materia.id, { url: "" });
+      setUrl("");
+      toast.success("Enlace eliminado");
+    } catch {
+      toast.error("No se pudo eliminar");
+    }
+  };
+
+  // Public view
   if (!isStaff) {
     return (
       <div data-testid={`materia-item-${materia.id}`}
@@ -140,7 +201,7 @@ const MateriaItem = ({ gradoId, materia }) => {
           </div>
         </div>
         {canGo ? (
-          <a href={savedUrl} target="_blank" rel="noreferrer" data-testid={`materia-go-${materia.id}`}
+          <a href={materia.url} target="_blank" rel="noreferrer" data-testid={`materia-go-${materia.id}`}
             className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center gap-1.5 transition-colors">
             Ir <ExternalLink className="w-3.5 h-3.5" />
           </a>
@@ -154,7 +215,7 @@ const MateriaItem = ({ gradoId, materia }) => {
     );
   }
 
-  // Staff view (admin or rector)
+  // Staff view
   return (
     <div data-testid={`materia-item-${materia.id}`}
       className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-[#c9a227]/25 transition-colors">
@@ -165,7 +226,7 @@ const MateriaItem = ({ gradoId, materia }) => {
         <div className="min-w-0">
           <div className="font-cinzel text-base text-[#f4f1e1] truncate">{materia.name}</div>
           <div className="font-dm-sans text-[10px] tracking-widest uppercase text-[#a3b3a6]">
-            {savedUrl ? "Enlace guardado" : "Sin enlace"}
+            {materia.url ? "Enlace guardado" : "Sin enlace"}
           </div>
         </div>
       </div>
@@ -180,7 +241,7 @@ const MateriaItem = ({ gradoId, materia }) => {
           {saving ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
           Guardar
         </button>
-        <a href={canGo ? savedUrl : undefined} target="_blank" rel="noreferrer"
+        <a href={canGo ? materia.url : undefined} target="_blank" rel="noreferrer"
           onClick={(e) => { if (!canGo) e.preventDefault(); }} data-testid={`materia-go-${materia.id}`}
           className={`px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center gap-1.5 transition-colors ${
             canGo ? "bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22]" : "bg-[#c9a227]/20 text-[#c9a227]/40 cursor-not-allowed"
@@ -199,22 +260,25 @@ const MateriaItem = ({ gradoId, materia }) => {
 };
 
 const MateriasView = () => {
-  const { gradoId } = useLibrary();
+  const { hierCatId, hierSubId, hierarchyTree } = useLibrary();
   const { isStaff } = useAuth();
-  const grado = getGradoById(gradoId);
-  const materias = MATERIAS[gradoId] || [];
-  if (!grado) return null;
+  const category = hierarchyTree.find((c) => c.id === hierCatId);
+  const subcategory = category?.subcategories?.find((s) => s.id === hierSubId);
+  if (!subcategory) return null;
+
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{grado.name}</h3>
+        <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{subcategory.name}</h3>
         <p className="font-cormorant text-lg text-[#a3b3a6]">
-          {isStaff ? "Gestiona los enlaces de Google\u00a0Drive para cada materia."
+          {isStaff ? "Gestiona los enlaces de Google Drive para cada materia."
                    : "Consulta los recursos disponibles por materia."}
         </p>
       </div>
       <div className="flex flex-col gap-3" data-testid="materias-list">
-        {materias.map((m) => (<MateriaItem key={m.id} gradoId={gradoId} materia={m} />))}
+        {(subcategory.materias || []).map((m) => (
+          <MateriaItem key={m.id} subcategoryId={hierSubId} materia={m} />
+        ))}
       </div>
     </div>
   );
@@ -246,8 +310,8 @@ export const LibraryModal = () => {
           </button>
         </div>
         <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1">
-          {level === 0 && <NivelView />}
-          {level === 1 && <GradoView />}
+          {level === 0 && <CategoryView />}
+          {level === 1 && <SubcategoryView />}
           {level === 2 && <MateriasView />}
         </div>
       </div>

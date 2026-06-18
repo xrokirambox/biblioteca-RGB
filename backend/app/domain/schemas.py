@@ -129,6 +129,94 @@ class CategoryRecord(BaseModel):
     updated_at: str = Field(default_factory=now_iso)
 
 
+# ---------- Hierarchy (Categoría → Subcategoría → Materia) ----------
+class HierarchyCategoryCreate(BaseModel):
+    name: str
+    description: str = ""
+    icon: str = "BookOpen"
+    sort_order: int = 0
+
+
+class HierarchyCategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    sort_order: Optional[int] = None
+
+
+class HierarchyCategoryRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=new_id)
+    name: str
+    description: str = ""
+    icon: str = "BookOpen"
+    sort_order: int = 0
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: str = Field(default_factory=now_iso)
+    updated_at: str = Field(default_factory=now_iso)
+
+
+class SubcategoryCreate(BaseModel):
+    name: str
+    category_id: str
+    description: str = ""
+    icon: str = "BookOpen"
+    sort_order: int = 0
+
+
+class SubcategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    category_id: Optional[str] = None
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    sort_order: Optional[int] = None
+
+
+class SubcategoryRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=new_id)
+    name: str
+    category_id: str
+    description: str = ""
+    icon: str = "BookOpen"
+    sort_order: int = 0
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: str = Field(default_factory=now_iso)
+    updated_at: str = Field(default_factory=now_iso)
+
+
+class HierarchyMateriaCreate(BaseModel):
+    name: str
+    subcategory_id: str
+    description: str = ""
+    icon: str = "BookOpen"
+    url: str = ""
+
+
+class HierarchyMateriaUpdate(BaseModel):
+    name: Optional[str] = None
+    subcategory_id: Optional[str] = None
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    url: Optional[str] = None
+
+
+class HierarchyMateriaRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=new_id)
+    name: str
+    subcategory_id: str
+    description: str = ""
+    icon: str = "BookOpen"
+    url: str = ""
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: str = Field(default_factory=now_iso)
+    updated_at: str = Field(default_factory=now_iso)
+
+
 # ---------- Audit ----------
 class AuditRecord(BaseModel):
     model_config = ConfigDict(extra="ignore")

@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.db.client import close_db, ensure_indexes
-from app.routers import audit, auth, books, categories, links, user
+from app.routers import audit, auth, books, categories, hierarchy, links, user
 from app.services import auth_service, books_service
 
 logging.basicConfig(
@@ -37,6 +37,7 @@ api_router.include_router(user.router)
 api_router.include_router(books.router)
 api_router.include_router(links.router)
 api_router.include_router(categories.router)
+api_router.include_router(hierarchy.router)
 api_router.include_router(audit.router)
 
 app.include_router(api_router)

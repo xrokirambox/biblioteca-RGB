@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, BookOpen, Users, History, LayoutDashboard, Layers } from "lucide-react";
+import { X, BookOpen, Users, History, LayoutDashboard, Layers, Network } from "lucide-react";
 import { BooksManager } from "./BooksManager";
 import { UsersManager } from "./UsersManager";
 import { AuditLog } from "./AuditLog";
 import { CategoriesManager } from "./CategoriesManager";
+import { HierarchyManager } from "./HierarchyManager";
 import { useAuth } from "../context/AuthContext";
 
 const TABS = [
   { id: "books", label: "Libros", icon: BookOpen },
   { id: "users", label: "Usuarios", icon: Users },
   { id: "categories", label: "Salones", icon: Layers },
+  { id: "hierarchy", label: "Jerarquía", icon: Network },
   { id: "audit", label: "Auditoría", icon: History },
 ];
 
@@ -82,6 +84,7 @@ export const StaffPanel = ({ open, onClose }) => {
           {tab === "books" && <BooksManager />}
           {tab === "users" && <UsersManager />}
           {tab === "categories" && <CategoriesManager />}
+          {tab === "hierarchy" && <HierarchyManager />}
           {tab === "audit" && <AuditLog />}
         </div>
       </div>
