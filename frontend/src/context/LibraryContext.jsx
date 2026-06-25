@@ -8,6 +8,7 @@ export function LibraryProvider({ children }) {
   const [level, setLevel] = useState(0);
   const [nivelId, setNivelId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
+  const [activeCategoryId, setActiveCategoryId] = useState(null);
 
   const [links, setLinks] = useState({});
   const [books, setBooks] = useState([]);
@@ -50,22 +51,35 @@ export function LibraryProvider({ children }) {
     refreshCategories();
   }, [refreshLinks, refreshBooks, refreshCategories]);
 
-  const openModal = () => { setLevel(0); setNivelId(null); setGradoId(null); setModalOpen(true); };
-  const closeModal = () => setModalOpen(false);
-  const goToNivel = (id) => { setNivelId(id); setLevel(1); };
-  const goToGrado = (id) => { setGradoId(id); setLevel(2); };
-  const goBack = () => {
-    if (level === 2) { setLevel(1); setGradoId(null); }
-    else if (level === 1) { setLevel(0); setNivelId(null); }
+  const openModal = () => {
+    setLevel(0);
+    setNivelId(null);
+    setGradoId(null);
+    setActiveCategoryId(null);
+    setModalOpen(true);
   };
 
-  // Links (staff)
+  // FIX: closeModal ahora limpia activeCategoryId correctamente
+  const closeModal = () => {
+    setModalOpen(false);
+    setActiveCategoryId(null);
+  };
+
+  const goToNivel = (id) => { setNivelId(id); setLevel(1); };
+  const goToGrado = (id) => { setGradoId(id); setLevel(2); };
+  const goToCategory = (categoryId) => {
+    setActiveCategoryId(categoryId);
+    setLevel(3);
+  };
+
+  const goBack = () => {
+    if (level === 3) { setLevel(0); setActiveCategoryId(null); }
+    else if (level === 2) { setLevel(1); setGradoId(null); }
+    else if (level === 1) { setLevel(0); setNivelId(null); }
+  }; 
+
   const saveLink = async (gradoIdArg, materiaId, url) => {
-   const res = await api.post("/links", {
-      grado_id: gradoIdArg,
-      materia_id: materiaId,
-      url,
-    });
+    const res = await api.post("/links", { grado_id: gradoIdArg, materia_id: materiaId, url });
     setLinks((prev) => ({
       ...prev,
       [gradoIdArg]: { ...(prev[gradoIdArg] || {}), [materiaId]: res.data.url },
@@ -86,7 +100,6 @@ export function LibraryProvider({ children }) {
     });
   };
 
-  // Books (staff)
   const createBook = async (payload) => {
     const res = await api.post("/books", payload);
     setBooks((prev) => [...prev, res.data]);
@@ -107,21 +120,20 @@ export function LibraryProvider({ children }) {
     setCategories((prev) => [...prev, res.data]);
     return res.data;
   };
-
   const updateCategory = async (id, payload) => {
     const res = await api.put(`/categories/${id}`, payload);
     setCategories((prev) => prev.map((c) => (c.id === id ? res.data : c)));
     return res.data;
   };
-
   const deleteCategory = async (id) => {
     await api.delete(`/categories/${id}`);
     setCategories((prev) => prev.filter((c) => c.id !== id));
   };
 
   const value = {
-    modalOpen, level, nivelId, gradoId, links, books, categories, loading,
-    openModal, closeModal, goToNivel, goToGrado, goBack,
+    modalOpen, level, nivelId, gradoId, activeCategoryId,
+    links, books, categories, loading,
+    openModal, closeModal, goToNivel, goToGrado, goToCategory, goBack,
     saveLink, removeLink, refreshLinks,
     createBook, updateBook, deleteBook, refreshBooks,
     createCategory, updateCategory, deleteCategory, refreshCategories,

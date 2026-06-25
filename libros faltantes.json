@@ -1,0 +1,179 @@
+
+[
+
+{
+    "id": "b4d23b54-fa86-43b7-b10a-a638e067eef6",
+    "grado_id": "psicologia",
+    "materia_id": "psico",
+    "url": "https://drive.google.com/drive/folders/15SKe1TbgwdCpWKQvHc8vQGac9ulPG391",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "d5e2a5e9-a952-403b-a095-d2293d16536f",
+    "grado_id": "docente",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1dsiVqUXYcnYlhaZHUN_cvLOZ7krLJt8k",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "4f0ecf39-11c2-4b27-a3c3-6a05115d7765",
+    "grado_id": "estudiantes",
+    "materia_id": "art",
+    "url": "https://drive.google.com/drive/folders/1RskMmnaq5IL3eL06t3yDJtA2njdyzwT8",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "35cc0efd-4303-4183-bd8f-191b44bb3e42",
+    "grado_id": "estudiantes",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1mH0gHutb0QEpha4Ug6kSj-kMbrnQhkr-",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "a06681a0-20c3-4e84-8e4a-e25caae3efb1",
+    "grado_id": "notouch",
+    "materia_id": "fotos",
+    "url": "https://drive.google.com/drive/folders/1TToy8K948Nj3JXRAEhkwWGQxtbx92O66",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "432cefc3-c66d-4f6b-8926-48d927447d04",
+    "grado_id": "notouch",
+    "materia_id": "dest",
+    "url": "https://drive.google.com/drive/folders/1NueuLVbXwP_58bGZj-h45gtghqr3B26l",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "cb3eda6f-095c-4913-8819-7561b85cf3b1",
+    "grado_id": "g9",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1BfXwFA0kjtGMwmDiw8ZX-awNtvvUnZkl",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "78b16cb4-24df-462e-8424-0a17c5f49ecb",
+    "grado_id": "g9",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1AyJLTS4EqFYVKuWSYsW2jykj1dbpnJSq",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "f27d920e-f409-4682-b19b-d525f0a6d296",
+    "grado_id": "g8",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/12m4lWCUlU80Cslbz91ZdtWFxaWAVpHjQ",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "310511fc-c055-4459-ae7b-5a0a72bfd481",
+    "grado_id": "g8",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1aNdZ7vE3jqWgTuUUKUeYDWiJbt2rQQlR",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "6c29dd1c-bb5c-419b-95f7-dc658ee8a056",
+    "grado_id": "g8",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1u1HUgEpTYktg9_GKRyrt5fEVtdf1Rdwj",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "79c1d4a3-32d2-4924-9852-00ae45ded36b",
+    "grado_id": "g2",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1tNt_xcp8vij5rKorA3PgRBdDo9qW5muB",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "4989eeb5-62e4-4ef4-b0cf-fb04566f24dc",
+    "grado_id": "g3",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Uj9f-qIvVpYHB5YIhoR97HEyRiFE0559",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "a26678c1-8136-4dbb-ac50-afe52cd3623d",
+    "grado_id": "g4",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1ka8d_q7gtDKUQ5nR3sGqQQE3q7cUBv0j",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "4c06e66e-511d-4636-b772-47746925bef6",
+    "grado_id": "g4",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1FA6pxIZANCLGGsVe-ijjfKYv0DxqE46I",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "c7514baf-b1e4-410b-9286-93359e74dffa",
+    "grado_id": "g5",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Pf6lXGfkQh6MOpAKFSNMERGSXnjeqo3Y",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "0e4ba6d5-5dd3-4ae4-a7a0-b170299c6f8b",
+    "grado_id": "g6",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1S-FJGiKKV0qzdK2FDc2SodrlMyj57VkZ",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "6009ee45-e95d-46d8-ad32-6138e0b3659f",
+    "grado_id": "g6",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Dj0HNBxPSxOC2COXFcNvY4TmdHzhV0n6",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "250d3823-06ec-4f8a-8795-278ff39ef1c1",
+    "grado_id": "g6",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1c_wsSMsrJf_JDzw35XpKmX4IwK_aGVFf",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "d373e07e-0abf-4656-9a2d-cc99feb1dd61",
+    "grado_id": "g7",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/17h21o6b58C-O-nYY18GwZfZrJlCyYf3G",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "fbd14e16-0fbe-4e8b-9465-53d35e0fdcb2",
+    "grado_id": "g7",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1gNM95PANZIEoRHQE8TeUDjJTyaB_5YCf",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}
+]

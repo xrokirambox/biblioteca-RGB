@@ -166,8 +166,10 @@ frontend/src/index.js
 frontend/src/lib/api.js
 frontend/src/lib/utils.js
 frontend/tailwind.config.js
+libros faltantes.json
 memory/.gitkeep
 memory/PRD.md
+quitar.txt
 test_reports/iteration_2.json
 test_reports/iteration_3.json
 test_reports/pytest/biblioteca_rgb_iter3.xml
@@ -177,6 +179,353 @@ test_reports/pytest/multirole_rgb.xml
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="libros faltantes.json">
+[
+
+{
+    "id": "b4d23b54-fa86-43b7-b10a-a638e067eef6",
+    "grado_id": "psicologia",
+    "materia_id": "psico",
+    "url": "https://drive.google.com/drive/folders/15SKe1TbgwdCpWKQvHc8vQGac9ulPG391",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "d5e2a5e9-a952-403b-a095-d2293d16536f",
+    "grado_id": "docente",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1dsiVqUXYcnYlhaZHUN_cvLOZ7krLJt8k",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "4f0ecf39-11c2-4b27-a3c3-6a05115d7765",
+    "grado_id": "estudiantes",
+    "materia_id": "art",
+    "url": "https://drive.google.com/drive/folders/1RskMmnaq5IL3eL06t3yDJtA2njdyzwT8",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "35cc0efd-4303-4183-bd8f-191b44bb3e42",
+    "grado_id": "estudiantes",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1mH0gHutb0QEpha4Ug6kSj-kMbrnQhkr-",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "a06681a0-20c3-4e84-8e4a-e25caae3efb1",
+    "grado_id": "notouch",
+    "materia_id": "fotos",
+    "url": "https://drive.google.com/drive/folders/1TToy8K948Nj3JXRAEhkwWGQxtbx92O66",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "432cefc3-c66d-4f6b-8926-48d927447d04",
+    "grado_id": "notouch",
+    "materia_id": "dest",
+    "url": "https://drive.google.com/drive/folders/1NueuLVbXwP_58bGZj-h45gtghqr3B26l",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},
+{
+    "id": "cb3eda6f-095c-4913-8819-7561b85cf3b1",
+    "grado_id": "g9",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1BfXwFA0kjtGMwmDiw8ZX-awNtvvUnZkl",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "78b16cb4-24df-462e-8424-0a17c5f49ecb",
+    "grado_id": "g9",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1AyJLTS4EqFYVKuWSYsW2jykj1dbpnJSq",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "f27d920e-f409-4682-b19b-d525f0a6d296",
+    "grado_id": "g8",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/12m4lWCUlU80Cslbz91ZdtWFxaWAVpHjQ",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "310511fc-c055-4459-ae7b-5a0a72bfd481",
+    "grado_id": "g8",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1aNdZ7vE3jqWgTuUUKUeYDWiJbt2rQQlR",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "6c29dd1c-bb5c-419b-95f7-dc658ee8a056",
+    "grado_id": "g8",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1u1HUgEpTYktg9_GKRyrt5fEVtdf1Rdwj",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "79c1d4a3-32d2-4924-9852-00ae45ded36b",
+    "grado_id": "g2",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1tNt_xcp8vij5rKorA3PgRBdDo9qW5muB",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "4989eeb5-62e4-4ef4-b0cf-fb04566f24dc",
+    "grado_id": "g3",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Uj9f-qIvVpYHB5YIhoR97HEyRiFE0559",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "a26678c1-8136-4dbb-ac50-afe52cd3623d",
+    "grado_id": "g4",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1ka8d_q7gtDKUQ5nR3sGqQQE3q7cUBv0j",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "4c06e66e-511d-4636-b772-47746925bef6",
+    "grado_id": "g4",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1FA6pxIZANCLGGsVe-ijjfKYv0DxqE46I",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "c7514baf-b1e4-410b-9286-93359e74dffa",
+    "grado_id": "g5",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Pf6lXGfkQh6MOpAKFSNMERGSXnjeqo3Y",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "0e4ba6d5-5dd3-4ae4-a7a0-b170299c6f8b",
+    "grado_id": "g6",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1S-FJGiKKV0qzdK2FDc2SodrlMyj57VkZ",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "6009ee45-e95d-46d8-ad32-6138e0b3659f",
+    "grado_id": "g6",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Dj0HNBxPSxOC2COXFcNvY4TmdHzhV0n6",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "250d3823-06ec-4f8a-8795-278ff39ef1c1",
+    "grado_id": "g6",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1c_wsSMsrJf_JDzw35XpKmX4IwK_aGVFf",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "d373e07e-0abf-4656-9a2d-cc99feb1dd61",
+    "grado_id": "g7",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/17h21o6b58C-O-nYY18GwZfZrJlCyYf3G",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+},{
+    "id": "fbd14e16-0fbe-4e8b-9465-53d35e0fdcb2",
+    "grado_id": "g7",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1gNM95PANZIEoRHQE8TeUDjJTyaB_5YCf",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}
+]
+</file>
+
+<file path="quitar.txt">
+\\ahoraa los que no ingresaran para  ser procesados luegos 
+
+
+
+{
+    "id": "b4d23b54-fa86-43b7-b10a-a638e067eef6",
+    "grado_id": "psicologia",
+    "materia_id": "psico",
+    "url": "https://drive.google.com/drive/folders/15SKe1TbgwdCpWKQvHc8vQGac9ulPG391",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}
+{
+    "id": "d5e2a5e9-a952-403b-a095-d2293d16536f",
+    "grado_id": "docente",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1dsiVqUXYcnYlhaZHUN_cvLOZ7krLJt8k",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}
+{
+    "id": "4f0ecf39-11c2-4b27-a3c3-6a05115d7765",
+    "grado_id": "estudiantes",
+    "materia_id": "art",
+    "url": "https://drive.google.com/drive/folders/1RskMmnaq5IL3eL06t3yDJtA2njdyzwT8",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}
+{
+    "id": "35cc0efd-4303-4183-bd8f-191b44bb3e42",
+    "grado_id": "estudiantes",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1mH0gHutb0QEpha4Ug6kSj-kMbrnQhkr-",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}
+
+
+{
+    "id": "cb3eda6f-095c-4913-8819-7561b85cf3b1",
+    "grado_id": "g9",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1BfXwFA0kjtGMwmDiw8ZX-awNtvvUnZkl",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "78b16cb4-24df-462e-8424-0a17c5f49ecb",
+    "grado_id": "g9",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1AyJLTS4EqFYVKuWSYsW2jykj1dbpnJSq",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "f27d920e-f409-4682-b19b-d525f0a6d296",
+    "grado_id": "g8",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/12m4lWCUlU80Cslbz91ZdtWFxaWAVpHjQ",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "310511fc-c055-4459-ae7b-5a0a72bfd481",
+    "grado_id": "g8",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1aNdZ7vE3jqWgTuUUKUeYDWiJbt2rQQlR",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "6c29dd1c-bb5c-419b-95f7-dc658ee8a056",
+    "grado_id": "g8",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1u1HUgEpTYktg9_GKRyrt5fEVtdf1Rdwj",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "79c1d4a3-32d2-4924-9852-00ae45ded36b",
+    "grado_id": "g2",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1tNt_xcp8vij5rKorA3PgRBdDo9qW5muB",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "4989eeb5-62e4-4ef4-b0cf-fb04566f24dc",
+    "grado_id": "g3",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Uj9f-qIvVpYHB5YIhoR97HEyRiFE0559",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "a26678c1-8136-4dbb-ac50-afe52cd3623d",
+    "grado_id": "g4",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1ka8d_q7gtDKUQ5nR3sGqQQE3q7cUBv0j",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "4c06e66e-511d-4636-b772-47746925bef6",
+    "grado_id": "g4",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1FA6pxIZANCLGGsVe-ijjfKYv0DxqE46I",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "c7514baf-b1e4-410b-9286-93359e74dffa",
+    "grado_id": "g5",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Pf6lXGfkQh6MOpAKFSNMERGSXnjeqo3Y",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "0e4ba6d5-5dd3-4ae4-a7a0-b170299c6f8b",
+    "grado_id": "g6",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/1S-FJGiKKV0qzdK2FDc2SodrlMyj57VkZ",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "6009ee45-e95d-46d8-ad32-6138e0b3659f",
+    "grado_id": "g6",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1Dj0HNBxPSxOC2COXFcNvY4TmdHzhV0n6",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "250d3823-06ec-4f8a-8795-278ff39ef1c1",
+    "grado_id": "g6",
+    "materia_id": "proy",
+    "url": "https://drive.google.com/drive/folders/1c_wsSMsrJf_JDzw35XpKmX4IwK_aGVFf",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "d373e07e-0abf-4656-9a2d-cc99feb1dd61",
+    "grado_id": "g7",
+    "materia_id": "guia",
+    "url": "https://drive.google.com/drive/folders/17h21o6b58C-O-nYY18GwZfZrJlCyYf3G",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}{
+    "id": "fbd14e16-0fbe-4e8b-9465-53d35e0fdcb2",
+    "grado_id": "g7",
+    "materia_id": "otros",
+    "url": "https://drive.google.com/drive/folders/1gNM95PANZIEoRHQE8TeUDjJTyaB_5YCf",
+    "created_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_by": "01d32647-3f4c-4eba-9501-95108dbcf437",
+    "updated_at": "2026-06-17T15:46:42.824407+00:00"
+}
+</file>
 
 <file path="backend/render.yaml">
 services:
@@ -2231,42 +2580,6 @@ E     ? ^^^^)</failure></testcase><testcase classname="backend.tests.test_multir
 
 </file>
 
-<file path="backend/app/config.py">
-from typing import List
-
-try:
-    from pydantic_settings import BaseSettings
-    from pydantic import Field
-except Exception:  # pragma: no cover
-    from pydantic import BaseSettings, Field
-
-
-class Settings(BaseSettings):
-    mongo_url: str = Field(..., env="MONGO_URL")
-    db_name: str = Field(..., env="DB_NAME")
-    jwt_secret: str = Field(..., env="JWT_SECRET")
-    cors_origins: str = Field("*", env="CORS_ORIGINS")
-    admin_email: str = Field("admin@rgb.edu", env="ADMIN_EMAIL")
-    admin_password: str = Field("admin123", env="ADMIN_PASSWORD")
-    rector_email: str = Field("rector@rgb.edu", env="RECTOR_EMAIL")
-    rector_password: str = Field("rector123", env="RECTOR_PASSWORD")
-    jwt_expire_hours: int = Field(12, env="JWT_EXPIRE_HOURS")
-    secure_cookies: bool = Field(True, env="SECURE_COOKIES")
-
-    @property
-    def cors_origin_list(self) -> List[str]:
-        if self.cors_origins.strip() in ("", "*"):
-            return ["*"]
-        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-
-
-settings = Settings()
-</file>
-
 <file path="backend/app/core/audit.py">
 from typing import Any, Dict, Optional
 
@@ -2378,43 +2691,6 @@ def enforce(request: Request) -> None:
 
 def clear(request: Request) -> None:
     _cache.pop(get_client_ip(request), None)
-</file>
-
-<file path="backend/app/core/security.py">
-import time
-import bcrypt
-import jwt
-
-from app.config import settings
-
-JWT_ALGORITHM = "HS256"
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
-
-def verify_password(plain: str, hashed: str) -> bool:
-    try:
-        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
-    except Exception:
-        return False
-
-
-def create_access_token(user_id: str, email: str, role: str) -> str:
-    payload = {
-        "sub": user_id,
-        "email": email,
-        "role": role,
-        "exp": int(time.time()) + settings.jwt_expiry_hours * 3600,
-        "type": "access",
-    }
-    return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
-
-
-def decode_access_token(token: str) -> dict:
-    """Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure."""
-    return jwt.decode(token, settings.jwt_secret, algorithms=[JWT_ALGORITHM])
 </file>
 
 <file path="backend/app/db/client.py">
@@ -2751,48 +3027,6 @@ async def delete_category(category_id: str, current=Depends(require_staff)):
     return {"deleted": deleted}
 </file>
 
-<file path="backend/app/routers/auth.py">
-from fastapi import APIRouter, Depends, Request, Response
-
-from app.config import settings
-from app.core.deps import get_current_user
-from app.domain.schemas import LoginIn
-from app.services import auth_service
-
-router = APIRouter(prefix="/auth", tags=["auth"])
-
-
-@router.post("/login")
-async def login(payload: LoginIn, response: Response, request: Request):
-    result = await auth_service.login(payload.email, payload.password, request)
-    response.set_cookie(
-        key="access_token",
-        value=result["token"],
-        httponly=True,
-        secure=settings.secure_cookies,
-        samesite="none" if settings.secure_cookies else "lax",
-        max_age=settings.jwt_expiry_hours * 3600,
-        path="/",
-    )
-    return result
-
-
-@router.post("/logout")
-async def logout(response: Response, request: Request):
-    try:
-        current = await get_current_user(request)
-        await auth_service.logout(current)
-    except Exception:
-        pass
-    response.delete_cookie("access_token", path="/")
-    return {"ok": True}
-
-
-@router.get("/me")
-async def me(user=Depends(get_current_user)):
-    return user
-</file>
-
 <file path="backend/app/routers/books.py">
 from fastapi import APIRouter, Depends
 
@@ -2885,44 +3119,6 @@ async def save_link(payload: LinkCreate, current=Depends(require_staff)):
 @router.delete("/{grado_id}/{materia_id}")
 async def delete_link(grado_id: str, materia_id: str, current=Depends(require_staff)):
     deleted = await links_service.delete_link(grado_id, materia_id, current)
-    return {"deleted": deleted}
-</file>
-
-<file path="backend/app/routers/user.py">
-from fastapi import APIRouter, Depends
-
-from app.core.deps import require_admin, require_staff
-from app.domain.schemas import UserCreate, UserUpdate
-from app.services import user_service
-
-router = APIRouter(prefix="/users", tags=["users"])
-
-
-@router.get("")
-async def list_users(_staff=Depends(require_staff)):
-    return await user_service.list_users()
-
-
-@router.post("")
-async def create_user(payload: UserCreate, current=Depends(require_staff)):
-    return await user_service.create_user(payload, current)
-
-
-@router.put("/{user_id}")
-async def update_user(
-    user_id: str,
-    payload: UserUpdate,
-    current=Depends(require_staff),
-):
-    return await user_service.update_user(user_id, payload, current)
-
-
-@router.delete("/{user_id}")
-async def delete_user(
-    user_id: str,
-    current=Depends(require_admin),
-):
-    deleted = await user_service.delete_user(user_id, current)
     return {"deleted": deleted}
 </file>
 
@@ -3742,6 +3938,182 @@ Interactive school library with glassmorphism dark theme. Hierarchical: Nivel �
 - [ ] Analytics per book/link clicks
 - [ ] PWA / offline caching
 - [ ] Per-grado custom icons / cover images
+</file>
+
+<file path="backend/app/config.py">
+from typing import List
+
+try:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+    PYDANTIC_V2 = True
+except ImportError:
+    from pydantic import BaseSettings
+    SettingsConfigDict = None
+    PYDANTIC_V2 = False
+
+
+class Settings(BaseSettings):
+    # MongoDB
+    mongo_url: str
+    db_name: str
+
+    # JWT
+    jwt_secret: str
+    jwt_expire_hours: int = 12
+
+    # CORS
+    cors_origins: str = "https://biblioteca-rgb.vercel.app"
+
+    # Cookies
+    secure_cookies: bool = True
+
+    # Admin
+    admin_email: str = "admin@rgb.edu"
+    admin_password: str = "admin123"
+
+    # Rector
+    rector_email: str = "rector@rgb.edu"
+    rector_password: str = "rector123"
+
+    @property
+    def cors_origin_list(self) -> List[str]:
+        if self.cors_origins.strip() in ("", "*"):
+            return ["*"]
+        return [
+            origin.strip()
+            for origin in self.cors_origins.split(",")
+            if origin.strip()
+        ]
+
+    if PYDANTIC_V2:
+        model_config = SettingsConfigDict(
+            env_file=".env",
+            case_sensitive=False,
+            extra="ignore",
+        )
+    else:
+        class Config:
+            env_file = ".env"
+            case_sensitive = False
+
+
+settings = Settings()
+</file>
+
+<file path="backend/app/core/security.py">
+import time
+import bcrypt
+import jwt
+
+from app.config import settings
+
+JWT_ALGORITHM = "HS256"
+
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    try:
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    except Exception:
+        return False
+
+
+def create_access_token(user_id: str, email: str, role: str) -> str:
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "role": role,
+        "exp": int(time.time()) + settings.jwt_expire_hours * 3600,  # FIX: expiry→expire
+        "type": "access",
+    }
+    return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    return jwt.decode(token, settings.jwt_secret, algorithms=[JWT_ALGORITHM])
+</file>
+
+<file path="backend/app/routers/auth.py">
+from fastapi import APIRouter, Depends, Request, Response
+
+from app.config import settings
+from app.core.deps import get_current_user
+from app.domain.schemas import LoginIn
+from app.services import auth_service
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/login")
+async def login(payload: LoginIn, response: Response, request: Request):
+    result = await auth_service.login(payload.email, payload.password, request)
+    response.set_cookie(
+        key="access_token",
+        value=result["token"],
+        httponly=True,
+        secure=settings.secure_cookies,
+        samesite="none" if settings.secure_cookies else "lax",
+        max_age=settings.jwt_expire_hours * 3600,  # FIX: expiry→expire
+        path="/",
+    )
+    return result
+
+
+@router.post("/logout")
+async def logout(response: Response, request: Request):
+    try:
+        current = await get_current_user(request)
+        await auth_service.logout(current)
+    except Exception:
+        pass
+    response.delete_cookie("access_token", path="/")
+    return {"ok": True}
+
+
+@router.get("/me")
+async def me(user=Depends(get_current_user)):
+    return user
+</file>
+
+<file path="backend/app/routers/user.py">
+from fastapi import APIRouter, Depends
+
+from app.core.deps import require_admin, require_staff
+from app.domain.schemas import UserCreate, UserUpdate
+from app.services import user_service
+
+router = APIRouter(prefix="/users", tags=["users"])
+
+
+@router.get("")
+async def list_users(_staff=Depends(require_staff)):
+    return await user_service.list_users()
+
+
+@router.post("", status_code=200)  # forzar 200
+async def create_user(payload: UserCreate, current=Depends(require_staff)):
+    return await user_service.create_user(payload, current)
+
+
+@router.put("/{user_id}")
+async def update_user(
+    user_id: str,
+    payload: UserUpdate,
+    current=Depends(require_staff),
+):
+    return await user_service.update_user(user_id, payload, current)
+
+
+@router.delete("/{user_id}")
+async def delete_user(
+    user_id: str,
+    current=Depends(require_admin),
+):
+    deleted = await user_service.delete_user(user_id, current)
+    return {"deleted": deleted}
 </file>
 
 <file path="frontend/components.json">
@@ -8260,14 +8632,19 @@ import { useLibrary } from "../context/LibraryContext";
 const ICONS = { Sprout, BookOpenText, GraduationCap, Users };
 
 export const Categories = () => {
-  const { openModal, goToNivel, categories } = useLibrary();
+  const { openModal, goToNivel, goToCategory, categories } = useLibrary();
 
-  const handleClick = (nivelId) => {
+  const handleNivelClick = (nivelId) => {
     openModal();
     setTimeout(() => goToNivel(nivelId), 10);
   };
 
-  const visibleCategories = (categories || []).filter((category) => category.status === "show");
+  const handleCategoryClick = (categoryId) => {
+    openModal();
+    setTimeout(() => goToCategory(categoryId), 10);
+  };
+
+  const visibleCategories = (categories || []).filter((c) => c.status === "show");
 
   return (
     <section id="salones" data-testid="categories-section" className="py-24 relative">
@@ -8282,13 +8659,14 @@ export const Categories = () => {
           <div className="divider-gold mt-8" />
         </div>
 
+        {/* Niveles fijos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {NIVELES.map((nivel, idx) => {
             const Icon = ICONS[nivel.icon] || BookOpenText;
             return (
               <button
                 key={nivel.id}
-                onClick={() => handleClick(nivel.id)}
+                onClick={() => handleNivelClick(nivel.id)}
                 data-testid={`nivel-card-${nivel.id}`}
                 className="group text-left glass rounded-lg p-8 relative overflow-hidden hover:border-[#c9a227]/50 transition-all duration-300 hover:-translate-y-1 animate-fade-up"
                 style={{ animationDelay: `${idx * 0.08}s` }}
@@ -8297,12 +8675,10 @@ export const Categories = () => {
                 <div className="absolute top-5 right-5 text-[#c9a227]/70 group-hover:text-[#c9a227] transition-colors">
                   <ArrowUpRight className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 </div>
-
                 <div className="relative">
                   <div className="w-14 h-14 rounded-full bg-[#c9a227]/10 flex items-center justify-center border border-[#c9a227]/30 mb-6">
                     <Icon className="w-6 h-6 text-[#c9a227]" />
                   </div>
-
                   <h3 className="font-cinzel text-3xl text-[#f4f1e1] mb-2">{nivel.name}</h3>
                   <div className="font-dm-sans text-xs tracking-[0.25em] uppercase text-[#c9a227] mb-5">
                     {nivel.subtitle}
@@ -8310,7 +8686,6 @@ export const Categories = () => {
                   <p className="font-cormorant text-lg text-[#a3b3a6] leading-relaxed">
                     {nivel.description}
                   </p>
-
                   <div className="mt-8 flex items-center gap-2 text-[#c9a227]/80 font-dm-sans text-xs tracking-wider uppercase">
                     <span className="h-px w-8 bg-[#c9a227]/60" />
                     {nivel.grados.length} grados disponibles
@@ -8321,33 +8696,44 @@ export const Categories = () => {
           })}
         </div>
 
+        {/* Categorías del admin — clicables */}
         {visibleCategories.length > 0 && (
           <div className="mt-16">
-            <div className="font-dm-sans text-xs tracking-[0.3em] uppercase text-[#c9a227]/80 mb-3">
-              Categorías creadas desde el Admin
+            <div className="font-dm-sans text-xs tracking-[0.3em] uppercase text-[#c9a227]/80 mb-6">
+              Categorías especiales
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {visibleCategories.map((category, idx) => (
-                <div
+                <button
                   key={category.id}
-                  className="glass rounded-lg p-8 relative overflow-hidden border border-[#c9a227]/10 animate-fade-up"
+                  onClick={() => handleCategoryClick(category.id)}
+                  data-testid={`category-card-${category.id}`}
+                  className="group text-left glass rounded-lg p-8 relative overflow-hidden hover:border-[#c9a227]/50 transition-all duration-300 hover:-translate-y-1 animate-fade-up"
                   style={{ animationDelay: `${idx * 0.08}s` }}
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#c9a227]/10 rounded-bl-full transition-colors" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#c9a227]/10 rounded-bl-full group-hover:bg-[#c9a227]/20 transition-colors" />
+                  <div className="absolute top-5 right-5 text-[#c9a227]/70 group-hover:text-[#c9a227] transition-colors">
+                    <ArrowUpRight className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                  </div>
                   <div className="relative">
                     <div className="w-14 h-14 rounded-full bg-[#c9a227]/10 flex items-center justify-center border border-[#c9a227]/30 mb-6">
                       <Users className="w-6 h-6 text-[#c9a227]" />
                     </div>
-
                     <h3 className="font-cinzel text-3xl text-[#f4f1e1] mb-2">{category.name}</h3>
                     <div className="font-dm-sans text-xs tracking-[0.25em] uppercase text-[#c9a227] mb-5">
-                      {category.audience === "profesores" ? "Solo profesores" : category.audience === "estudiantes" ? "Solo estudiantes" : "General"}
+                      {category.audience === "profesores" ? "Solo profesores"
+                        : category.audience === "estudiantes" ? "Solo estudiantes"
+                        : "General"}
                     </div>
-                    <p className="font-cormorant text-lg text-[#a3b3a6] leading-relaxed min-h-[5rem]">
-                      {category.description || "Categoría creada desde el panel admin."}
+                    <p className="font-cormorant text-lg text-[#a3b3a6] leading-relaxed min-h-[3rem]">
+                      {category.description || "Categoría creada para ti "}
                     </p>
+                    <div className="mt-8 flex items-center gap-2 text-[#c9a227]/80 font-dm-sans text-xs tracking-wider uppercase">
+                      <span className="h-px w-8 bg-[#c9a227]/60" />
+                      Ver contenido
+                    </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -8587,66 +8973,6 @@ export const Header = ({ onOpenLibrary }) => {
 };
 </file>
 
-<file path="frontend/src/context/AuthContext.jsx">
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { api } from "../lib/api";
-
-const AuthContext = createContext(null);
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // null = checking, false = anon, object = logged
-  const [loginOpen, setLoginOpen] = useState(false);
-
-  const fetchMe = useCallback(async () => {
-    try {
-      const res = await api.get("/auth/me");
-      setUser(res.data);
-    } catch {
-      setUser(false);
-    }
-  }, []);
-
-  useEffect(() => { fetchMe(); }, [fetchMe]);
-
-    const login = async (email, password) => {
-        const res = await api.post("/auth/login",{ email, password });
-        if (res.data?.token) setAuthToken(res.data.token);
-        setUser(res.data);
-        return res.data;
-      };
-
-      const logout = async () => {
-        try {
-           await api.post("/auth/logout");
-        } catch (_) {}
-        setAuthToken(null);
-        setUser(false);
-      };
-
-  const role = user?.role || null;
-  const isAdmin = role === "admin";
-  const isRector = role === "rector";
-  const isStaff = isAdmin || isRector;
-  // Rector cannot delete users, only admin can; both can create
-  const canDeleteUsers = isAdmin;
-  const canChangeRoles = isAdmin;
-  const canCreateUsers = isStaff;
-
-  const value = {
-    user, role, isAdmin, isRector, isStaff,
-    canDeleteUsers, canChangeRoles, canCreateUsers,
-    loginOpen, setLoginOpen, login, logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
-};
-</file>
-
 <file path="backend/server.py">
 import logging
 
@@ -8813,6 +9139,66 @@ async def on_shutdown() -> None:
 </html>
 </file>
 
+<file path="frontend/src/context/AuthContext.jsx">
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { api, setAuthToken } from "../lib/api";  // FIX: importar setAuthToken
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  const fetchMe = useCallback(async () => {
+    try {
+      const res = await api.get("/auth/me");
+      setUser(res.data);
+    } catch {
+      setUser(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchMe(); }, [fetchMe]);
+
+  const login = async (email, password) => {
+    const res = await api.post("/auth/login", { email, password });
+    if (res.data?.token) setAuthToken(res.data.token);  // ahora funciona
+    setUser(res.data);
+    return res.data;
+  };
+
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (_) {}
+    setAuthToken(null);
+    setUser(false);
+  };
+
+  const role = user?.role || null;
+  const isAdmin = role === "admin";
+  const isRector = role === "rector";
+  const isStaff = isAdmin || isRector;
+  const canDeleteUsers = isAdmin;
+  const canChangeRoles = isAdmin;
+  const canCreateUsers = isStaff;
+
+  const value = {
+    user, role, isAdmin, isRector, isStaff,
+    canDeleteUsers, canChangeRoles, canCreateUsers,
+    loginOpen, setLoginOpen, login, logout,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
+};
+</file>
+
 <file path="frontend/src/App.js">
 import React, { useState } from "react";
 import "./App.css";
@@ -8915,6 +9301,7 @@ export function LibraryProvider({ children }) {
   const [level, setLevel] = useState(0);
   const [nivelId, setNivelId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
+  const [activeCategoryId, setActiveCategoryId] = useState(null);
 
   const [links, setLinks] = useState({});
   const [books, setBooks] = useState([]);
@@ -8957,22 +9344,35 @@ export function LibraryProvider({ children }) {
     refreshCategories();
   }, [refreshLinks, refreshBooks, refreshCategories]);
 
-  const openModal = () => { setLevel(0); setNivelId(null); setGradoId(null); setModalOpen(true); };
-  const closeModal = () => setModalOpen(false);
-  const goToNivel = (id) => { setNivelId(id); setLevel(1); };
-  const goToGrado = (id) => { setGradoId(id); setLevel(2); };
-  const goBack = () => {
-    if (level === 2) { setLevel(1); setGradoId(null); }
-    else if (level === 1) { setLevel(0); setNivelId(null); }
+  const openModal = () => {
+    setLevel(0);
+    setNivelId(null);
+    setGradoId(null);
+    setActiveCategoryId(null);
+    setModalOpen(true);
   };
 
-  // Links (staff)
+  // FIX: closeModal ahora limpia activeCategoryId correctamente
+  const closeModal = () => {
+    setModalOpen(false);
+    setActiveCategoryId(null);
+  };
+
+  const goToNivel = (id) => { setNivelId(id); setLevel(1); };
+  const goToGrado = (id) => { setGradoId(id); setLevel(2); };
+  const goToCategory = (categoryId) => {
+    setActiveCategoryId(categoryId);
+    setLevel(3);
+  };
+
+  const goBack = () => {
+    if (level === 3) { setLevel(0); setActiveCategoryId(null); }
+    else if (level === 2) { setLevel(1); setGradoId(null); }
+    else if (level === 1) { setLevel(0); setNivelId(null); }
+  }; 
+
   const saveLink = async (gradoIdArg, materiaId, url) => {
-   const res = await api.post("/links", {
-      grado_id: gradoIdArg,
-      materia_id: materiaId,
-      url,
-    });
+    const res = await api.post("/links", { grado_id: gradoIdArg, materia_id: materiaId, url });
     setLinks((prev) => ({
       ...prev,
       [gradoIdArg]: { ...(prev[gradoIdArg] || {}), [materiaId]: res.data.url },
@@ -8993,7 +9393,6 @@ export function LibraryProvider({ children }) {
     });
   };
 
-  // Books (staff)
   const createBook = async (payload) => {
     const res = await api.post("/books", payload);
     setBooks((prev) => [...prev, res.data]);
@@ -9014,21 +9413,20 @@ export function LibraryProvider({ children }) {
     setCategories((prev) => [...prev, res.data]);
     return res.data;
   };
-
   const updateCategory = async (id, payload) => {
     const res = await api.put(`/categories/${id}`, payload);
     setCategories((prev) => prev.map((c) => (c.id === id ? res.data : c)));
     return res.data;
   };
-
   const deleteCategory = async (id) => {
     await api.delete(`/categories/${id}`);
     setCategories((prev) => prev.filter((c) => c.id !== id));
   };
 
   const value = {
-    modalOpen, level, nivelId, gradoId, links, books, categories, loading,
-    openModal, closeModal, goToNivel, goToGrado, goBack,
+    modalOpen, level, nivelId, gradoId, activeCategoryId,
+    links, books, categories, loading,
+    openModal, closeModal, goToNivel, goToGrado, goToCategory, goBack,
     saveLink, removeLink, refreshLinks,
     createBook, updateBook, deleteBook, refreshBooks,
     createCategory, updateCategory, deleteCategory, refreshCategories,
