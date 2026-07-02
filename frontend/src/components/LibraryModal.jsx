@@ -270,9 +270,8 @@ const MateriaItem = ({ materia }) => {
         </button>
         <a href={canGo ? materia.url : undefined} target="_blank" rel="noreferrer"
           onClick={(e) => { if (!canGo) e.preventDefault(); }} data-testid={`materia-go-${materia.id}`}
-          className={`px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center gap-1.5 transition-colors ${
-            canGo ? "bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22]" : "bg-[#c9a227]/20 text-[#c9a227]/40 cursor-not-allowed"
-          }`} aria-disabled={!canGo}>
+          className={`px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center gap-1.5 transition-colors ${canGo ? "bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22]" : "bg-[#c9a227]/20 text-[#c9a227]/40 cursor-not-allowed"
+            }`} aria-disabled={!canGo}>
           Ir <ExternalLink className="w-3.5 h-3.5" />
         </a>
         {canGo && (
@@ -298,7 +297,7 @@ const MateriasView = () => {
         <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{category.name}</h3>
         <p className="font-cormorant text-lg text-[#a3b3a6]">
           {isStaff ? "Gestiona los enlaces de Google Drive para cada materia."
-                   : "Consulta los recursos disponibles por materia."}
+            : "Consulta los recursos disponibles por materia."}
         </p>
       </div>
       <div className="flex flex-col gap-4" data-testid="materias-list">
