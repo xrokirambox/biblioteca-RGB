@@ -49,7 +49,7 @@ const ICONS = {
   Landmark, TreePine, Flower, Mountain,
   Waves, Umbrella, Snowflake, Flame,
   FireExtinguisher, Siren, AlertTriangle, AlertCircle, Info,
-  HelpCircle, Question, CheckCircle, XCircle, MinusCircle, PlusCircle,
+  HelpCircle, CheckCircle, XCircle, MinusCircle, PlusCircle,
   PlayCircle, PauseCircle, StopCircle, SkipForward, SkipBack, Rewind,
   FastForward, Repeat, Shuffle, Volume, Volume1, Volume2, VolumeX,
   Mic, MicOff, Headphones, Speaker, Watch, Clock, AlarmClock, Timer,
