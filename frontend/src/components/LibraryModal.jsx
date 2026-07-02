@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, ChevronRight, ChevronLeft, Library, BookOpen, ExternalLink, Save, Check, Trash2, Loader as Loader2, Folder, FileText, Link2, GraduationCap, Sprout, BookOpenText, Sigma, Leaf, Globe as Globe2, Languages, Palette, Dumbbell, HeartHandshake, FlaskConical, Atom, TestTube as TestTube2, ScrollText, Map, Cpu, SquareFunction as FunctionSquare, Brain, ChartLine as LineChart, Layers, Network, School, Award, Star, Bookmark, BookMarked, BookX, BookCheck, PenTool, Ruler, Calculator, Compass, Music, Monitor, Code, Database, Grid2x2 as Grid, LayoutGrid as Layout, List, SquareCheck as CheckSquare, Clipboard, FileCode, Hash, Binary, GitBranch, GitCommitVertical as GitCommit, GitMerge, GitPullRequest, GitFork as Github, Rabbit as Gitlab, Metronome as Chrome, Globe, Hop as Home, Building, Building2, Warehouse, Landmark, TreePine, Flower, Mountain, Umbrella, Snowflake, Flame, TriangleAlert as AlertTriangle, CircleAlert as AlertCircle, Info, Circle as HelpCircle, CircleCheck as CheckCircle, Circle as XCircle, CircleMinus as MinusCircle, CirclePlus as PlusCircle, CirclePlay as PlayCircle, CirclePause as PauseCircle, CircleStop as StopCircle, SkipForward, SkipBack, Rewind, FastForward, Repeat, Shuffle, Volume, Volume1, Volume2, VolumeX, Mic, MicOff, Headphones, Speaker, Watch, Clock, AlarmClock, Timer, Hourglass, Calendar, CalendarCheck, CalendarX, CalendarPlus, CalendarMinus, CalendarClock, Pin, PinOff, MapPinned, Locate, Crosshair, Target, Radar, Scan, ScanLine, ScanFace, ScanEye, ScanSearch, FingerprintPattern as Fingerprint, ScanText, Barcode, QrCode, Ticket, TicketCheck, Users, User, UserCheck, UserPlus, Mail, Phone, MessageCircle, MessageSquare, Bell, Search, ListFilter as Filter, ListSortAscending as SortAsc, ChartBar as BarChart, ChartPie as PieChart, TrendingUp, Activity, Heart, ThumbsUp, Eye, Printer, Download, Upload, Paperclip, Tag, Tags, Circle, Square, Triangle, Hexagon, Octagon, Diamond, Crown, Trophy, Medal, Gift, ShoppingCart, Wallet, CreditCard, Receipt, Package, Box, Archive, Trash, RefreshCw, RotateCcw, Undo, Redo, Scissors, Copy, ClipboardList, ClipboardCheck, FilePlus, FileMinus, File as FileEdit, LogIn, LogOut, Settings, FileSliders as Sliders, ToggleLeft, ToggleRight, Wifi, Bluetooth, Cast, Airplay, Radio, Tv, MonitorPlay, Film, Video, Camera, Image, Images, Aperture, Focus, ZoomIn, ZoomOut, Maximize, Minimize, Move, ChevronLeft as AlignLeft, TextAlignCenter as AlignCenter, Highlighter as AlignRight, TextAlignJustify as AlignJustify, Bold, Italic, Underline, Strikethrough, Heading, Type, Quote, Terminal, Bug, Castle, Church, Hospital, Hotel, Store, CircleDivide as DivideCircle } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Library, BookOpen, ExternalLink, Save, Check, Trash2, Loader as Loader2, Folder, FileText, Link2, GraduationCap, Sprout, BookOpenText, Sigma, Leaf, Globe as Globe2, Languages, Palette, Dumbbell, HeartHandshake, FlaskConical, Atom, TestTube as TestTube2, ScrollText, Map, Cpu, SquareFunction as FunctionSquare, Brain, ChartLine as LineChart, Layers, Network, School, Award, Star, Bookmark, BookMarked, BookX, BookCheck, PenTool, Ruler, Calculator, Compass, Music, Monitor, Code, Database, Grid2x2 as Grid, LayoutGrid as Layout, List, SquareCheck as CheckSquare, Clipboard, FileCode, Hash, Binary, GitBranch, GitCommitVertical as GitCommit, GitMerge, GitPullRequest, GitFork as Github, Rabbit as Gitlab, Monitor as Chrome, Globe, Hop as Home, Building, Building2, Warehouse, Landmark, TreePine, Flower, Mountain, Umbrella, Snowflake, Flame, TriangleAlert as AlertTriangle, CircleAlert as AlertCircle, Info, Circle as HelpCircle, CircleCheck as CheckCircle, Circle as XCircle, CircleMinus as MinusCircle, CirclePlus as PlusCircle, CirclePlay as PlayCircle, CirclePause as PauseCircle, CircleStop as StopCircle, SkipForward, SkipBack, Rewind, FastForward, Repeat, Shuffle, Volume, Volume1, Volume2, VolumeX, Mic, MicOff, Headphones, Speaker, Watch, Clock, AlarmClock, Timer, Hourglass, Calendar, CalendarCheck, CalendarX, CalendarPlus, CalendarMinus, CalendarClock, Pin, PinOff, MapPinned, Locate, Crosshair, Target, Radar, Scan, ScanLine, ScanFace, ScanEye, ScanSearch, ScanText, Barcode, QrCode, Ticket, TicketCheck, Users, User, UserCheck, UserPlus, Mail, Phone, MessageCircle, MessageSquare, Bell, Search, ListFilter as Filter, ChartBar as BarChart, ChartPie as PieChart, TrendingUp, Activity, Heart, ThumbsUp, Eye, Printer, Download, Upload, Paperclip, Tag, Tags, Circle, Square, Triangle, Hexagon, Octagon, Diamond, Crown, Trophy, Medal, Gift, ShoppingCart, Wallet, CreditCard, Receipt, Package, Box, Archive, Trash, RefreshCw, RotateCcw, Undo, Redo, Scissors, Copy, ClipboardList, ClipboardCheck, FilePlus, FileMinus, File as FileEdit, LogIn, LogOut, Settings, FileSliders as Sliders, ToggleLeft, ToggleRight, Wifi, Bluetooth, Cast, Airplay, Radio, Tv, MonitorPlay, Film, Video, Camera, Image, Images, Aperture, Focus, ZoomIn, ZoomOut, Maximize, Minimize, Move, Bold, Italic, Underline, Strikethrough, Heading, Type, Quote, Terminal, Bug, Castle, Church, Hospital, Hotel, Store, CircleDivide as DivideCircle } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
@@ -19,7 +19,7 @@ const ALL_ICONS = {
   Telescope, Satellite, Rocket, Plane, Car, Train, Truck,
   Ship, Anchor, Flag, MapPin, Navigation, Globe,
   Users, User, UserCheck, UserPlus, Mail, Phone, MessageCircle,
-  MessageSquare, Bell, Search, Filter, SortAsc, BarChart,
+  MessageSquare, Bell, Search, Filter, BarChart,
   PieChart, TrendingUp, Activity, Heart, ThumbsUp, Eye,
   Printer, Download, Upload, Paperclip, Tag, Tags, Circle,
   Square, Triangle, Hexagon, Octagon, Diamond, Crown,
@@ -55,9 +55,8 @@ function getIcon(name) {
 }
 
 const Breadcrumb = () => {
-  const { level, hierCatId, hierSubId, goBackHierarchy, hierarchyTree } = useLibrary();
+  const { level, hierCatId, goBackHierarchy, hierarchyTree } = useLibrary();
   const category = hierCatId ? hierarchyTree.find((c) => c.id === hierCatId) : null;
-  const subcategory = hierSubId ? category?.subcategories?.find((s) => s.id === hierSubId) : null;
 
   return (
     <div className="flex items-center gap-2 font-dm-sans text-xs sm:text-sm tracking-wide" data-testid="modal-breadcrumb">
@@ -66,10 +65,6 @@ const Breadcrumb = () => {
       {category && (<>
         <ChevronRight className="w-3.5 h-3.5 text-[#c9a227]/60" />
         <span className={level === 1 ? "text-[#c9a227]" : "text-[#a3b3a6]"}>{category.name}</span>
-      </>)}
-      {subcategory && (<>
-        <ChevronRight className="w-3.5 h-3.5 text-[#c9a227]/60" />
-        <span className="text-[#c9a227]">{subcategory.name}</span>
       </>)}
       {level > 0 && (
         <button onClick={goBackHierarchy} data-testid="modal-back-btn"
@@ -151,14 +146,24 @@ const SubcategoryView = () => {
   );
 };
 
-const MateriaItem = ({ subcategoryId, materia }) => {
-  const { updateHierarchyMateria } = useLibrary();
+const MateriaItem = ({ materia }) => {
+  const { updateHierarchyMateria, books } = useLibrary();
   const { isStaff } = useAuth();
   const [url, setUrl] = useState(materia.url || "");
   const [saving, setSaving] = useState(false);
   const Icon = getIcon(materia.icon);
 
   useEffect(() => { setUrl(materia.url || ""); }, [materia.url]);
+
+  const normalized = (value = "") => value.toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
+  const relatedBooks = useMemo(() => {
+    const target = normalized(materia.name);
+    return (books || []).filter((book) => {
+      const category = normalized(book.category || "");
+      const title = normalized(book.title || "");
+      return category === target || title.includes(target) || category.includes(target);
+    }).slice(0, 2);
+  }, [books, materia.name]);
 
   const isValid = url && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"));
   const canGo = !!materia.url;
@@ -190,26 +195,48 @@ const MateriaItem = ({ subcategoryId, materia }) => {
   if (!isStaff) {
     return (
       <div data-testid={`materia-item-${materia.id}`}
-        className={`flex items-center gap-4 p-4 rounded-lg bg-white/[0.02] border border-white/5 ${canGo ? "hover:border-[#c9a227]/40" : ""} transition-colors`}>
-        <div className="w-11 h-11 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/25 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-5 h-5 text-[#c9a227]" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-cinzel text-base text-[#f4f1e1] truncate">{materia.name}</div>
-          <div className="font-dm-sans text-[10px] tracking-widest uppercase text-[#a3b3a6]">
-            {canGo ? "Recurso disponible" : "Sin recurso aún"}
+        className={`p-4 rounded-lg bg-white/[0.02] border border-white/5 ${canGo ? "hover:border-[#c9a227]/40" : ""} transition-colors`}>
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/25 flex items-center justify-center flex-shrink-0">
+            <Icon className="w-5 h-5 text-[#c9a227]" />
           </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-cinzel text-base text-[#f4f1e1] truncate">{materia.name}</div>
+            <div className="font-dm-sans text-[10px] tracking-widest uppercase text-[#a3b3a6]">
+              {canGo ? "Recurso disponible" : "Sin recurso aún"}
+            </div>
+          </div>
+          {canGo ? (
+            <a href={materia.url} target="_blank" rel="noreferrer" data-testid={`materia-go-${materia.id}`}
+              className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center gap-1.5 transition-colors">
+              Ir <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          ) : (
+            <span data-testid={`materia-empty-${materia.id}`}
+              className="px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase text-[#a3b3a6]/50 border border-white/5">
+              No disponible
+            </span>
+          )}
         </div>
-        {canGo ? (
-          <a href={materia.url} target="_blank" rel="noreferrer" data-testid={`materia-go-${materia.id}`}
-            className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center gap-1.5 transition-colors">
-            Ir <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+        {relatedBooks.length > 0 ? (
+          <div className="mt-4 space-y-2 border-t border-white/5 pt-3">
+            {relatedBooks.map((book) => (
+              <a key={book.id} href={book.url} target="_blank" rel="noreferrer"
+                className="flex items-start gap-3 rounded-md bg-black/20 p-2 hover:bg-[#c9a227]/10 transition-colors">
+                <div className="h-14 w-10 flex-shrink-0 overflow-hidden rounded-sm border border-[#c9a227]/20 bg-[#020b04]">
+                  {book.cover ? <img src={book.cover} alt={book.title} className="h-full w-full object-cover" /> : <div className="flex h-full w-full items-center justify-center text-[#c9a227]/40"><BookOpen className="w-4 h-4" /></div>}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-dm-sans text-xs text-[#f4f1e1] line-clamp-1">{book.title}</div>
+                  <div className="font-cormorant text-xs text-[#a3b3a6] line-clamp-2 mt-0.5">{book.description || "Recurso destacado para esta materia."}</div>
+                </div>
+              </a>
+            ))}
+          </div>
         ) : (
-          <span data-testid={`materia-empty-${materia.id}`}
-            className="px-4 py-2.5 rounded-sm font-dm-sans text-xs tracking-widest uppercase text-[#a3b3a6]/50 border border-white/5">
-            No disponible
-          </span>
+          <div className="mt-4 border-t border-white/5 pt-3 font-dm-sans text-[11px] uppercase tracking-wider text-[#a3b3a6]/70">
+            Aún no hay libros asociados a esta materia.
+          </div>
         )}
       </div>
     );
@@ -260,24 +287,30 @@ const MateriaItem = ({ subcategoryId, materia }) => {
 };
 
 const MateriasView = () => {
-  const { hierCatId, hierSubId, hierarchyTree } = useLibrary();
+  const { hierCatId, hierarchyTree } = useLibrary();
   const { isStaff } = useAuth();
   const category = hierarchyTree.find((c) => c.id === hierCatId);
-  const subcategory = category?.subcategories?.find((s) => s.id === hierSubId);
-  if (!subcategory) return null;
+  if (!category) return null;
 
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{subcategory.name}</h3>
+        <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1] mb-2">{category.name}</h3>
         <p className="font-cormorant text-lg text-[#a3b3a6]">
           {isStaff ? "Gestiona los enlaces de Google Drive para cada materia."
                    : "Consulta los recursos disponibles por materia."}
         </p>
       </div>
-      <div className="flex flex-col gap-3" data-testid="materias-list">
-        {(subcategory.materias || []).map((m) => (
-          <MateriaItem key={m.id} subcategoryId={hierSubId} materia={m} />
+      <div className="flex flex-col gap-4" data-testid="materias-list">
+        {(category.subcategories || []).map((sub) => (
+          <div key={sub.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="mb-3 font-cinzel text-lg text-[#c9a227]">{sub.name}</div>
+            <div className="flex flex-col gap-3">
+              {(sub.materias || []).map((m) => (
+                <MateriaItem key={m.id} materia={m} />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
@@ -311,8 +344,7 @@ export const LibraryModal = () => {
         </div>
         <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1">
           {level === 0 && <CategoryView />}
-          {level === 1 && <SubcategoryView />}
-          {level === 2 && <MateriasView />}
+          {level === 1 && <MateriasView />}
         </div>
       </div>
     </div>,

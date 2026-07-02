@@ -17,7 +17,7 @@ const LUCIDE_ICONS = [
   "Telescope", "Satellite", "Rocket", "Plane", "Car", "Train", "Truck",
   "Ship", "Anchor", "Flag", "MapPin", "Navigation", "Globe", "Earth",
   "Users", "User", "UserCheck", "UserPlus", "Mail", "Phone", "MessageCircle",
-  "MessageSquare", "Bell", "Search", "Filter", "SortAsc", "BarChart",
+  "MessageSquare", "Bell", "Search", "Filter", "BarChart",
   "PieChart", "TrendingUp", "Activity", "Heart", "ThumbsUp", "Eye",
   "Printer", "Download", "Upload", "Paperclip", "Tag", "Tags", "Circle",
   "Square", "Triangle", "Hexagon", "Octagon", "Diamond", "Crown",
