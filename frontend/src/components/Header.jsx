@@ -28,19 +28,19 @@ export const Header = ({ onOpenLibrary }) => {
   const handleLogout = async () => { await logout(); toast.success("Sesión cerrada"); };
 
   return (
-    <header data-testid="app-header" className="fixed top-0 w-full z-40 backdrop-blur-2xl bg-[#020b04]/80 border-b border-[#c9a227]/20">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-20">
-        <a href="#inicio" className="flex items-center gap-3 group select-none" data-testid="header-logo" onClick={handleLogoClick} title="Inicio">
-          <div className="w-12 h-12 rounded-full overflow-hidden border border-[#c9a227]/50 bg-[#051a09] flex items-center justify-center shadow-[0_0_20px_rgba(201,162,39,0.2)] group-hover:shadow-[0_0_28px_rgba(201,162,39,0.45)] transition-shadow">
+    <header data-testid="app-header" className="fixed top-0 w-full z-40 backdrop-blur-xl bg-[#020b04]/70 border-b border-[#c9a227]/15">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between h-16">
+        <a href="#inicio" className="flex items-center gap-2.5 group select-none" data-testid="header-logo" onClick={handleLogoClick} title="Inicio">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-[#c9a227]/40 bg-[#051a09] flex items-center justify-center shadow-[0_0_14px_rgba(201,162,39,0.16)] group-hover:shadow-[0_0_20px_rgba(201,162,39,0.3)] transition-shadow">
             <img src="/logo.png" alt="RGB" className="w-full h-full object-cover" />
           </div>
           <div className="leading-tight hidden sm:block">
-            <div className="font-cinzel text-[#c9a227] text-lg tracking-wider">RGB</div>
-            <div className="font-dm-sans text-[10px] uppercase tracking-[0.2em] text-[#a3b3a6]">Biblioteca Escolar</div>
+            <div className="font-cinzel text-[#c9a227] text-base tracking-wider">RGB</div>
+            <div className="font-dm-sans text-[9px] uppercase tracking-[0.2em] text-[#a3b3a6]">Biblioteca Escolar</div>
           </div>
         </a>
 
-        <nav className="hidden md:flex items-center gap-10">
+        <nav className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((l) => (
             <a key={l.id} href={l.href} data-testid={`nav-link-${l.id}`}
               className="font-dm-sans text-sm tracking-wide text-[#f4f1e1] hover:text-[#c9a227] transition-colors">
@@ -48,7 +48,7 @@ export const Header = ({ onOpenLibrary }) => {
             </a>
           ))}
           {isStaff && user && (
-            <div className="flex items-center gap-3 pl-6 border-l border-[#c9a227]/20">
+            <div className="hidden lg:flex items-center gap-3 pl-5 border-l border-[#c9a227]/15">
               <UserAvatar user={user} size="sm" />
               <div className="flex flex-col text-left">
                 <span className="font-dm-sans text-xs text-[#f4f1e1]">{user.name}</span>
@@ -58,14 +58,14 @@ export const Header = ({ onOpenLibrary }) => {
           )}
           {isStaff && (
             <button onClick={handleLogout} data-testid="header-logout-btn"
-              className="btn-outline-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-dm-sans font-semibold tracking-widest uppercase">
+              className="btn-outline-gold inline-flex items-center gap-2 px-3 py-1.5 rounded-sm text-[11px] font-dm-sans font-semibold tracking-widest uppercase">
               <LogOut className="w-3.5 h-3.5" />
               Salir
             </button>
           )}
           <button onClick={onOpenLibrary} data-testid="header-open-library-btn"
-            className="btn-gold px-5 py-2 rounded-sm text-sm font-dm-sans font-semibold tracking-wide">
-            Abrir Biblioteca
+            className="btn-gold px-4 py-1.5 rounded-sm text-sm font-dm-sans font-semibold tracking-wide">
+            Biblioteca
           </button>
         </nav>
 

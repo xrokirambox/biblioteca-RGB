@@ -423,11 +423,104 @@ function getIcon(name) {
   return ALL_ICONS[name] || BookOpen;
 }
 
-const Breadcrumb = () => {
+const Breadcrumb = ({ category, subcategory }) => {
+  const label = subcategory
+    ? `Biblioteca · ${category?.name || "..."} · ${subcategory.name}`
+    : category
+      ? `Biblioteca · ${category.name}`
+      : "Biblioteca · Materias Generales";
+
   return (
     <div className="flex items-center gap-2 font-dm-sans text-xs sm:text-sm tracking-wide" data-testid="modal-breadcrumb">
       <Library className="w-4 h-4 text-[#c9a227]" />
-      <span className="text-[#c9a227]">Biblioteca · Materias Generales</span>
+      <span className="text-[#c9a227]">{label}</span>
+    </div>
+  );
+};
+
+const CategoryView = ({ category, onSelectSub }) => {
+  const Icon = getIcon(category.icon);
+  return (
+    <div className="animate-fade-in">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/30 flex items-center justify-center">
+            <Icon className="w-6 h-6 text-[#c9a227]" />
+          </div>
+          <div>
+            <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1]">{category.name}</h3>
+            <p className="font-cormorant text-sm text-[#a3b3a6] max-w-2xl">
+              {category.description || "Selecciona un grado para ver sus materias disponibles."}
+            </p>
+          </div>
+        </div>
+        <div className="font-dm-sans text-xs uppercase tracking-[0.3em] text-[#c9a227]/80 mb-4">
+          Grados disponibles
+        </div>
+      </div>
+
+      {category.subcategories?.length ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {category.subcategories.map((sub) => (
+            <button
+              key={sub.id}
+              type="button"
+              onClick={() => onSelectSub(sub.id)}
+              className="group text-left glass rounded-lg p-6 border border-white/5 hover:border-[#c9a227]/40 transition-all"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="font-dm-sans text-xs uppercase tracking-[0.25em] text-[#c9a227] mb-2">Grado</p>
+                  <h4 className="font-cinzel text-xl text-[#f4f1e1]">{sub.name}</h4>
+                </div>
+                <span className="text-[#c9a227]/70">{(sub.materias?.length || 0)} materias</span>
+              </div>
+              <p className="font-cormorant text-sm text-[#a3b3a6] line-clamp-3">
+                {sub.description || "Explora los recursos asociados a este grado."}
+              </p>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 font-cormorant text-lg text-[#a3b3a6]">
+          No hay grados configurados para esta categoría.
+        </div>
+      )}
+    </div>
+  );
+};
+
+const SubcategoryView = ({ category, subcategory }) => {
+  return (
+    <div className="animate-fade-in">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/30 flex items-center justify-center">
+            <BookOpen className="w-6 h-6 text-[#c9a227]" />
+          </div>
+          <div>
+            <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1]">{subcategory.name}</h3>
+            <p className="font-cormorant text-sm text-[#a3b3a6] max-w-2xl">
+              {subcategory.description || `Materias disponibles para ${subcategory.name}.`}
+            </p>
+            <p className="mt-2 text-xs uppercase tracking-[0.25em] text-[#c9a227]/80">
+              {category.name}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {subcategory.materias?.length ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          {subcategory.materias.map((materia) => (
+            <MateriaCard key={materia.id} materia={materia} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 font-cormorant text-lg text-[#a3b3a6]">
+          Esta subcategoría aún no tiene materias.
+        </div>
+      )}
     </div>
   );
 };
@@ -656,7 +749,13 @@ const MateriasGeneralesView = () => {
 };
 
 export const LibraryModal = () => {
-  const { modalOpen, closeModal } = useLibrary();
+  const {
+    modalOpen, closeModal, hierarchyTree, level, hierCatId, hierSubId,
+    goBackHierarchy, goToHierSub,
+  } = useLibrary();
+
+  const selectedCategory = hierarchyTree.find((cat) => cat.id === hierCatId) || null;
+  const selectedSubcategory = selectedCategory?.subcategories?.find((sub) => sub.id === hierSubId) || null;
 
   useEffect(() => {
     if (!modalOpen) return;
@@ -668,20 +767,41 @@ export const LibraryModal = () => {
 
   if (!modalOpen) return null;
 
+  const renderContent = () => {
+    if (level === 1 && selectedCategory) {
+      return <CategoryView category={selectedCategory} onSelectSub={goToHierSub} />;
+    }
+    if (level === 2 && selectedCategory && selectedSubcategory) {
+      return <SubcategoryView category={selectedCategory} subcategory={selectedSubcategory} />;
+    }
+    return <MateriasGeneralesView />;
+  };
+
   return createPortal(
     <div className="fixed inset-0 z-50 bg-[#020b04]/90 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
       onClick={closeModal} data-testid="library-modal-overlay">
       <div className="w-full max-w-5xl bg-[#051a09] border border-[#c9a227]/30 rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh] animate-scale-in"
         onClick={(e) => e.stopPropagation()} data-testid="library-modal">
         <div className="p-5 sm:p-6 border-b border-[#c9a227]/20 bg-[#020b04]/60 flex items-start gap-4">
-          <div className="flex-1"><Breadcrumb /></div>
+          <div className="flex-1">
+            <Breadcrumb category={selectedCategory} subcategory={selectedSubcategory} />
+          </div>
+          {level > 0 && (
+            <button
+              type="button"
+              onClick={goBackHierarchy}
+              className="px-4 py-2 rounded-sm border border-[#c9a227]/20 text-[#c9a227] hover:bg-[#c9a227]/10 font-dm-sans text-xs tracking-widest uppercase"
+            >
+              Volver
+            </button>
+          )}
           <button onClick={closeModal} data-testid="modal-close-btn"
             className="p-2 rounded-full hover:bg-[#c9a227]/10 text-[#c9a227] transition" aria-label="Cerrar">
             <X className="w-5 h-5" />
           </button>
         </div>
         <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1">
-          <MateriasGeneralesView />
+          {renderContent()}
         </div>
       </div>
     </div>,
