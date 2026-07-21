@@ -85,6 +85,7 @@ export const Categories = () => {
     setTimeout(() => goToHierCat(catId), 10);
   };
 
+  const safeHierarchyTree = Array.isArray(hierarchyTree) ? hierarchyTree : [];
   const visibleCategories = (categories || []).filter((c) => c.status === "show");
 
   return (
@@ -101,7 +102,7 @@ export const Categories = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {hierarchyTree.map((category, idx) => {
+          {safeHierarchyTree.map((category, idx) => {
             const Icon = getIcon(category.icon);
             return (
               <button
@@ -136,7 +137,7 @@ export const Categories = () => {
           })}
         </div>
 
-        {hierarchyTree.length === 0 && (
+        {safeHierarchyTree.length === 0 && (
           <div className="text-center py-16 font-cormorant text-xl text-[#a3b3a6]">
             No hay niveles configurados. El staff puede crear la jerarquía desde el panel de administración.
           </div>

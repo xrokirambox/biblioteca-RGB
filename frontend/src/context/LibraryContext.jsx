@@ -56,7 +56,7 @@ export function LibraryProvider({ children }) {
     try {
       setHierarchyLoading(true);
       const res = await api.get("/hierarchy/tree");
-      setHierarchyTree(res.data || []);
+      setHierarchyTree(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       console.error("Error loading hierarchy tree", e);
     } finally {

@@ -532,23 +532,26 @@ const SubcategoryView = ({ category, subcategory }) => {
  */
 function flattenMaterias(hierarchyTree) {
   const seen = new Map();
-  (hierarchyTree || []).forEach((nivel) => {
-    (nivel.subcategories || []).forEach((grado) => {
-      (grado.materias || []).forEach((materia) => {
-        const key = (materia.name || "").trim().toLowerCase();
+  const tree = Array.isArray(hierarchyTree) ? hierarchyTree : [];
+
+  tree.forEach((nivel) => {
+    const subcategories = Array.isArray(nivel?.subcategories) ? nivel.subcategories : [];
+    subcategories.forEach((grado) => {
+      const materias = Array.isArray(grado?.materias) ? grado.materias : [];
+      materias.forEach((materia) => {
+        const key = (materia?.name || "").trim().toLowerCase();
         if (!key) return;
         if (!seen.has(key)) {
           seen.set(key, materia);
         } else {
-          // Si ya existe una materia con este nombre pero sin url, y la
-          // nueva sí tiene url, nos quedamos con la que tiene recurso.
           const existing = seen.get(key);
-          if (!existing.url && materia.url) seen.set(key, materia);
+          if (!existing?.url && materia?.url) seen.set(key, materia);
         }
       });
     });
   });
-  return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name, "es"));
+
+  return Array.from(seen.values()).sort((a, b) => (a?.name || "").localeCompare(b?.name || "", "es"));
 }
 
 const normalized = (value = "") => value.toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
@@ -754,7 +757,8 @@ export const LibraryModal = () => {
     goBackHierarchy, goToHierSub,
   } = useLibrary();
 
-  const selectedCategory = hierarchyTree.find((cat) => cat.id === hierCatId) || null;
+  const safeHierarchyTree = Array.isArray(hierarchyTree) ? hierarchyTree : [];
+  const selectedCategory = safeHierarchyTree.find((cat) => cat.id === hierCatId) || null;
   const selectedSubcategory = selectedCategory?.subcategories?.find((sub) => sub.id === hierSubId) || null;
 
   useEffect(() => {
