@@ -596,6 +596,27 @@ const MateriaCard = ({ materia }) => {
 
   const isValid = url && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"));
   const canGo = !!materia.url;
+  const notebookUrl = materia.notebook_url || "";
+  const notebookBooks = useMemo(() => {
+    const target = normalized(materia.name);
+    const matches = (books || []).filter((book) => normalized(book.category || "") === target && book.url);
+    return matches.length ? matches : (relatedBook?.url ? [relatedBook] : []);
+  }, [books, materia.name, relatedBook]);
+
+  const prepareNotebook = async () => {
+    if (!notebookBooks.length) {
+      toast.error("No hay libros con enlace para preparar esta materia.");
+      return;
+    }
+    const sources = notebookBooks.map((book) => `${book.title}${book.author ? ` — ${book.author}` : ""}\n${book.url}`).join("\n\n");
+    try {
+      await navigator.clipboard.writeText(sources);
+      window.open(notebookUrl || "https://notebooklm.google.com/", "_blank", "noopener,noreferrer");
+      toast.success(`${notebookBooks.length} libro(s) copiado(s). Pégalos como fuentes en NotebookLM.`);
+    } catch {
+      toast.error("No se pudo copiar los enlaces. Revisa los permisos del navegador.");
+    }
+  };
 
   const handleSave = async () => {
     if (!isValid) return toast.error("Ingresa una URL válida (http, https o /).");
@@ -644,16 +665,15 @@ const MateriaCard = ({ materia }) => {
         </p>
 
         {!isStaff ? (
-          canGo ? (
-            <a
-              href={materia.url}
-              target="_blank"
-              rel="noreferrer"
-              data-testid={`materia-go-${materia.id}`}
-              className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center justify-center gap-1.5 transition-colors"
-            >
-              Ir <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+          notebookUrl || canGo ? (
+            <div className="flex flex-col gap-2">
+              {notebookUrl && <a href={notebookUrl} target="_blank" rel="noreferrer" data-testid={`materia-notebook-${materia.id}`} className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center justify-center gap-1.5 transition-colors">
+                Estudiar con IA <ExternalLink className="w-3.5 h-3.5" />
+              </a>}
+              {canGo && <a href={materia.url} target="_blank" rel="noreferrer" data-testid={`materia-go-${materia.id}`} className="border border-[#c9a227]/40 text-[#c9a227] hover:bg-[#c9a227]/10 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center justify-center gap-1.5 transition-colors">
+                Ver recurso <ExternalLink className="w-3.5 h-3.5" />
+              </a>}
+            </div>
           ) : (
             <span
               data-testid={`materia-empty-${materia.id}`}
@@ -703,6 +723,9 @@ const MateriaCard = ({ materia }) => {
           </div>
         ) : (
           <div className="flex items-center gap-2">
+            <button onClick={prepareNotebook} data-testid={`materia-prepare-notebook-${materia.id}`} className="px-3 py-2 rounded-sm border border-[#c9a227]/40 text-[#c9a227] hover:bg-[#c9a227]/10 transition-colors font-dm-sans text-[11px] tracking-widest uppercase" title="Copiar libros y abrir NotebookLM">
+              Preparar IA
+            </button>
             <button
               onClick={() => setEditing(true)}
               data-testid={`materia-edit-${materia.id}`}

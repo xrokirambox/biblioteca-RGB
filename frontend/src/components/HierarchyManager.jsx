@@ -241,10 +241,10 @@ const SubcategoryForm = ({ categories, initial, onSubmit, onCancel, submitting }
 };
 
 const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting }) => {
-  const [form, setForm] = useState(initial || { name: "", subcategory_id: "", description: "", icon: "BookOpen", url: "" });
+  const [form, setForm] = useState(initial || { name: "", subcategory_id: "", description: "", icon: "BookOpen", url: "", notebook_url: "" });
 
   useEffect(() => {
-    setForm(initial || { name: "", subcategory_id: (subcategories[0]?.id || ""), description: "", icon: "BookOpen", url: "" });
+    setForm(initial || { name: "", subcategory_id: (subcategories[0]?.id || ""), description: "", icon: "BookOpen", url: "", notebook_url: "" });
   }, [initial, subcategories]);
 
   const handle = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
@@ -260,6 +260,7 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
       description: form.description.trim(),
       icon: form.icon || "BookOpen",
       url: form.url.trim(),
+      notebook_url: (form.notebook_url || "").trim(),
     });
   };
 
@@ -296,6 +297,15 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
           value={form.url}
           onChange={handle("url")}
           placeholder="https://drive.google.com/..."
+          className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227]"
+        />
+      </div>
+      <div className="md:col-span-2">
+        <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Enlace de NotebookLM</label>
+        <input
+          value={form.notebook_url || ""}
+          onChange={handle("notebook_url")}
+          placeholder="https://notebooklm.google.com/notebook/..."
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227]"
         />
       </div>

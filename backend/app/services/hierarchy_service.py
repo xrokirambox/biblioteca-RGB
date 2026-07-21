@@ -217,6 +217,9 @@ async def create_materia(
         raise HTTPException(status_code=404, detail="Subcategoría padre no encontrada")
 
     url = (payload.url or "").strip()
+    notebook_url = (payload.notebook_url or "").strip()
+    if notebook_url and not (notebook_url.startswith("http://") or notebook_url.startswith("https://")):
+        raise HTTPException(status_code=400, detail="La URL de NotebookLM no es válida")
     if url and not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
         raise HTTPException(status_code=400, detail="URL inválida")
 
@@ -226,6 +229,7 @@ async def create_materia(
         description=(payload.description or "").strip(),
         icon=payload.icon or "BookOpen",
         url=url,
+        notebook_url=notebook_url,
         created_by=current["id"],
         updated_by=current["id"],
     )
@@ -264,6 +268,11 @@ async def update_materia(
         if url and not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
             raise HTTPException(status_code=400, detail="URL inválida")
         changes["url"] = url
+    if payload.notebook_url is not None:
+        notebook_url = payload.notebook_url.strip()
+        if notebook_url and not (notebook_url.startswith("http://") or notebook_url.startswith("https://")):
+            raise HTTPException(status_code=400, detail="La URL de NotebookLM no es válida")
+        changes["notebook_url"] = notebook_url
     if not changes:
         return existing
 

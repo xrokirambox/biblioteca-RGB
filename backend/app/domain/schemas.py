@@ -193,6 +193,7 @@ class HierarchyMateriaCreate(BaseModel):
     description: str = ""
     icon: str = "BookOpen"
     url: str = ""
+    notebook_url: str = ""
 
 
 class HierarchyMateriaUpdate(BaseModel):
@@ -201,6 +202,7 @@ class HierarchyMateriaUpdate(BaseModel):
     description: Optional[str] = None
     icon: Optional[str] = None
     url: Optional[str] = None
+    notebook_url: Optional[str] = None
 
 
 class HierarchyMateriaRecord(BaseModel):
@@ -211,6 +213,7 @@ class HierarchyMateriaRecord(BaseModel):
     description: str = ""
     icon: str = "BookOpen"
     url: str = ""
+    notebook_url: str = ""
     created_by: str = ""
     updated_by: str = ""
     created_at: str = Field(default_factory=now_iso)
