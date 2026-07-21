@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Save, Trash2, Edit3, Loader2, BookOpen } from "lucide-react";
+import { Plus, Save, Trash2, Edit3, Loader2, BookOpen, ShoppingCart } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 import { CATEGORIAS } from "../data/materias";
 import { toast } from "sonner";
+import { NotebookCart, getSavedNotebookCart, saveNotebookCart } from "./NotebookCart";
 
 const EMPTY = { title: "", author: "", category: "literatura", cover: "", url: "", description: "" };
 const BOOK_CATEGORIES = (CATEGORIAS || []).filter((c) => c.id !== "all");
@@ -76,8 +77,14 @@ export const BooksManager = () => {
   const [mode, setMode] = useState("list");
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [notebookCart, setNotebookCart] = useState(() => getSavedNotebookCart());
 
   useEffect(() => { refreshBooks(); }, [refreshBooks]);
+  useEffect(() => { saveNotebookCart(notebookCart); }, [notebookCart]);
+
+  const toggleNotebookBook = (id) => setNotebookCart((current) => (
+    current.includes(id) ? current.filter((bookId) => bookId !== id) : [...current, id]
+  ));
 
   const handleCreate = async (form) => {
     try { setBusy(true); await createBook(form); toast.success("Libro creado"); setMode("list"); }
@@ -103,10 +110,10 @@ export const BooksManager = () => {
           <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#a3b3a6]">{books.length} en catálogo</div>
         </div>
         {mode === "list" && (
-          <button onClick={() => setMode("create")} data-testid="books-create-btn"
-            className="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase">
-            <Plus className="w-3.5 h-3.5" /> Nuevo libro
-          </button>
+          <div className="flex gap-2">
+            {notebookCart.length > 0 && <button onClick={() => setMode("notebook")} data-testid="notebook-cart-open" className="border border-[#c9a227]/50 text-[#c9a227] inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"><ShoppingCart className="w-3.5 h-3.5" /> IA ({notebookCart.length})</button>}
+            <button onClick={() => setMode("create")} data-testid="books-create-btn" className="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"><Plus className="w-3.5 h-3.5" /> Nuevo libro</button>
+          </div>
         )}
       </div>
 
@@ -114,6 +121,7 @@ export const BooksManager = () => {
       {mode === "edit" && editing && (
         <BookForm initial={editing} onSubmit={handleUpdate} onCancel={() => { setMode("list"); setEditing(null); }} submitting={busy} />
       )}
+      {mode === "notebook" && <NotebookCart books={books} selectedIds={notebookCart} onRemove={(id) => toggleNotebookBook(id)} onClose={() => setMode("list")} onPublish={() => { setNotebookCart([]); setMode("list"); }} />}
 
       {mode === "list" && (
         books.length === 0 ? (
@@ -133,6 +141,9 @@ export const BooksManager = () => {
                   <div className="font-cinzel text-sm text-[#f4f1e1] leading-tight line-clamp-2 mb-1">{b.title}</div>
                   <div className="font-cormorant italic text-[#a3b3a6] text-sm mb-3 line-clamp-1">{b.author || "—"}</div>
                   <div className="mt-auto flex items-center gap-2">
+                    <button onClick={() => toggleNotebookBook(b.id)} data-testid={`notebook-cart-toggle-${b.id}`} className={`p-2 rounded-sm border transition ${notebookCart.includes(b.id) ? "border-[#c9a227] bg-[#c9a227] text-[#020b04]" : "border-[#c9a227]/50 text-[#c9a227] hover:bg-[#c9a227]/10"}`} title="Añadir a NotebookLM">
+                      <ShoppingCart className="w-3.5 h-3.5" />
+                    </button>
                     <button onClick={() => { setEditing(b); setMode("edit"); }} data-testid={`admin-book-edit-${b.id}`}
                       className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-sm border border-[#c9a227]/50 text-[#c9a227] hover:bg-[#c9a227]/10 font-dm-sans text-[10px] tracking-widest uppercase">
                       <Edit3 className="w-3 h-3" /> Editar
