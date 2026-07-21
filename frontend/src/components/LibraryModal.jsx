@@ -25,7 +25,6 @@ import {
   Atom,
   TestTube2,
   ScrollText,
-  Map,
   Cpu,
   Brain,
   LineChart,
@@ -210,6 +209,7 @@ import {
   UnlockKeyhole as Unlock,
   LockKeyhole as Lock,
 } from "lucide-react";
+import { Map as MapIcon } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
@@ -232,7 +232,6 @@ const ALL_ICONS = {
   Dumbbell,
   HeartHandshake,
   ScrollText,
-  Map,
   Cpu,
   Brain,
   LineChart,
@@ -423,6 +422,17 @@ function getIcon(name) {
   return ALL_ICONS[name] || BookOpen;
 }
 
+const makeSafeHierarchyTree = (value) => {
+  if (!Array.isArray(value)) return [];
+  return value.filter(Boolean).map((item) => ({
+    ...item,
+    subcategories: Array.isArray(item?.subcategories) ? item.subcategories.filter(Boolean).map((sub) => ({
+      ...sub,
+      materias: Array.isArray(sub?.materias) ? sub.materias.filter(Boolean) : [],
+    })) : [],
+  }));
+};
+
 const Breadcrumb = ({ category, subcategory }) => {
   const label = subcategory
     ? `Biblioteca · ${category?.name || "..."} · ${subcategory.name}`
@@ -531,8 +541,8 @@ const SubcategoryView = ({ category, subcategory }) => {
  * mostrarlas todas juntas sin pasos intermedios de navegación.
  */
 function flattenMaterias(hierarchyTree) {
-  const seen = new Map();
-  const tree = Array.isArray(hierarchyTree) ? hierarchyTree : [];
+  const seen = new globalThis.Map();
+  const tree = makeSafeHierarchyTree(hierarchyTree);
 
   tree.forEach((nivel) => {
     const subcategories = Array.isArray(nivel?.subcategories) ? nivel.subcategories : [];
@@ -757,7 +767,7 @@ export const LibraryModal = () => {
     goBackHierarchy, goToHierSub,
   } = useLibrary();
 
-  const safeHierarchyTree = Array.isArray(hierarchyTree) ? hierarchyTree : [];
+  const safeHierarchyTree = makeSafeHierarchyTree(hierarchyTree);
   const selectedCategory = safeHierarchyTree.find((cat) => cat.id === hierCatId) || null;
   const selectedSubcategory = selectedCategory?.subcategories?.find((sub) => sub.id === hierSubId) || null;
 

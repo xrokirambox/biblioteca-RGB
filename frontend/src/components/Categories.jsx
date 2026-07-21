@@ -3,7 +3,7 @@ import {
   ArrowUpRight, Users, BookOpen, BookOpenText, GraduationCap, Sprout,
   Library, School, Folder, FileText, Link2, Sigma, Leaf, Globe2, Languages,
   Palette, Dumbbell, HeartHandshake, FlaskConical, Atom, TestTube2, ScrollText,
-  Map, Cpu, FunctionSquare, Brain, LineChart, Layers, Network, Award, Star,
+  Cpu, FunctionSquare, Brain, LineChart, Layers, Network, Award, Star,
   Bookmark, BookMarked, BookX, BookCheck, PenTool, Ruler, Calculator, Compass,
   Music, Monitor, Code, Database, Grid, Layout, List, CheckSquare, Clipboard,
   FileCode, Hash, Binary, Share2, Shield, Lock, Key, Unlock, Zap, Sun, Moon,
@@ -31,13 +31,14 @@ import {
   GitPullRequest, Github, Gitlab, Monitor as Chrome, Castle, Church, Hospital, Hotel, Store,
   DivideCircle,
 } from "lucide-react";
+import { Map as MapIcon } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 
 const ICONS = {
   BookOpen, BookOpenText, GraduationCap, Sprout, Users,
   ArrowUpRight, Library, School, Folder, FileText, Link2,
   Sigma, Leaf, Globe2, Languages, Palette, Dumbbell, HeartHandshake,
-  FlaskConical, Atom, TestTube2, ScrollText, Map, Cpu, FunctionSquare,
+  FlaskConical, Atom, TestTube2, ScrollText, MapIcon, Cpu, FunctionSquare,
   Brain, LineChart, Layers, Network, Award, Star, Bookmark,
   BookMarked, BookX, BookCheck, PenTool, Ruler, Calculator,
   Compass, Music, Monitor, Code, Database, Grid,
@@ -85,7 +86,7 @@ export const Categories = () => {
     setTimeout(() => goToHierCat(catId), 10);
   };
 
-  const safeHierarchyTree = Array.isArray(hierarchyTree) ? hierarchyTree : [];
+  const safeHierarchyTree = Array.isArray(hierarchyTree) ? hierarchyTree.filter(Boolean) : [];
   const visibleCategories = (categories || []).filter((c) => c.status === "show");
 
   return (
