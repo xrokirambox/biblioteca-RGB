@@ -11,7 +11,7 @@ export const Footer = () => {
               <Library className="w-5 h-5 text-[#c9a227]" />
             </div>
             <div>
-              <div className="font-cinzel text-[#c9a227] text-lg tracking-wider">RGB</div>
+            <div className="font-cinzel text-[#c9a227] text-base tracking-wider">RGB</div>
               <div className="font-dm-sans text-[10px] uppercase tracking-[0.2em] text-[#a3b3a6]">
                 Biblioteca Escolar
               </div>
