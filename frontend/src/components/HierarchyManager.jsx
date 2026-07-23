@@ -538,7 +538,7 @@ export const HierarchyManager = () => {
         <div>
           <div className="font-cinzel text-lg text-[#f4f1e1]">Jerarquía académica</div>
           <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#a3b3a6]">
-            {hierarchyCategories.length} categorías · {hierarchySubcategories.length} subcategorías · {hierarchyMaterias.length} materias
+            {hierarchyCategories.length} categorías · {hierarchySubcategories.length} subcategorías · {hierarchyMaterias.length} libros
           </div>
         </div>
         {mode === "list" && (
