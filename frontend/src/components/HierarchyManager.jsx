@@ -545,7 +545,7 @@ export const HierarchyManager = () => {
           <div className="flex items-center gap-2">
             <button onClick={() => startCreate("materia")}
               className="btn-gold inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
-              <Plus className="w-3 h-3" /> Materia
+              <Plus className="w-3 h-3" /> libro
             </button>
             <button onClick={() => startCreate("subcategory")}
               className="btn-gold inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
@@ -620,7 +620,7 @@ export const HierarchyManager = () => {
                               <div className="flex-1 min-w-0">
                                 <div className="font-dm-sans text-sm text-[#f4f1e1]">{sub.name}</div>
                                 <div className="font-dm-sans text-[10px] text-[#a3b3a6]/60">
-                                  {sub.materias?.length || 0} materias
+                                  {sub.materias?.length || 0} libros
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
@@ -640,7 +640,7 @@ export const HierarchyManager = () => {
                               <div className="border-t border-[#c9a227]/5">
                                 {(sub.materias || []).length === 0 ? (
                                   <div className="px-4 py-4 pl-16 text-center font-dm-sans text-[10px] text-[#a3b3a6]/50">
-                                    Sin materias. Crea una materia para esta subcategoría.
+                                    Sin libros. Crea una libro para esta subcategoría.
                                   </div>
                                 ) : (
                                   <div className="flex flex-col">

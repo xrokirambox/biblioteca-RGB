@@ -97,7 +97,7 @@ export const Categories = () => {
             Salones de Clase
           </div>
           <h2 className="font-cinzel text-4xl sm:text-5xl text-[#f4f1e1] leading-tight">
-            Selecciona un <span className="text-[#c9a227] italic font-cormorant">nivel académico</span>
+            Selecciona el <span className="text-[#c9a227] italic font-cormorant">material academico</span>
           </h2>
           <div className="divider-gold mt-8" />
         </div>
