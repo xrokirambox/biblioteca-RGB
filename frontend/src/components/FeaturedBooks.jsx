@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { useLibrary } from "../context/LibraryContext";
 import { CATEGORIAS } from "../data/materias";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ShoppingCart } from "lucide-react";
 
 export const FeaturedBooks = ({ searchQuery = "" }) => {
-  const { books } = useLibrary();
+  const { books, notebookCart, toggleNotebookBook } = useLibrary();
   const [filter, setFilter] = useState("all");
 
   const filtered = useMemo(() => {
@@ -84,6 +84,7 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
                   <p className="font-dm-sans text-xs text-[#a3b3a6]/80 leading-relaxed line-clamp-2 mb-4 flex-1">
                     {b.description}
                   </p>
+                  <div className="flex items-center justify-between gap-3">
                   <a
                     href={b.url}
                     target="_blank"
@@ -93,6 +94,12 @@ export const FeaturedBooks = ({ searchQuery = "" }) => {
                   >
                     Leer más <ExternalLink className="w-3.5 h-3.5" />
                   </a>
+                  <button onClick={() => toggleNotebookBook(b.id)} data-testid={`featured-notebook-cart-toggle-${b.id}`}
+                    title={notebookCart.includes(b.id) ? "Quitar del carrito" : "Añadir al carrito"}
+                    className={`p-2 rounded-sm border transition ${notebookCart.includes(b.id) ? "border-[#c9a227] bg-[#c9a227] text-[#020b04]" : "border-[#c9a227]/40 text-[#c9a227] hover:bg-[#c9a227]/10"}`}>
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                  </button>
+                  </div>
                 </div>
               </article>
             ))}

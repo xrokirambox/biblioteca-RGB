@@ -2,8 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { BookOpen, Check, Clipboard, ExternalLink, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLibrary } from "../context/LibraryContext";
-
-const STORAGE_KEY = "rgb_notebook_cart";
+import { getSavedNotebookCart, saveNotebookCart, clearNotebookCart } from "../lib/notebookCart";
 
 export const NotebookCart = ({ books, selectedIds, onRemove, onClose, onPublish }) => {
   const { hierarchyMaterias, updateHierarchyMateria } = useLibrary();
@@ -39,7 +38,7 @@ export const NotebookCart = ({ books, selectedIds, onRemove, onClose, onPublish 
     try {
       setSaving(true);
       await updateHierarchyMateria(materiaId, { notebook_url: notebookUrl.trim() });
-      localStorage.removeItem(STORAGE_KEY);
+      clearNotebookCart();
       toast.success("Notebook publicado para los estudiantes.");
       onPublish();
     } catch (error) {
@@ -73,8 +72,4 @@ export const NotebookCart = ({ books, selectedIds, onRemove, onClose, onPublish 
   );
 };
 
-export const getSavedNotebookCart = () => {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; }
-};
-
-export const saveNotebookCart = (ids) => localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+export { getSavedNotebookCart, saveNotebookCart };

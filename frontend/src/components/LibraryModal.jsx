@@ -566,6 +566,12 @@ function flattenMaterias(hierarchyTree) {
 
 const normalized = (value = "") => value.toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
 
+const getEmbedSrc = (embedHtml = "") => {
+  const match = embedHtml.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+  const src = match?.[1] || "";
+  return /^https?:\/\//i.test(src) ? src : "";
+};
+
 const MateriaCard = ({ materia }) => {
   const { updateHierarchyMateria, books } = useLibrary();
   const { isStaff } = useAuth();
@@ -589,6 +595,7 @@ const MateriaCard = ({ materia }) => {
   }, [books, materia.name]);
 
   const cover = materia.cover || relatedBook?.cover || null;
+  const videoSrc = materia.content_type === "video" ? getEmbedSrc(materia.embed_html) : "";
   const description =
     materia.description ||
     relatedBook?.description ||
@@ -649,7 +656,9 @@ const MateriaCard = ({ materia }) => {
     >
       {/* Portada pequeña */}
       <div className="relative h-28 w-full bg-[#020b04] border-b border-white/5 flex items-center justify-center overflow-hidden">
-        {cover ? (
+        {videoSrc ? (
+          <iframe src={videoSrc} title={materia.name} className="h-full w-full border-0" allowFullScreen loading="lazy" />
+        ) : cover ? (
           <img src={cover} alt={materia.name} className="h-full w-full object-cover" />
         ) : (
           <div className="w-12 h-12 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/30 flex items-center justify-center">
@@ -659,13 +668,15 @@ const MateriaCard = ({ materia }) => {
       </div>
 
       <div className="p-4 flex flex-col flex-1">
-        <div className="font-cinzel text-base text-[#f4f1e1] mb-1 truncate">{materia.name}</div>
+        <div className="flex items-center gap-1.5 font-cinzel text-base text-[#f4f1e1] mb-1 truncate">{materia.content_type === "video" && <Video className="w-4 h-4 text-[#c9a227] shrink-0" />}<span className="truncate">{materia.name}</span></div>
         <p className="font-cormorant text-sm text-[#a3b3a6] line-clamp-2 mb-4 flex-1">
           {description}
         </p>
 
         {!isStaff ? (
-          notebookUrl || canGo ? (
+          videoSrc ? (
+            <span className="px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase text-[#c9a227] border border-[#c9a227]/30 text-center">Video</span>
+          ) : notebookUrl || canGo ? (
             <div className="flex flex-col gap-2">
               {notebookUrl && <a href={notebookUrl} target="_blank" rel="noreferrer" data-testid={`materia-notebook-${materia.id}`} className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center justify-center gap-1.5 transition-colors">
                 Estudiar con IA <ExternalLink className="w-3.5 h-3.5" />

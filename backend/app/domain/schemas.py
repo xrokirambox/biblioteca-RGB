@@ -194,6 +194,9 @@ class HierarchyMateriaCreate(BaseModel):
     icon: str = "BookOpen"
     url: str = ""
     notebook_url: str = ""
+    cover: str = ""
+    content_type: str = "book"
+    embed_html: str = ""
 
 
 class HierarchyMateriaUpdate(BaseModel):
@@ -203,6 +206,9 @@ class HierarchyMateriaUpdate(BaseModel):
     icon: Optional[str] = None
     url: Optional[str] = None
     notebook_url: Optional[str] = None
+    cover: Optional[str] = None
+    content_type: Optional[str] = None
+    embed_html: Optional[str] = None
 
 
 class HierarchyMateriaRecord(BaseModel):
@@ -214,6 +220,9 @@ class HierarchyMateriaRecord(BaseModel):
     icon: str = "BookOpen"
     url: str = ""
     notebook_url: str = ""
+    cover: str = ""
+    content_type: str = "book"
+    embed_html: str = ""
     created_by: str = ""
     updated_by: str = ""
     created_at: str = Field(default_factory=now_iso)

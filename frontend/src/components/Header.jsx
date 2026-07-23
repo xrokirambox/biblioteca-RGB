@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
-import { Menu, X, LogOut, Shield } from "lucide-react";
+import { Menu, X, LogOut, Shield, ShoppingCart } from "lucide-react";
+import { useLibrary } from "../context/LibraryContext";
 import { useAuth } from "../context/AuthContext";
 import { UserAvatar } from "./UserAvatar";
 import { toast } from "sonner";
@@ -11,9 +12,10 @@ const NAV_LINKS = [
   { id: "buscar", label: "Buscar", href: "#buscar" },
 ];
 
-export const Header = ({ onOpenLibrary }) => {
+export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {} }) => {
   const [open, setOpen] = useState(false);
   const { isStaff, user, role, setLoginOpen, logout } = useAuth();
+  const { notebookCart } = useLibrary();
   const clickCount = useRef(0);
   const clickTimer = useRef(null);
 
@@ -63,6 +65,12 @@ export const Header = ({ onOpenLibrary }) => {
               Salir
             </button>
           )}
+          <button onClick={onOpenNotebookCart} data-testid="header-notebook-cart-btn" title="Carrito para NotebookLM"
+            className="btn-outline-gold relative inline-flex items-center gap-2 px-3 py-1.5 rounded-sm text-[11px] font-dm-sans font-semibold tracking-widest uppercase">
+            <ShoppingCart className="w-3.5 h-3.5" />
+            Carrito
+            {notebookCart.length > 0 && <span className="min-w-4 h-4 px-1 rounded-full bg-[#c9a227] text-[#020b04] text-[9px] inline-flex items-center justify-center">{notebookCart.length}</span>}
+          </button>
           <button onClick={onOpenLibrary} data-testid="header-open-library-btn"
             className="btn-gold px-4 py-1.5 rounded-sm text-sm font-dm-sans font-semibold tracking-wide">
             Biblioteca
@@ -88,6 +96,10 @@ export const Header = ({ onOpenLibrary }) => {
               <LogOut className="w-3.5 h-3.5" /> Salir
             </button>
           )}
+          <button onClick={() => { setOpen(false); onOpenNotebookCart(); }} data-testid="mobile-notebook-cart-btn"
+            className="btn-outline-gold inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm text-xs font-dm-sans font-semibold tracking-widest uppercase">
+            <ShoppingCart className="w-3.5 h-3.5" /> Carrito{notebookCart.length ? ` (${notebookCart.length})` : ""}
+          </button>
           <button onClick={() => { setOpen(false); onOpenLibrary(); }} data-testid="mobile-open-library-btn"
             className="btn-gold px-4 py-2 rounded-sm text-sm font-dm-sans font-semibold">
             Abrir Biblioteca

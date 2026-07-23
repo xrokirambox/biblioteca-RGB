@@ -240,20 +240,32 @@ const SubcategoryForm = ({ categories, initial, onSubmit, onCancel, submitting }
   );
 };
 
+const EMPTY_MATERIA_FORM = { name: "", subcategory_id: "", description: "", icon: "BookOpen", url: "", notebook_url: "", cover: "", content_type: "book", embed_html: "" };
+
 const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting }) => {
-  const [form, setForm] = useState(initial || { name: "", subcategory_id: "", description: "", icon: "BookOpen", url: "", notebook_url: "" });
+  const [form, setForm] = useState(initial || EMPTY_MATERIA_FORM);
 
   useEffect(() => {
-    setForm(initial || { name: "", subcategory_id: (subcategories[0]?.id || ""), description: "", icon: "BookOpen", url: "", notebook_url: "" });
+    setForm(initial || { ...EMPTY_MATERIA_FORM, subcategory_id: (subcategories[0]?.id || "") });
   }, [initial, subcategories]);
 
   const handle = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
   const handleIcon = (icon) => setForm((prev) => ({ ...prev, icon }));
+  const handleCoverFile = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return toast.error("Selecciona un archivo de imagen.");
+    if (file.size > 3 * 1024 * 1024) return toast.error("La imagen debe pesar menos de 3 MB.");
+    const reader = new FileReader();
+    reader.onload = () => setForm((prev) => ({ ...prev, cover: String(reader.result || "") }));
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return toast.error("El nombre es obligatorio");
     if (!form.subcategory_id) return toast.error("Selecciona una subcategoría");
+    if (form.content_type === "video" && !form.embed_html.trim()) return toast.error("Pega el código HTML embebido del video.");
     await onSubmit({
       name: form.name.trim(),
       subcategory_id: form.subcategory_id,
@@ -261,6 +273,9 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
       icon: form.icon || "BookOpen",
       url: form.url.trim(),
       notebook_url: (form.notebook_url || "").trim(),
+      cover: (form.cover || "").trim(),
+      content_type: form.content_type === "video" ? "video" : "book",
+      embed_html: (form.embed_html || "").trim(),
     });
   };
 
@@ -288,9 +303,36 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
         />
       </div>
       <div>
+        <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">¿Qué vas a subir? *</label>
+        <select value={form.content_type || "book"} onChange={handle("content_type")}
+          className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227]">
+          <option value="book" className="bg-[#051a09]">Libro / materia</option>
+          <option value="video" className="bg-[#051a09]">Video</option>
+        </select>
+      </div>
+      <div>
+        <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Portada (enlace de imagen)</label>
+        <input value={form.cover || ""} onChange={handle("cover")} placeholder="https://..."
+          className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227]" />
+      </div>
+      <div className="md:col-span-2">
+        <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">O subir imagen de portada</label>
+        <input type="file" accept="image/*" onChange={handleCoverFile}
+          className="w-full text-xs font-dm-sans text-[#a3b3a6] file:mr-3 file:border-0 file:bg-[#c9a227]/15 file:px-3 file:py-2 file:text-xs file:text-[#c9a227] file:cursor-pointer" />
+        {form.cover && <p className="mt-1 text-[10px] text-[#a3b3a6]">Portada configurada. Puedes sustituirla con otro enlace o archivo.</p>}
+      </div>
+      <div>
         <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Icono</label>
         <IconPicker value={form.icon} onChange={handleIcon} />
       </div>
+      {form.content_type === "video" && (
+        <div className="md:col-span-2">
+          <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Código HTML embebido del video *</label>
+          <textarea value={form.embed_html || ""} onChange={handle("embed_html")} rows={4} placeholder={'<iframe src="https://www.youtube.com/embed/..." ...></iframe>'}
+            className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] resize-none" />
+          <p className="mt-1 text-[10px] text-[#a3b3a6]">Pega el código iframe de YouTube, Vimeo u otra plataforma. Se mostrará como tarjeta de video.</p>
+        </div>
+      )}
       <div>
         <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">URL</label>
         <input
@@ -545,7 +587,7 @@ export const HierarchyManager = () => {
           <div className="flex items-center gap-2">
             <button onClick={() => startCreate("materia")}
               className="btn-gold inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
-              <Plus className="w-3 h-3" /> libro
+              <Plus className="w-3 h-3" /> Libro o video
             </button>
             <button onClick={() => startCreate("subcategory")}
               className="btn-gold inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
@@ -562,7 +604,7 @@ export const HierarchyManager = () => {
       {mode !== "list" && (
         <div className="mb-6">
           <div className="font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-3">
-            {editing ? "Editar" : "Nueva"} {entityType === "category" ? "categoría" : entityType === "subcategory" ? "subcategoría" : "materia"}
+            {editing ? "Editar" : "Nueva"} {entityType === "category" ? "categoría" : entityType === "subcategory" ? "subcategoría" : "libro o video"}
           </div>
           {renderForm()}
         </div>
@@ -646,9 +688,9 @@ export const HierarchyManager = () => {
                                   <div className="flex flex-col">
                                     {sub.materias.map((mat) => (
                                       <div key={mat.id} className="flex items-center gap-3 px-4 py-2 pl-16 border-b border-[#c9a227]/5 last:border-b-0">
-                                        <BookOpen className="w-3 h-3 text-[#c9a227]/50" />
+                                        {mat.content_type === "video" ? <FileText className="w-3 h-3 text-[#c9a227]/50" /> : <BookOpen className="w-3 h-3 text-[#c9a227]/50" />}
                                         <div className="flex-1 min-w-0">
-                                          <div className="font-dm-sans text-xs text-[#f4f1e1]/90">{mat.name}</div>
+                                          <div className="font-dm-sans text-xs text-[#f4f1e1]/90">{mat.name} {mat.content_type === "video" && <span className="text-[#c9a227]/70">· Video</span>}</div>
                                           {mat.url && (
                                             <div className="font-dm-sans text-[10px] text-[#c9a227]/50 truncate">
                                               <Link2 className="w-2.5 h-2.5 inline mr-1" />{mat.url}

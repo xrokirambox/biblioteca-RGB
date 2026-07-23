@@ -3,7 +3,7 @@ import { Plus, Save, Trash2, Edit3, Loader2, BookOpen, ShoppingCart } from "luci
 import { useLibrary } from "../context/LibraryContext";
 import { CATEGORIAS } from "../data/materias";
 import { toast } from "sonner";
-import { NotebookCart, getSavedNotebookCart, saveNotebookCart } from "./NotebookCart";
+import { NotebookCart } from "./NotebookCart";
 
 const EMPTY = { title: "", author: "", category: "literatura", cover: "", url: "", description: "" };
 const BOOK_CATEGORIES = (CATEGORIAS || []).filter((c) => c.id !== "all");
@@ -73,18 +73,12 @@ const BookForm = ({ initial, onSubmit, onCancel, submitting }) => {
 };
 
 export const BooksManager = () => {
-  const { books, createBook, updateBook, deleteBook, refreshBooks } = useLibrary();
+  const { books, createBook, updateBook, deleteBook, refreshBooks, notebookCart, toggleNotebookBook, setNotebookCart } = useLibrary();
   const [mode, setMode] = useState("list");
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [notebookCart, setNotebookCart] = useState(() => getSavedNotebookCart());
 
   useEffect(() => { refreshBooks(); }, [refreshBooks]);
-  useEffect(() => { saveNotebookCart(notebookCart); }, [notebookCart]);
-
-  const toggleNotebookBook = (id) => setNotebookCart((current) => (
-    current.includes(id) ? current.filter((bookId) => bookId !== id) : [...current, id]
-  ));
 
   const handleCreate = async (form) => {
     try { setBusy(true); await createBook(form); toast.success("Libro creado"); setMode("list"); }

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { api } from "../lib/api";
+import { getSavedNotebookCart, saveNotebookCart } from "../lib/notebookCart";
 
 const LibraryContext = createContext(null);
 
@@ -21,6 +22,13 @@ export function LibraryProvider({ children }) {
   const [hierarchySubcategories, setHierarchySubcategories] = useState([]);
   const [hierarchyMaterias, setHierarchyMaterias] = useState([]);
   const [hierarchyLoading, setHierarchyLoading] = useState(false);
+  const [notebookCart, setNotebookCart] = useState(() => getSavedNotebookCart());
+  const [notebookCartOpen, setNotebookCartOpen] = useState(false);
+
+  useEffect(() => { saveNotebookCart(notebookCart); }, [notebookCart]);
+  const toggleNotebookBook = (id) => setNotebookCart((current) => (
+    current.includes(id) ? current.filter((bookId) => bookId !== id) : [...current, id]
+  ));
 
   const refreshLinks = useCallback(async () => {
     try {
@@ -248,6 +256,7 @@ export function LibraryProvider({ children }) {
   const value = {
     modalOpen, level, nivelId, gradoId, links, books, categories, loading,
     hierarchyTree, hierarchyCategories, hierarchySubcategories, hierarchyMaterias, hierarchyLoading,
+    notebookCart, toggleNotebookBook, notebookCartOpen, setNotebookCartOpen, setNotebookCart,
     hierCatId, hierSubId,
     openModal, closeModal, goToNivel, goToGrado, goBack,
     goToHierCat, goToHierSub, goBackHierarchy,

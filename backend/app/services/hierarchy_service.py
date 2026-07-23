@@ -230,6 +230,9 @@ async def create_materia(
         icon=payload.icon or "BookOpen",
         url=url,
         notebook_url=notebook_url,
+        cover=(payload.cover or "").strip(),
+        content_type=payload.content_type if payload.content_type in {"book", "video"} else "book",
+        embed_html=(payload.embed_html or "").strip(),
         created_by=current["id"],
         updated_by=current["id"],
     )
@@ -273,6 +276,14 @@ async def update_materia(
         if notebook_url and not (notebook_url.startswith("http://") or notebook_url.startswith("https://")):
             raise HTTPException(status_code=400, detail="La URL de NotebookLM no es válida")
         changes["notebook_url"] = notebook_url
+    if payload.cover is not None:
+        changes["cover"] = payload.cover.strip()
+    if payload.content_type is not None:
+        if payload.content_type not in {"book", "video"}:
+            raise HTTPException(status_code=400, detail="Tipo de contenido invÃ¡lido")
+        changes["content_type"] = payload.content_type
+    if payload.embed_html is not None:
+        changes["embed_html"] = payload.embed_html.strip()
     if not changes:
         return existing
 
