@@ -29,7 +29,7 @@ export const NotebookCart = ({ books, selectedIds, onRemove, onClose, onPublish 
 
   const openNotebook = async () => {
     try { await copySources(); } catch { return toast.error("No fue posible copiar las fuentes."); }
-    window.open(notebookUrl || "https://notebooklm.google.com/", "_blank", "noopener,noreferrer");
+    window.open(notebookUrl || "https://notebooklm.google.com/notebook/creating", "_blank", "noopener,noreferrer");
   };
 
   const publish = async () => {

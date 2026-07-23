@@ -347,7 +347,7 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
         <input
           value={form.notebook_url || ""}
           onChange={handle("notebook_url")}
-          placeholder="https://notebooklm.google.com/notebook/..."
+          placeholder="https://notebooklm.google.com/notebook/creatingnotebook/..."
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227]"
         />
       </div>

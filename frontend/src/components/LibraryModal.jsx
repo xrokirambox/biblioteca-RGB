@@ -618,7 +618,7 @@ const MateriaCard = ({ materia }) => {
     const sources = notebookBooks.map((book) => `${book.title}${book.author ? ` — ${book.author}` : ""}\n${book.url}`).join("\n\n");
     try {
       await navigator.clipboard.writeText(sources);
-      window.open(notebookUrl || "https://notebooklm.google.com/", "_blank", "noopener,noreferrer");
+      window.open(notebookUrl || "https://notebooklm.google.com/notebook/creating", "_blank", "noopener,noreferrer");
       toast.success(`${notebookBooks.length} libro(s) copiado(s). Pégalos como fuentes en NotebookLM.`);
     } catch {
       toast.error("No se pudo copiar los enlaces. Revisa los permisos del navegador.");
