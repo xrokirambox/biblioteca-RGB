@@ -75,7 +75,7 @@ const ICONS = {
 };
 
 function getIcon(name) {
-  return ICONS[name] || BookOpen;
+  return ICONS[name] || none;
 }
 
 export const Categories = () => {

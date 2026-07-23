@@ -280,7 +280,7 @@ async def update_materia(
         changes["cover"] = payload.cover.strip()
     if payload.content_type is not None:
         if payload.content_type not in {"book", "video"}:
-            raise HTTPException(status_code=400, detail="Tipo de contenido invÃ¡lido")
+            raise HTTPException(status_code=400, detail="Tipo de contenido invalido")
         changes["content_type"] = payload.content_type
     if payload.embed_html is not None:
         changes["embed_html"] = payload.embed_html.strip()
