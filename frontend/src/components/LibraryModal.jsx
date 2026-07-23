@@ -438,7 +438,7 @@ const Breadcrumb = ({ category, subcategory }) => {
     ? `Biblioteca · ${category?.name || "..."} · ${subcategory.name}`
     : category
       ? `Biblioteca · ${category.name}`
-      : "Biblioteca · Materias Generales";
+      : "Biblioteca · libros de la materia";
 
   return (
     <div className="flex items-center gap-2 font-dm-sans text-xs sm:text-sm tracking-wide" data-testid="modal-breadcrumb">
