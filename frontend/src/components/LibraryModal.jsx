@@ -213,6 +213,7 @@ import { Map as MapIcon } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+import { VideoTheaterModal } from "./VideoTheaterModal";
 
 const ALL_ICONS = {
   BookOpen,
@@ -578,8 +579,9 @@ const MateriaCard = ({ materia }) => {
   const [url, setUrl] = useState(materia.url || "");
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [theaterOpen, setTheaterOpen] = useState(false); 
   const Icon = getIcon(materia.icon);
-
+  const videoSrc = materia.content_type === "video" ? getEmbedSrc(materia.embed_html) : "";
   useEffect(() => { setUrl(materia.url || ""); }, [materia.url]);
 
   // Buscamos un libro relacionado para usar su portada y descripción como
@@ -595,7 +597,6 @@ const MateriaCard = ({ materia }) => {
   }, [books, materia.name]);
 
   const cover = materia.cover || relatedBook?.cover || null;
-  const videoSrc = materia.content_type === "video" ? getEmbedSrc(materia.embed_html) : "";
   const description =
     materia.description ||
     relatedBook?.description ||
@@ -657,7 +658,19 @@ const MateriaCard = ({ materia }) => {
       {/* Portada pequeña */}
       <div className="relative h-28 w-full bg-[#020b04] border-b border-white/5 flex items-center justify-center overflow-hidden">
         {videoSrc ? (
-          <iframe src={videoSrc} title={materia.name} className="h-full w-full border-0" allowFullScreen loading="lazy" />
+          <button
+            type="button"
+            onClick={() => setTheaterOpen(true)}
+            className="group/video relative w-full h-full"
+            data-testid={`materia-video-open-${materia.id}`}
+          >
+            <iframe src={videoSrc} title={materia.name} className="h-full w-full border-0 pointer-events-none" loading="lazy" />
+            <span className="absolute inset-0 bg-black/0 group-hover/video:bg-black/30 transition-colors flex items-center justify-center">
+              <span className="opacity-0 group-hover/video:opacity-100 transition-opacity text-[#c9a227] text-xs font-dm-sans tracking-widest uppercase">
+                Ver ampliado
+              </span>
+            </span>
+          </button>
         ) : cover ? (
           <img src={cover} alt={materia.name} className="h-full w-full object-cover" />
         ) : (
@@ -760,6 +773,15 @@ const MateriaCard = ({ materia }) => {
           </div>
         )}
       </div>
+
+      <VideoTheaterModal
+        open={theaterOpen}
+        onClose={() => setTheaterOpen(false)}
+        videoSrc={videoSrc}
+        title={materia.name}
+        description={description}
+        externalUrl={materia.url}
+      />
     </div>
   );
 };
