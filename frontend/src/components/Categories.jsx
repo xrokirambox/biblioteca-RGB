@@ -123,7 +123,7 @@ export const Categories = () => {
                   </div>
                   <h3 className="font-cinzel text-3xl text-[#f4f1e1] mb-2">{category.name}</h3>
                   <div className="font-dm-sans text-xs tracking-[0.25em] uppercase text-[#c9a227] mb-5">
-                    {category.subcategories?.length || 0} grados disponibles
+                    {category.subcategories?.length || 0} Material disponibles
                   </div>
                   <p className="font-cormorant text-lg text-[#a3b3a6] leading-relaxed">
                     {category.description || "Explora los grados y materias disponibles."}

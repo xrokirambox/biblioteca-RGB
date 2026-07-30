@@ -20056,7 +20056,7 @@
                               (null === (a = e.subcategories) || void 0 === a
                                 ? void 0
                                 : a.length) || 0,
-                              " grados disponibles",
+                              " recursos disponibles",
                             ],
                           }),
                           (0, Gr.jsx)("p", {
@@ -21008,7 +21008,7 @@
               (0, Gr.jsx)("div", {
                 className:
                   "font-dm-sans text-xs uppercase tracking-[0.3em] text-[#c9a227]/80 mb-4",
-                children: "Grados disponibles",
+                children: "Recursos disponibles",
               }),
             ],
           }),

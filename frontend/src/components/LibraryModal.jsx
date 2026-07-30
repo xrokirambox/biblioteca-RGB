@@ -461,12 +461,12 @@ const CategoryView = ({ category, onSelectSub }) => {
           <div>
             <h3 className="font-cinzel text-2xl sm:text-3xl text-[#f4f1e1]">{category.name}</h3>
             <p className="font-cormorant text-sm text-[#a3b3a6] max-w-2xl">
-              {category.description || "Selecciona un grado para ver sus materias disponibles."}
+              {category.description || "Selecciona una materia para ver sus recursos disponibles."}
             </p>
           </div>
         </div>
         <div className="font-dm-sans text-xs uppercase tracking-[0.3em] text-[#c9a227]/80 mb-4">
-          Grados disponibles
+          recursos disponibles
         </div>
       </div>
 
@@ -481,10 +481,10 @@ const CategoryView = ({ category, onSelectSub }) => {
             >
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="font-dm-sans text-xs uppercase tracking-[0.25em] text-[#c9a227] mb-2">Grado</p>
+                  <p className="font-dm-sans text-xs uppercase tracking-[0.25em] text-[#c9a227] mb-2">materia</p>
                   <h4 className="font-cinzel text-xl text-[#f4f1e1]">{sub.name}</h4>
                 </div>
-                <span className="text-[#c9a227]/70">{(sub.materias?.length || 0)} materias</span>
+                <span className="text-[#c9a227]/70">{(sub.materias?.length || 0)} recursos</span>
               </div>
               <p className="font-cormorant text-sm text-[#a3b3a6] line-clamp-3">
                 {sub.description || "Explora los recursos asociados a este grado."}
