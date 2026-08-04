@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Search as SearchIcon } from "lucide-react";
 
-export const SearchSection = ({ onSearch }) => {
-  const [query, setQuery] = useState("");
+export const SearchSection = ({ query = "", onSearch }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,7 +33,7 @@ export const SearchSection = ({ onSearch }) => {
                   data-testid="search-input"
                   type="text"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => onSearch?.(e.target.value)}
                   placeholder="Buscar libros, autores, materias..."
                   className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm pl-11 pr-4 py-4 font-dm-sans text-sm text-white placeholder:text-[#a3b3a6]/60 focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227] transition"
                 />

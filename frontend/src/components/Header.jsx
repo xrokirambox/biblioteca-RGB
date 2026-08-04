@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const NAV_LINKS = [
   { id: "inicio", label: "Inicio", href: "#inicio" },
   { id: "salones", label: "Salones", href: "#salones" },
-  { id: "destacados", label: "Destacados", href: "#destacados" },
+  { id: "destacados", label: "Libros", href: "#destacados" },
   { id: "buscar", label: "Buscar", href: "#buscar" },
 ];
 

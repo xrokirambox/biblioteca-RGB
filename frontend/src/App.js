@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -17,17 +17,31 @@ import { AdminBadge } from "./components/AdminBadge";
 import { NotebookCart } from "./components/NotebookCart";
 
 const HomeInner = () => {
-  const { openModal, books, notebookCart, toggleNotebookBook, notebookCartOpen, setNotebookCartOpen, setNotebookCart } = useLibrary();
+  const { openModal, books, hierarchyMaterias, notebookCart, toggleNotebookBook, notebookCartOpen, setNotebookCartOpen, setNotebookCart } = useLibrary();
   const [searchQuery, setSearchQuery] = useState("");
+  const generalBooks = useMemo(() => (
+    (hierarchyMaterias || [])
+      .filter((materia) => !materia.content_type || materia.content_type === "book")
+      .map((materia) => ({
+        id: `general-${materia.id}`,
+        title: materia.name,
+        author: "Material general",
+        category: materia.category || "general",
+        cover: materia.cover || "",
+        url: materia.url || "",
+        description: materia.description || "Recurso general de la biblioteca.",
+        isGeneral: true,
+      }))
+  ), [hierarchyMaterias]);
 
   return (
     <div className="App relative">
       <Header onOpenLibrary={openModal} onOpenNotebookCart={() => setNotebookCartOpen(true)} />
       <main>
         <Hero onOpenLibrary={openModal} />
-        <SearchSection onSearch={setSearchQuery} />
+        <SearchSection query={searchQuery} onSearch={setSearchQuery} />
         <Categories />
-        <FeaturedBooks searchQuery={searchQuery} />
+        <FeaturedBooks searchQuery={searchQuery} generalBooks={generalBooks} onSearch={setSearchQuery} />
         <CTABanner onOpenLibrary={openModal} />
       </main>
       <Footer />
