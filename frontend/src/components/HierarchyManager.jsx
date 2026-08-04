@@ -265,16 +265,18 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
     e.preventDefault();
     if (!form.name.trim()) return toast.error("El nombre es obligatorio");
     if (!form.subcategory_id) return toast.error("Selecciona una subcategoría");
-    if (form.content_type === "video" && !form.embed_html.trim()) return toast.error("Pega el código HTML embebido del video.");
+    if (["video", "pdf"].includes(form.content_type) && !form.embed_html.trim()) {
+      return toast.error(`Pega el código HTML embebido del ${form.content_type === "pdf" ? "PDF" : "video"}.`);
+    }
     await onSubmit({
       name: form.name.trim(),
       subcategory_id: form.subcategory_id,
       description: form.description.trim(),
       icon: form.icon || "BookOpen",
-      url: form.url.trim(),
+      url: ["video", "pdf"].includes(form.content_type) ? "" : form.url.trim(),
       notebook_url: (form.notebook_url || "").trim(),
       cover: (form.cover || "").trim(),
-      content_type: form.content_type === "video" ? "video" : "book",
+      content_type: ["video", "pdf"].includes(form.content_type) ? form.content_type : "book",
       embed_html: (form.embed_html || "").trim(),
     });
   };
@@ -308,6 +310,7 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227]">
           <option value="book" className="bg-[#051a09]">Libro / materia</option>
           <option value="video" className="bg-[#051a09]">Video</option>
+          <option value="pdf" className="bg-[#051a09]">PDF</option>
         </select>
       </div>
       <div>
@@ -325,15 +328,15 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
         <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Icono</label>
         <IconPicker value={form.icon} onChange={handleIcon} />
       </div>
-      {form.content_type === "video" && (
+      {["video", "pdf"].includes(form.content_type) && (
         <div className="md:col-span-2">
-          <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Código HTML embebido del video *</label>
-          <textarea value={form.embed_html || ""} onChange={handle("embed_html")} rows={4} placeholder={'<iframe src="https://www.youtube.com/embed/..." ...></iframe>'}
+          <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Código HTML embebido del {form.content_type === "pdf" ? "PDF" : "video"} *</label>
+          <textarea value={form.embed_html || ""} onChange={handle("embed_html")} rows={4} placeholder={form.content_type === "pdf" ? '<iframe src="https://.../archivo.pdf" ...></iframe>' : '<iframe src="https://www.youtube.com/embed/..." ...></iframe>'}
             className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] resize-none" />
-          <p className="mt-1 text-[10px] text-[#a3b3a6]">Pega el código iframe de YouTube, Vimeo u otra plataforma. Se mostrará como tarjeta de video.</p>
+          <p className="mt-1 text-[10px] text-[#a3b3a6]">Pega el iframe del recurso. No necesitas añadir el enlace por separado.</p>
         </div>
       )}
-      <div>
+      {form.content_type === "book" && <div>
         <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">URL</label>
         <input
           value={form.url}
@@ -341,7 +344,7 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
           placeholder="https://drive.google.com/..."
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227]"
         />
-      </div>
+      </div>}
       <div className="md:col-span-2">
         <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Enlace de NotebookLM</label>
         <input
@@ -688,9 +691,9 @@ export const HierarchyManager = () => {
                                   <div className="flex flex-col">
                                     {sub.materias.map((mat) => (
                                       <div key={mat.id} className="flex items-center gap-3 px-4 py-2 pl-16 border-b border-[#c9a227]/5 last:border-b-0">
-                                        {mat.content_type === "video" ? <FileText className="w-3 h-3 text-[#c9a227]/50" /> : <BookOpen className="w-3 h-3 text-[#c9a227]/50" />}
+                                        {["video", "pdf"].includes(mat.content_type) ? <FileText className="w-3 h-3 text-[#c9a227]/50" /> : <BookOpen className="w-3 h-3 text-[#c9a227]/50" />}
                                         <div className="flex-1 min-w-0">
-                                          <div className="font-dm-sans text-xs text-[#f4f1e1]/90">{mat.name} {mat.content_type === "video" && <span className="text-[#c9a227]/70">· Video</span>}</div>
+                                          <div className="font-dm-sans text-xs text-[#f4f1e1]/90">{mat.name} {mat.content_type === "video" && <span className="text-[#c9a227]/70">· Video</span>}{mat.content_type === "pdf" && <span className="text-[#c9a227]/70">· PDF</span>}</div>
                                           {mat.url && (
                                             <div className="font-dm-sans text-[10px] text-[#c9a227]/50 truncate">
                                               <Link2 className="w-2.5 h-2.5 inline mr-1" />{mat.url}

@@ -25,6 +25,16 @@ cat_repo = HierarchyCategoryRepository()
 sub_repo = SubcategoryRepository()
 mat_repo = HierarchyMateriaRepository()
 
+EMBEDDED_CONTENT_TYPES = {"video", "pdf"}
+CONTENT_TYPES = {"book", *EMBEDDED_CONTENT_TYPES}
+
+
+def validate_embedded_content(content_type: str, embed_html: str) -> None:
+    """Embedded resources need an iframe; their URL lives inside that iframe."""
+    if content_type in EMBEDDED_CONTENT_TYPES and "<iframe" not in embed_html.lower():
+        label = "video" if content_type == "video" else "PDF"
+        raise HTTPException(status_code=400, detail=f"Pega el código iframe embebido del {label}")
+
 
 # ---------- Categories ----------
 async def list_hierarchy_categories() -> List[Dict[str, Any]]:
@@ -223,6 +233,10 @@ async def create_materia(
     if url and not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
         raise HTTPException(status_code=400, detail="URL inválida")
 
+    content_type = payload.content_type if payload.content_type in CONTENT_TYPES else "book"
+    embed_html = (payload.embed_html or "").strip()
+    validate_embedded_content(content_type, embed_html)
+
     record = HierarchyMateriaRecord(
         name=payload.name.strip(),
         subcategory_id=payload.subcategory_id,
@@ -231,8 +245,8 @@ async def create_materia(
         url=url,
         notebook_url=notebook_url,
         cover=(payload.cover or "").strip(),
-        content_type=payload.content_type if payload.content_type in {"book", "video"} else "book",
-        embed_html=(payload.embed_html or "").strip(),
+        content_type=content_type,
+        embed_html=embed_html,
         created_by=current["id"],
         updated_by=current["id"],
     )
@@ -278,12 +292,16 @@ async def update_materia(
         changes["notebook_url"] = notebook_url
     if payload.cover is not None:
         changes["cover"] = payload.cover.strip()
+    content_type = payload.content_type if payload.content_type is not None else existing.get("content_type", "book")
+    embed_html = (payload.embed_html if payload.embed_html is not None else existing.get("embed_html", "")).strip()
     if payload.content_type is not None:
-        if payload.content_type not in {"book", "video"}:
+        if payload.content_type not in CONTENT_TYPES:
             raise HTTPException(status_code=400, detail="Tipo de contenido invalido")
         changes["content_type"] = payload.content_type
     if payload.embed_html is not None:
-        changes["embed_html"] = payload.embed_html.strip()
+        changes["embed_html"] = embed_html
+    if payload.content_type is not None or payload.embed_html is not None:
+        validate_embedded_content(content_type, embed_html)
     if not changes:
         return existing
 

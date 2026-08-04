@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, ExternalLink, Video as VideoIcon } from "lucide-react";
+import { X, ExternalLink, Video as VideoIcon, FileText } from "lucide-react";
 
 /**
  * VideoTheaterModal
@@ -21,6 +21,7 @@ export const VideoTheaterModal = ({
   open,
   onClose,
   videoSrc,
+  contentType = "video",
   title,
   description,
   externalUrl,
@@ -53,7 +54,7 @@ export const VideoTheaterModal = ({
       >
         {/* Barra superior */}
         <div className="flex items-center gap-3 px-4 sm:px-6 py-3 border-b border-[#c9a227]/20 bg-[#020b04]/60">
-          <VideoIcon className="w-4 h-4 text-[#c9a227] shrink-0" />
+          {contentType === "pdf" ? <FileText className="w-4 h-4 text-[#c9a227] shrink-0" /> : <VideoIcon className="w-4 h-4 text-[#c9a227] shrink-0" />}
           <h3 className="font-cinzel text-base sm:text-lg text-[#f4f1e1] truncate flex-1">
             {title}
           </h3>
@@ -68,8 +69,7 @@ export const VideoTheaterModal = ({
           </button>
         </div>
 
-        {/* Video en grande, formato teatro */}
-        <div className="w-full bg-black aspect-video">
+        <div className={`w-full bg-black ${contentType === "pdf" ? "h-[72vh]" : "aspect-video"}`}>
           <iframe
             src={videoSrc}
             title={title}
@@ -95,7 +95,7 @@ export const VideoTheaterModal = ({
                 className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-sm border border-[#c9a227]/40 text-[#c9a227] hover:bg-[#c9a227]/10 transition-colors font-dm-sans text-xs tracking-widest uppercase"
                 data-testid="video-theater-external-link"
               >
-                Ver en YouTube <ExternalLink className="w-3.5 h-3.5" />
+                Ver recurso <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
           </div>

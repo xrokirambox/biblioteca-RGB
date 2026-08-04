@@ -581,7 +581,9 @@ const MateriaCard = ({ materia }) => {
   const [editing, setEditing] = useState(false);
   const [theaterOpen, setTheaterOpen] = useState(false); 
   const Icon = getIcon(materia.icon);
-  const videoSrc = materia.content_type === "video" ? getEmbedSrc(materia.embed_html) : "";
+  const isEmbedded = ["video", "pdf"].includes(materia.content_type);
+  const mediaSrc = isEmbedded ? getEmbedSrc(materia.embed_html) : "";
+  const mediaLabel = materia.content_type === "pdf" ? "PDF" : "Video";
   useEffect(() => { setUrl(materia.url || ""); }, [materia.url]);
 
   // Buscamos un libro relacionado para usar su portada y descripción como
@@ -657,16 +659,17 @@ const MateriaCard = ({ materia }) => {
     >
       {/* Portada pequeña */}
       <div className="relative h-28 w-full bg-[#020b04] border-b border-white/5 flex items-center justify-center overflow-hidden">
-        {videoSrc ? (
+        {mediaSrc ? (
           <button
             type="button"
             onClick={() => setTheaterOpen(true)}
             className="group/video relative w-full h-full"
-            data-testid={`materia-video-open-${materia.id}`}
+            data-testid={`materia-${materia.content_type}-open-${materia.id}`}
           >
-            <iframe src={videoSrc} title={materia.name} className="h-full w-full border-0 pointer-events-none" loading="lazy" />
-            <span className="absolute inset-0 bg-black/0 group-hover/video:bg-black/30 transition-colors flex items-center justify-center">
-              <span className="opacity-0 group-hover/video:opacity-100 transition-opacity text-[#c9a227] text-xs font-dm-sans tracking-widest uppercase">
+            <iframe src={mediaSrc} title={materia.name} className="h-full w-full border-0 pointer-events-none" loading="lazy" />
+            <span className="absolute inset-0 bg-black/10 group-hover/video:bg-black/55 transition-colors flex items-center justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#c9a227]/80 bg-[#020b04]/95 px-3 py-2 text-[#f4f1e1] shadow-[0_2px_12px_rgba(0,0,0,0.9)] font-dm-sans text-[10px] tracking-widest uppercase opacity-85 group-hover/video:opacity-100 group-hover/video:scale-105 transition-all">
+                <Maximize className="w-3.5 h-3.5 text-[#c9a227]" />
                 Ver ampliado
               </span>
             </span>
@@ -681,14 +684,14 @@ const MateriaCard = ({ materia }) => {
       </div>
 
       <div className="p-4 flex flex-col flex-1">
-        <div className="flex items-center gap-1.5 font-cinzel text-base text-[#f4f1e1] mb-1 truncate">{materia.content_type === "video" && <Video className="w-4 h-4 text-[#c9a227] shrink-0" />}<span className="truncate">{materia.name}</span></div>
+        <div className="flex items-center gap-1.5 font-cinzel text-base text-[#f4f1e1] mb-1 truncate">{materia.content_type === "video" ? <Video className="w-4 h-4 text-[#c9a227] shrink-0" /> : materia.content_type === "pdf" ? <FileText className="w-4 h-4 text-[#c9a227] shrink-0" /> : null}<span className="truncate">{materia.name}</span></div>
         <p className="font-cormorant text-sm text-[#a3b3a6] line-clamp-2 mb-4 flex-1">
           {description}
         </p>
 
         {!isStaff ? (
-          videoSrc ? (
-            <span className="px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase text-[#c9a227] border border-[#c9a227]/30 text-center">Video</span>
+          mediaSrc ? (
+            <span className="px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase text-[#c9a227] border border-[#c9a227]/30 text-center">{mediaLabel}</span>
           ) : notebookUrl || canGo ? (
             <div className="flex flex-col gap-2">
               {notebookUrl && <a href={notebookUrl} target="_blank" rel="noreferrer" data-testid={`materia-notebook-${materia.id}`} className="bg-[#c9a227] text-[#020b04] hover:bg-[#b08d22] px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase inline-flex items-center justify-center gap-1.5 transition-colors">
@@ -706,6 +709,8 @@ const MateriaCard = ({ materia }) => {
               No disponible
             </span>
           )
+        ) : isEmbedded ? (
+          <span className="px-4 py-2 rounded-sm font-dm-sans text-[11px] tracking-widest uppercase text-[#c9a227]/70 border border-[#c9a227]/20 text-center">{mediaLabel} embebido</span>
         ) : editing ? (
           <div className="flex flex-col gap-2">
             <input
@@ -777,7 +782,8 @@ const MateriaCard = ({ materia }) => {
       <VideoTheaterModal
         open={theaterOpen}
         onClose={() => setTheaterOpen(false)}
-        videoSrc={videoSrc}
+        videoSrc={mediaSrc}
+        contentType={materia.content_type}
         title={materia.name}
         description={description}
         externalUrl={materia.url}
