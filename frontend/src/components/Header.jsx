@@ -10,10 +10,10 @@ const NAV_LINKS = [
   { id: "salones", label: "Salones", href: "#salones" },
   { id: "destacados", label: "Libros", href: "#destacados" },
   { id: "buscar", label: "Buscar", href: "#buscar" },
-  { id: "creador", label: "Creador", href: "#creador" },
+  { id: "creador", label: "Creador" },
 ];
 
-export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {} }) => {
+export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {}, onOpenCreator = () => {} }) => {
   const [open, setOpen] = useState(false);
   const { isStaff, user, role, setLoginOpen, logout } = useAuth();
   const { notebookCart } = useLibrary();
@@ -45,10 +45,7 @@ export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {} }) => {
 
         <nav className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((l) => (
-            <a key={l.id} href={l.href} data-testid={`nav-link-${l.id}`}
-              className="font-dm-sans text-sm tracking-wide text-[#f4f1e1] hover:text-[#c9a227] transition-colors">
-              {l.label}
-            </a>
+            l.id === "creador" ? <button key={l.id} type="button" onClick={onOpenCreator} data-testid="nav-link-creador" className="font-dm-sans text-sm tracking-wide text-[#f4f1e1] hover:text-[#c9a227] transition-colors">{l.label}</button> : <a key={l.id} href={l.href} data-testid={`nav-link-${l.id}`} className="font-dm-sans text-sm tracking-wide text-[#f4f1e1] hover:text-[#c9a227] transition-colors">{l.label}</a>
           ))}
           {isStaff && user && (
             <div className="hidden lg:flex items-center gap-3 pl-5 border-l border-[#c9a227]/15">
@@ -86,10 +83,7 @@ export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {} }) => {
       {open && (
         <div className="md:hidden border-t border-[#c9a227]/15 bg-[#020b04]/95 px-6 py-4 flex flex-col gap-4 animate-fade-in">
           {NAV_LINKS.map((l) => (
-            <a key={l.id} href={l.href} onClick={() => setOpen(false)} data-testid={`mobile-nav-link-${l.id}`}
-              className="font-dm-sans text-sm text-[#f4f1e1]">
-              {l.label}
-            </a>
+            l.id === "creador" ? <button key={l.id} type="button" onClick={() => { setOpen(false); onOpenCreator(); }} data-testid="mobile-nav-link-creador" className="font-dm-sans text-sm text-left text-[#f4f1e1]">{l.label}</button> : <a key={l.id} href={l.href} onClick={() => setOpen(false)} data-testid={`mobile-nav-link-${l.id}`} className="font-dm-sans text-sm text-[#f4f1e1]">{l.label}</a>
           ))}
           {isStaff && (
             <button onClick={() => { setOpen(false); handleLogout(); }}

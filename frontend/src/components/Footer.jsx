@@ -1,7 +1,7 @@
 import React from "react";
 import { Github, Mail, BookMarked } from "lucide-react";
 
-export const Footer = () => {
+export const Footer = ({ onOpenCreator = () => {} }) => {
   return (
     <footer
       data-testid="app-footer"
@@ -59,9 +59,9 @@ export const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="#creador" className="hover:text-[#c9a227] transition">
+              <button type="button" onClick={onOpenCreator} className="hover:text-[#c9a227] transition">
                 Creador
-              </a>
+              </button>
             </li>
           </ul>
         </div>

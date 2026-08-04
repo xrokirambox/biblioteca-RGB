@@ -9,7 +9,7 @@ import { Hero } from "./components/Hero";
 import { SearchSection } from "./components/SearchSection";
 import { Categories } from "./components/Categories";
 import { FeaturedBooks } from "./components/FeaturedBooks";
-import { CreatorSection } from "./components/CreatorSection";
+import { CreatorModal } from "./components/CreatorModal";
 import { CTABanner } from "./components/CTABanner";
 import { Footer } from "./components/Footer";
 import { LibraryModal } from "./components/LibraryModal";
@@ -20,6 +20,7 @@ import { NotebookCart } from "./components/NotebookCart";
 const HomeInner = () => {
   const { openModal, books, hierarchyMaterias, notebookCart, toggleNotebookBook, notebookCartOpen, setNotebookCartOpen, setNotebookCart } = useLibrary();
   const [searchQuery, setSearchQuery] = useState("");
+  const [creatorOpen, setCreatorOpen] = useState(false);
   const generalBooks = useMemo(() => (
     (hierarchyMaterias || [])
       .filter((materia) => !materia.content_type || materia.content_type === "book")
@@ -37,19 +38,19 @@ const HomeInner = () => {
 
   return (
     <div className="App relative">
-      <Header onOpenLibrary={openModal} onOpenNotebookCart={() => setNotebookCartOpen(true)} />
+      <Header onOpenLibrary={openModal} onOpenNotebookCart={() => setNotebookCartOpen(true)} onOpenCreator={() => setCreatorOpen(true)} />
       <main>
         <Hero onOpenLibrary={openModal} />
         <SearchSection query={searchQuery} onSearch={setSearchQuery} />
         <Categories />
         <FeaturedBooks searchQuery={searchQuery} generalBooks={generalBooks} onSearch={setSearchQuery} />
-        <CreatorSection />
         <CTABanner onOpenLibrary={openModal} />
       </main>
-      <Footer />
+      <Footer onOpenCreator={() => setCreatorOpen(true)} />
       <LibraryModal />
       <AdminLogin />
       <AdminBadge />
+      <CreatorModal open={creatorOpen} onClose={() => setCreatorOpen(false)} />
       {notebookCartOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Carrito de NotebookLM">
           <div className="max-w-3xl mx-auto mt-12">
