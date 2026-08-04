@@ -136,7 +136,7 @@ const CategoryForm = ({ initial, onSubmit, onCancel, submitting }) => {
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227] resize-none"
         />
       </div>
-      <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
+      <div className="md:col-span-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-2">
         {onCancel && (
           <button type="button" onClick={onCancel}
             className="px-4 py-2.5 rounded-sm border border-[#a3b3a6]/40 text-[#a3b3a6] hover:border-[#a3b3a6] font-dm-sans text-xs tracking-widest uppercase">
@@ -223,7 +223,7 @@ const SubcategoryForm = ({ categories, initial, onSubmit, onCancel, submitting }
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227] resize-none"
         />
       </div>
-      <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
+      <div className="md:col-span-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-2">
         {onCancel && (
           <button type="button" onClick={onCancel}
             className="px-4 py-2.5 rounded-sm border border-[#a3b3a6]/40 text-[#a3b3a6] hover:border-[#a3b3a6] font-dm-sans text-xs tracking-widest uppercase">
@@ -364,7 +364,7 @@ const MateriaForm = ({ subcategories, initial, onSubmit, onCancel, submitting })
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227] resize-none"
         />
       </div>
-      <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
+      <div className="md:col-span-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-2">
         {onCancel && (
           <button type="button" onClick={onCancel}
             className="px-4 py-2.5 rounded-sm border border-[#a3b3a6]/40 text-[#a3b3a6] hover:border-[#a3b3a6] font-dm-sans text-xs tracking-widest uppercase">
@@ -579,7 +579,7 @@ export const HierarchyManager = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
           <div className="font-cinzel text-lg text-[#f4f1e1]">Jerarquía académica</div>
           <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#a3b3a6]">
@@ -587,17 +587,17 @@ export const HierarchyManager = () => {
           </div>
         </div>
         {mode === "list" && (
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:flex sm:flex-wrap items-stretch gap-2 w-full sm:w-auto">
             <button onClick={() => startCreate("materia")}
-              className="btn-gold inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
-              <Plus className="w-3 h-3" /> Libro o video
+              className="btn-gold justify-center inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
+              <Plus className="w-3 h-3" /> Recurso
             </button>
             <button onClick={() => startCreate("subcategory")}
-              className="btn-gold inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
+              className="btn-gold justify-center inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
               <Plus className="w-3 h-3" /> Subcategoría
             </button>
             <button onClick={() => startCreate("category")}
-              className="btn-gold inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase">
+              className="btn-gold justify-center inline-flex items-center gap-2 px-3 py-2 rounded-sm font-dm-sans text-[10px] tracking-widest uppercase min-[420px]:col-span-2 sm:col-auto">
               <Plus className="w-3 h-3" /> Categoría
             </button>
           </div>
@@ -657,7 +657,7 @@ export const HierarchyManager = () => {
                       <div className="flex flex-col">
                         {category.subcategories.map((sub) => (
                           <div key={sub.id} className="border-b border-[#c9a227]/5 last:border-b-0">
-                            <div className="flex items-center gap-3 px-4 py-2.5 pl-10 bg-[#020b04]/20">
+                            <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 pl-5 sm:pl-10 bg-[#020b04]/20">
                               <button onClick={() => toggleSub(sub.id)} className="text-[#c9a227]/60 hover:text-[#c9a227] transition">
                                 {expandedSubs.has(sub.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                               </button>
@@ -684,13 +684,13 @@ export const HierarchyManager = () => {
                             {expandedSubs.has(sub.id) && (
                               <div className="border-t border-[#c9a227]/5">
                                 {(sub.materias || []).length === 0 ? (
-                                  <div className="px-4 py-4 pl-16 text-center font-dm-sans text-[10px] text-[#a3b3a6]/50">
+                                  <div className="px-3 sm:px-4 py-4 pl-8 sm:pl-16 text-center font-dm-sans text-[10px] text-[#a3b3a6]/50">
                                     Sin libros. Crea una libro para esta subcategoría.
                                   </div>
                                 ) : (
                                   <div className="flex flex-col">
                                     {sub.materias.map((mat) => (
-                                      <div key={mat.id} className="flex items-center gap-3 px-4 py-2 pl-16 border-b border-[#c9a227]/5 last:border-b-0">
+                                      <div key={mat.id} className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 pl-8 sm:pl-16 border-b border-[#c9a227]/5 last:border-b-0">
                                         {["video", "pdf"].includes(mat.content_type) ? <FileText className="w-3 h-3 text-[#c9a227]/50" /> : <BookOpen className="w-3 h-3 text-[#c9a227]/50" />}
                                         <div className="flex-1 min-w-0">
                                           <div className="font-dm-sans text-xs text-[#f4f1e1]/90">{mat.name} {mat.content_type === "video" && <span className="text-[#c9a227]/70">· Video</span>}{mat.content_type === "pdf" && <span className="text-[#c9a227]/70">· PDF</span>}</div>

@@ -55,7 +55,7 @@ const UserForm = ({ initial, onSubmit, onCancel, submitting, canChangeRole }) =>
           required={!isEdit} placeholder={isEdit ? "Dejar vacío para no cambiar" : "Mínimo 6 caracteres"}
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white placeholder:text-[#a3b3a6]/50 focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227]" />
       </div>
-      <div className="sm:col-span-2 flex items-center justify-end gap-3">
+      <div className="sm:col-span-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
         {onCancel && (
           <button type="button" onClick={onCancel} data-testid="user-form-cancel"
             className="px-4 py-2.5 rounded-sm border border-[#a3b3a6]/40 text-[#a3b3a6] hover:border-[#a3b3a6] font-dm-sans text-xs tracking-widest uppercase">
@@ -158,14 +158,14 @@ export const UsersManager = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <div className="font-cinzel text-lg text-[#f4f1e1]">Usuarios del sistema</div>
           <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#a3b3a6]">{users.length} cuentas</div>
         </div>
         {mode === "list" && (
           <button onClick={() => setMode("create")} data-testid="users-create-btn"
-            className="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase">
+            className="btn-gold w-full sm:w-auto justify-center inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase">
             <Plus className="w-3.5 h-3.5" /> Nuevo usuario
           </button>
         )}

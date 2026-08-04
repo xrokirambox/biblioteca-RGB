@@ -84,7 +84,7 @@ const CategoryForm = ({ initial, onSubmit, onCancel, submitting }) => {
         />
       </div>
 
-      <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
+      <div className="md:col-span-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-2">
         {onCancel && (
           <button
             type="button"
@@ -169,7 +169,7 @@ export const CategoriesManager = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
           <div className="font-cinzel text-lg text-[#f4f1e1]">Gestión de salones</div>
           <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#a3b3a6]">
@@ -180,7 +180,7 @@ export const CategoriesManager = () => {
           <button
             onClick={() => setMode("create")}
             data-testid="categories-create-btn"
-            className="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"
+            className="btn-gold w-full sm:w-auto justify-center inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"
           >
             <Plus className="w-3.5 h-3.5" /> Nueva categoría
           </button>

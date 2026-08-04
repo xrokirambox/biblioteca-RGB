@@ -55,7 +55,7 @@ const BookForm = ({ initial, onSubmit, onCancel, submitting }) => {
         <textarea data-testid="book-form-description" value={form.description} onChange={handle("description")} rows={3}
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227] resize-none" />
       </div>
-      <div className="sm:col-span-2 flex items-center justify-end gap-3 pt-2">
+      <div className="sm:col-span-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-2">
         {onCancel && (
           <button type="button" onClick={onCancel} data-testid="book-form-cancel"
             className="px-4 py-2.5 rounded-sm border border-[#a3b3a6]/40 text-[#a3b3a6] hover:border-[#a3b3a6] font-dm-sans text-xs tracking-widest uppercase">
@@ -98,15 +98,15 @@ export const BooksManager = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
           <div className="font-cinzel text-lg text-[#f4f1e1]">Gestión de libros</div>
           <div className="font-dm-sans text-[10px] tracking-[0.25em] uppercase text-[#a3b3a6]">{books.length} en catálogo</div>
         </div>
         {mode === "list" && (
-          <div className="flex gap-2">
-            {notebookCart.length > 0 && <button onClick={() => setMode("notebook")} data-testid="notebook-cart-open" className="border border-[#c9a227]/50 text-[#c9a227] inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"><ShoppingCart className="w-3.5 h-3.5" /> IA ({notebookCart.length})</button>}
-            <button onClick={() => setMode("create")} data-testid="books-create-btn" className="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"><Plus className="w-3.5 h-3.5" /> Nuevo libro</button>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            {notebookCart.length > 0 && <button onClick={() => setMode("notebook")} data-testid="notebook-cart-open" className="flex-1 sm:flex-none justify-center border border-[#c9a227]/50 text-[#c9a227] inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"><ShoppingCart className="w-3.5 h-3.5" /> IA ({notebookCart.length})</button>}
+            <button onClick={() => setMode("create")} data-testid="books-create-btn" className="flex-1 sm:flex-none justify-center btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-sm font-dm-sans text-xs tracking-widest uppercase"><Plus className="w-3.5 h-3.5" /> Nuevo libro</button>
           </div>
         )}
       </div>
