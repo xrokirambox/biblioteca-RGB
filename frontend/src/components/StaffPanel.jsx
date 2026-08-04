@@ -37,7 +37,7 @@ export const StaffPanel = ({ open, onClose }) => {
       data-testid="staff-panel-overlay"
     >
       <div
-        className="w-full max-w-6xl bg-[#051a09] border border-[#c9a227]/30 rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col min-h-0 max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] animate-scale-in"
+        className="w-full max-w-6xl h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)] bg-[#051a09] border border-[#c9a227]/30 rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col min-h-0 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
         data-testid="staff-panel-modal"
       >

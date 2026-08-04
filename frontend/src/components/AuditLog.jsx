@@ -87,7 +87,7 @@ export const AuditLog = () => {
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 font-cormorant text-xl text-[#a3b3a6]">No hay eventos para mostrar.</div>
       ) : (
-        <div className="space-y-2" data-testid="audit-list">
+        <div className="space-y-2 max-h-[48dvh] sm:max-h-[52dvh] overflow-y-auto pr-1 sm:pr-2 custom-scrollbar" data-testid="audit-list">
           {filtered.map((e) => {
             const Icon = ACTION_ICONS[e.action] || History;
             const color = ACTION_COLORS[e.action] || ACTION_COLORS.update;
