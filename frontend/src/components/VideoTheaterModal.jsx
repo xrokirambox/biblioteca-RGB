@@ -43,12 +43,12 @@ export const VideoTheaterModal = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] bg-[#020b04]/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in"
+      className="fixed inset-0 z-[60] bg-[#020b04]/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-6 animate-fade-in"
       onClick={onClose}
       data-testid="video-theater-overlay"
     >
       <div
-        className="w-full max-w-6xl bg-[#051a09] border border-[#c9a227]/30 rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col max-h-[92vh] animate-scale-in"
+        className="w-full max-w-6xl bg-[#051a09] border border-[#c9a227]/30 rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col min-h-0 max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-3rem)] animate-scale-in"
         onClick={(e) => e.stopPropagation()}
         data-testid="video-theater-modal"
       >
@@ -69,7 +69,10 @@ export const VideoTheaterModal = ({
           </button>
         </div>
 
-        <div className={`w-full bg-black ${contentType === "pdf" ? "h-[72vh]" : "aspect-video"}`}>
+        <div
+          className={`bg-black shrink-0 ${contentType === "pdf" ? "w-full h-[58dvh] sm:h-[70dvh]" : "self-center aspect-video"}`}
+          style={contentType === "video" ? { width: "min(100%, calc((100dvh - 5rem) * 16 / 9))" } : undefined}
+        >
           <iframe
             src={videoSrc}
             title={title}
@@ -81,7 +84,7 @@ export const VideoTheaterModal = ({
 
         {/* Info debajo del video */}
         {(description || externalUrl) && (
-          <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+          <div className="min-h-0 p-4 sm:p-6 overflow-y-auto custom-scrollbar">
             {description && (
               <p className="font-cormorant text-base sm:text-lg text-[#a3b3a6] leading-relaxed">
                 {description}
