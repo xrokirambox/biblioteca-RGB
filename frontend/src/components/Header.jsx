@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { id: "salones", label: "Salones", href: "#salones" },
   { id: "destacados", label: "Libros", href: "#destacados" },
   { id: "buscar", label: "Buscar", href: "#buscar" },
+  { id: "creador", label: "Creador", href: "#creador" },
 ];
 
 export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {} }) => {

@@ -50,12 +50,17 @@ export const Footer = () => {
             </li>
             <li>
               <a href="#destacados" className="hover:text-[#c9a227] transition">
-                Destacados
+                Libros
               </a>
             </li>
             <li>
               <a href="#buscar" className="hover:text-[#c9a227] transition">
                 Buscar
+              </a>
+            </li>
+            <li>
+              <a href="#creador" className="hover:text-[#c9a227] transition">
+                Creador
               </a>
             </li>
           </ul>

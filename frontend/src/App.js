@@ -9,6 +9,7 @@ import { Hero } from "./components/Hero";
 import { SearchSection } from "./components/SearchSection";
 import { Categories } from "./components/Categories";
 import { FeaturedBooks } from "./components/FeaturedBooks";
+import { CreatorSection } from "./components/CreatorSection";
 import { CTABanner } from "./components/CTABanner";
 import { Footer } from "./components/Footer";
 import { LibraryModal } from "./components/LibraryModal";
@@ -42,6 +43,7 @@ const HomeInner = () => {
         <SearchSection query={searchQuery} onSearch={setSearchQuery} />
         <Categories />
         <FeaturedBooks searchQuery={searchQuery} generalBooks={generalBooks} onSearch={setSearchQuery} />
+        <CreatorSection />
         <CTABanner onOpenLibrary={openModal} />
       </main>
       <Footer />

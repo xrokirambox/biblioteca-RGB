@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { useLibrary } from "../context/LibraryContext";
-import { CATEGORIAS } from "../data/materias";
 import { ExternalLink, ShoppingCart, BookOpen, Search } from "lucide-react";
 
 const normalize = (value = "") => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -13,7 +12,7 @@ export const FeaturedBooks = ({ searchQuery = "", generalBooks = [], onSearch })
     const q = normalize(searchQuery.trim());
     const catalog = q ? [...books, ...generalBooks] : books;
     return catalog.filter((b) => {
-      const matchCat = q || filter === "all" ? true : b.category === filter;
+      const matchCat = filter === "all" || normalize(b.category) === filter;
       const matchQ =
         !q ||
         normalize(b.title).includes(q) ||
@@ -25,6 +24,11 @@ export const FeaturedBooks = ({ searchQuery = "", generalBooks = [], onSearch })
   }, [books, generalBooks, filter, searchQuery]);
 
   const isSearching = Boolean(searchQuery.trim());
+  const filterOptions = useMemo(() => {
+    const catalog = isSearching ? [...books, ...generalBooks] : books;
+    const categories = [...new Set(catalog.map((book) => book.category).filter(Boolean))];
+    return [{ id: "all", name: "Todas" }, ...categories.map((category) => ({ id: normalize(category), name: category }))];
+  }, [books, generalBooks, isSearching]);
   const suggestions = useMemo(() => {
     const values = [...books, ...generalBooks].flatMap((book) => [book.category, book.author]).filter(Boolean);
     return [...new Set(values)].slice(0, 4);
@@ -46,7 +50,7 @@ export const FeaturedBooks = ({ searchQuery = "", generalBooks = [], onSearch })
 
           {/* Filters */}
           <div className="flex flex-wrap gap-2" data-testid="category-filters">
-            {CATEGORIAS.map((c) => (
+            {filterOptions.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setFilter(c.id)}
