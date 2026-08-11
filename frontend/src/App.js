@@ -23,15 +23,16 @@ const HomeInner = () => {
   const [creatorOpen, setCreatorOpen] = useState(false);
   const generalBooks = useMemo(() => (
     (hierarchyMaterias || [])
-      .filter((materia) => !materia.content_type || materia.content_type === "book")
       .map((materia) => ({
         id: `general-${materia.id}`,
-        title: materia.name,
+        title: materia.name || "Recurso sin título",
         author: "Material general",
         category: materia.category || "general",
         cover: materia.cover || "",
         url: materia.url || "",
         description: materia.description || "Recurso general de la biblioteca.",
+        contentType: materia.content_type || "book",
+        embedHtml: materia.embed_html || "",
         isGeneral: true,
       }))
   ), [hierarchyMaterias]);

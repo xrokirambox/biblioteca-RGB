@@ -1,12 +1,19 @@
 import React, { useMemo, useState } from "react";
 import { useLibrary } from "../context/LibraryContext";
-import { ExternalLink, ShoppingCart, BookOpen, Search } from "lucide-react";
+import { ExternalLink, ShoppingCart, BookOpen, Search, FileText, Maximize, Video } from "lucide-react";
+import { VideoTheaterModal } from "./VideoTheaterModal";
 
-const normalize = (value = "") => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const normalize = (value) => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const getEmbedSrc = (embedHtml) => {
+  const match = String(embedHtml ?? "").match(/<iframe[^>]+src=["']([^"']+)["']/i);
+  const src = match?.[1] || "";
+  return /^https?:\/\//i.test(src) ? src : "";
+};
 
 export const FeaturedBooks = ({ searchQuery = "", generalBooks = [], onSearch }) => {
   const { books, notebookCart, toggleNotebookBook } = useLibrary();
   const [filter, setFilter] = useState("all");
+  const [selectedResource, setSelectedResource] = useState(null);
 
   const filtered = useMemo(() => {
     const q = normalize(searchQuery.trim());
@@ -85,7 +92,10 @@ export const FeaturedBooks = ({ searchQuery = "", generalBooks = [], onSearch })
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filtered.map((b, idx) => (
+            {filtered.map((b, idx) => {
+              const isEmbedded = ["video", "pdf"].includes(b.contentType);
+              const mediaSrc = isEmbedded ? getEmbedSrc(b.embedHtml) : "";
+              return (
               <article
                 key={b.id}
                 data-testid={`book-card-${b.id}`}
@@ -93,8 +103,12 @@ export const FeaturedBooks = ({ searchQuery = "", generalBooks = [], onSearch })
                 style={{ animationDelay: `${idx * 0.05}s` }}
               >
                 <div className="relative aspect-[3/4] overflow-hidden">
-                  {b.cover ? <img src={b.cover} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full bg-[#020b04] flex items-center justify-center"><BookOpen className="w-12 h-12 text-[#c9a227]/50" /></div>}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#020b04] via-[#020b04]/40 to-transparent" />
+                  {mediaSrc ? (
+                    <button type="button" onClick={() => setSelectedResource({ ...b, mediaSrc })} className="w-full h-full" data-testid={`resource-open-${b.id}`}>
+                      <iframe src={mediaSrc} title={b.title} className="w-full h-full border-0 pointer-events-none" loading="lazy" />
+                    </button>
+                  ) : b.cover ? <img src={b.cover} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full bg-[#020b04] flex items-center justify-center">{b.contentType === "pdf" ? <FileText className="w-12 h-12 text-[#c9a227]/50" /> : isEmbedded ? <Video className="w-12 h-12 text-[#c9a227]/50" /> : <BookOpen className="w-12 h-12 text-[#c9a227]/50" />}</div>}
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#020b04] via-[#020b04]/40 to-transparent" />
                   <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#020b04]/80 border border-[#c9a227]/30 font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]">
                     {b.isGeneral ? "General" : b.category}
                   </div>
@@ -117,10 +131,20 @@ export const FeaturedBooks = ({ searchQuery = "", generalBooks = [], onSearch })
                   </div>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
+      <VideoTheaterModal
+        open={Boolean(selectedResource)}
+        onClose={() => setSelectedResource(null)}
+        videoSrc={selectedResource?.mediaSrc || ""}
+        contentType={selectedResource?.contentType}
+        title={selectedResource?.title || "Recurso"}
+        description={selectedResource?.description || ""}
+        externalUrl={selectedResource?.url || ""}
+      />
     </section>
   );
 };

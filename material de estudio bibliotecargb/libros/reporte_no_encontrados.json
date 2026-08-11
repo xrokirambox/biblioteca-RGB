@@ -1,0 +1,22 @@
+{
+  "filas_csv_totales": 596,
+  "filas_csv_con_error_de_formato": 0,
+  "recursos_generados": 561,
+  "subcategorias_sin_match": {
+    "📋 GUÍAS DE APRENDIZAJE": 25,
+    "📚 CARTILLAS": 4
+  },
+  "ejemplos_por_subcategoria_sin_match": {
+    "📋 GUÍAS DE APRENDIZAJE": [
+      "[5°] Tecnologia-5o-Guias-de-aprendizaje.pdf",
+      "[4°] Tecnologia-4o-Guias-de-aprendizaje.pdf",
+      "[3°] Tecnologia-3o-Guias-de-aprendizaje.pdf"
+    ],
+    "📚 CARTILLAS": [
+      "[6°] CIEN_6_UNIDAD1_DOC.pdf",
+      "[6°] SOC_6_UNIDAD1_DOC.pdf",
+      "[6°] SOC_6_UNIDAD1_EST.pdf"
+    ]
+  },
+  "lineas_con_error_de_formato": []
+}
