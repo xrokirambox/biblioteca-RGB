@@ -29,7 +29,10 @@ class Settings(BaseSettings):
         if self.cors_origins.strip() in ("", "*"):
             raise ValueError("CORS_ORIGINS debe listar explícitamente los dominios permitidos cuando se usan cookies")
         return [
-            origin.strip()
+            # An Origin header never carries a trailing slash.  Normalizing it
+            # here prevents an otherwise valid Render/Vercel setting such as
+            # "https://site.vercel.app/" from silently failing CORS checks.
+            origin.strip().rstrip("/")
             for origin in self.cors_origins.split(",")
             if origin.strip()
         ]

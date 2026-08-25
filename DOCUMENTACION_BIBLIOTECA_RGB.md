@@ -677,7 +677,7 @@ npm run build   # Genera /build para producción
 npm start       # Servidor de desarrollo
 ```
 
-La URL del backend se configura en `frontend/src/lib/api.js` mediante la variable de entorno `REACT_APP_API_URL`.
+La URL del backend se configura en `frontend/src/lib/api.js` mediante la variable de entorno `REACT_APP_BACKEND_URL`.
 
 ### Variables de entorno requeridas en producción
 
