@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.core.deps import require_staff
+from app.core.deps import require_admin, require_staff
 from app.domain.schemas import BookCreate, BookUpdate
 from app.services import books_service
 
@@ -23,6 +23,6 @@ async def update_book(book_id: str, payload: BookUpdate, current=Depends(require
 
 
 @router.delete("/{book_id}")
-async def delete_book(book_id: str, current=Depends(require_staff)):
+async def delete_book(book_id: str, current=Depends(require_admin)):
     deleted = await books_service.delete_book(book_id, current)
     return {"deleted": deleted}

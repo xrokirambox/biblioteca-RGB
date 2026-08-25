@@ -22,3 +22,5 @@ async def ensure_indexes() -> None:
     await db.hierarchy_materias.create_index("id", unique=True)
     await db.hierarchy_materias.create_index("subcategory_id")
     await db.audit_log.create_index([("timestamp", -1)])
+    await db.book_proposals.create_index("id", unique=True)
+    await db.book_proposals.create_index([("status", 1), ("submitted_at", -1)])

@@ -16,13 +16,13 @@ def new_id() -> str:
 # ---------- Auth ----------
 class LoginIn(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=1, max_length=128)
 
 
 # ---------- Users ----------
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=12, max_length=128)
     name: str = ""
     role: str = "rector"
 
@@ -30,7 +30,7 @@ class UserCreate(BaseModel):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     role: Optional[str] = None
-    password: Optional[str] = None
+    password: Optional[str] = Field(default=None, max_length=128)
     profile_photo_url: Optional[str] = None
 
 
@@ -48,7 +48,29 @@ class UserOut(BaseModel):
 
 
 class UserWithToken(UserOut):
-    token: str
+    csrf_token: str
+
+
+# ---------- Book proposals ----------
+class BookProposalCreate(BaseModel):
+    teacher_name: str = Field(min_length=2, max_length=100)
+    book_title: str = Field(min_length=2, max_length=200)
+    author: str = Field(default="", max_length=120)
+    reason: str = Field(default="", max_length=1000)
+
+
+class BookProposalUpdate(BaseModel):
+    status: str = Field(pattern="^(pending|reviewed|accepted|rejected)$")
+
+
+class BookProposalRecord(BookProposalCreate):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=new_id)
+    status: str = "pending"
+    submitted_by: str = ""
+    submitted_at: str = Field(default_factory=now_iso)
+    reviewed_by: str = ""
+    reviewed_at: Optional[str] = None
 
 
 # ---------- Links ----------

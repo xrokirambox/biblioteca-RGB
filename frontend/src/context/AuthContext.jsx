@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { api, setAuthToken } from "../lib/api";  // FIX: importar setAuthToken
+import { api, setCsrfToken } from "../lib/api";
 
 const AuthContext = createContext(null);
 
@@ -10,8 +10,10 @@ export function AuthProvider({ children }) {
   const fetchMe = useCallback(async () => {
     try {
       const res = await api.get("/auth/me");
+      setCsrfToken(res.data?.csrf_token);
       setUser(res.data);
     } catch {
+      setCsrfToken(null);
       setUser(false);
     }
   }, []);
@@ -20,7 +22,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
-    if (res.data?.token) setAuthToken(res.data.token);  // ahora funciona
+    setCsrfToken(res.data?.csrf_token);
     setUser(res.data);
     return res.data;
   };
@@ -29,20 +31,21 @@ export function AuthProvider({ children }) {
     try {
       await api.post("/auth/logout");
     } catch (_) {}
-    setAuthToken(null);
+    setCsrfToken(null);
     setUser(false);
   };
 
   const role = user?.role || null;
   const isAdmin = role === "admin";
   const isRector = role === "rector";
+  const isTeacher = role === "docente";
   const isStaff = isAdmin || isRector;
   const canDeleteUsers = isAdmin;
   const canChangeRoles = isAdmin;
   const canCreateUsers = isStaff;
 
   const value = {
-    user, role, isAdmin, isRector, isStaff,
+    user, role, isAdmin, isRector, isTeacher, isStaff,
     canDeleteUsers, canChangeRoles, canCreateUsers,
     loginOpen, setLoginOpen, login, logout,
   };

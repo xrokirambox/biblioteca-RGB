@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # JWT
     jwt_secret: str
-    jwt_expire_hours: int = 12
+    jwt_expire_hours: int = 8
 
     # CORS
     cors_origins: str = "https://biblioteca-rgb.vercel.app"
@@ -24,18 +24,10 @@ class Settings(BaseSettings):
     # Cookies
     secure_cookies: bool = True
 
-    # Admin
-    admin_email: str = "admin@rgb.edu"
-    admin_password: str = "admin123"
-
-    # Rector
-    rector_email: str = "rector@rgb.edu"
-    rector_password: str = "rector123"
-
     @property
     def cors_origin_list(self) -> List[str]:
         if self.cors_origins.strip() in ("", "*"):
-            return ["*"]
+            raise ValueError("CORS_ORIGINS debe listar explícitamente los dominios permitidos cuando se usan cookies")
         return [
             origin.strip()
             for origin in self.cors_origins.split(",")

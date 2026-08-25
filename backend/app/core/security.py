@@ -1,3 +1,4 @@
+import secrets
 import time
 import bcrypt
 import jwt
@@ -18,15 +19,17 @@ def verify_password(plain: str, hashed: str) -> bool:
         return False
 
 
-def create_access_token(user_id: str, email: str, role: str) -> str:
+def create_access_token(user_id: str, email: str, role: str) -> tuple[str, str]:
+    csrf_token = secrets.token_urlsafe(32)
     payload = {
         "sub": user_id,
         "email": email,
         "role": role,
         "exp": int(time.time()) + settings.jwt_expire_hours * 3600,  # FIX: expiry→expire
         "type": "access",
+        "csrf": csrf_token,
     }
-    return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
+    return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM), csrf_token
 
 
 def decode_access_token(token: str) -> dict:

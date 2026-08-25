@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from app.core.deps import require_staff
+from app.core.deps import require_admin, require_staff
 from app.domain.schemas import (
     HierarchyCategoryCreate,
     HierarchyCategoryUpdate,
@@ -44,7 +44,7 @@ async def update_hierarchy_category(
 
 @router.delete("/categories/{category_id}")
 async def delete_hierarchy_category(
-    category_id: str, current=Depends(require_staff)
+    category_id: str, current=Depends(require_admin)
 ):
     return await hierarchy_service.delete_hierarchy_category(category_id, current)
 
@@ -76,7 +76,7 @@ async def update_subcategory(
 
 @router.delete("/subcategories/{subcategory_id}")
 async def delete_subcategory(
-    subcategory_id: str, current=Depends(require_staff)
+    subcategory_id: str, current=Depends(require_admin)
 ):
     return await hierarchy_service.delete_subcategory(subcategory_id, current)
 
@@ -108,6 +108,6 @@ async def update_materia(
 
 @router.delete("/materias/{materia_id}")
 async def delete_materia(
-    materia_id: str, current=Depends(require_staff)
+    materia_id: str, current=Depends(require_admin)
 ):
     return await hierarchy_service.delete_materia(materia_id, current)

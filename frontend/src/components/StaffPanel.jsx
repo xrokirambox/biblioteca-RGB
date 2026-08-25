@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, BookOpen, Users, History, LayoutDashboard, Layers, Network } from "lucide-react";
+import { X, BookOpen, History, LayoutDashboard, Layers, Network, KeyRound, Lightbulb } from "lucide-react";
 import { BooksManager } from "./BooksManager";
 import { UsersManager } from "./UsersManager";
 import { AuditLog } from "./AuditLog";
 import { CategoriesManager } from "./CategoriesManager";
 import { HierarchyManager } from "./HierarchyManager";
+import { ProposalsManager } from "./ProposalsManager";
 import { useAuth } from "../context/AuthContext";
 
 const TABS = [
   { id: "books", label: "Libros", icon: BookOpen },
-  { id: "users", label: "Usuarios", icon: Users },
+  { id: "credentials", label: "Credenciales", icon: KeyRound },
   { id: "categories", label: "Salones", icon: Layers },
   { id: "hierarchy", label: "Jerarquía", icon: Network },
   { id: "audit", label: "Auditoría", icon: History },
+  { id: "proposals", label: "Propuestas", icon: Lightbulb },
 ];
 
 export const StaffPanel = ({ open, onClose }) => {
@@ -82,10 +84,11 @@ export const StaffPanel = ({ open, onClose }) => {
         {/* Body */}
         <div className="px-3 sm:px-6 py-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
           {tab === "books" && <BooksManager />}
-          {tab === "users" && <UsersManager />}
+          {tab === "credentials" && <UsersManager />}
           {tab === "categories" && <CategoriesManager />}
           {tab === "hierarchy" && <HierarchyManager />}
           {tab === "audit" && <AuditLog />}
+          {tab === "proposals" && <ProposalsManager />}
         </div>
       </div>
     </div>,

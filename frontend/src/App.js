@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -16,11 +16,23 @@ import { LibraryModal } from "./components/LibraryModal";
 import { AdminLogin } from "./components/AdminLogin";
 import { AdminBadge } from "./components/AdminBadge";
 import { NotebookCart } from "./components/NotebookCart";
+import { WelcomeTour, hasCompletedWelcomeTour } from "./components/WelcomeTour";
+import { BookProposalForm } from "./components/BookProposalForm";
 
 const HomeInner = () => {
   const { openModal, books, hierarchyMaterias, notebookCart, toggleNotebookBook, notebookCartOpen, setNotebookCartOpen, setNotebookCart } = useLibrary();
   const [searchQuery, setSearchQuery] = useState("");
   const [creatorOpen, setCreatorOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+
+  useEffect(() => {
+    if (!hasCompletedWelcomeTour()) setTourOpen(true);
+  }, []);
+
+  const closeTour = () => {
+    try { window.localStorage.setItem("rgb-library-welcome-tour-completed", "true"); } catch { /* local storage may be unavailable */ }
+    setTourOpen(false);
+  };
   const generalBooks = useMemo(() => (
     (hierarchyMaterias || [])
       .map((materia) => ({
@@ -39,12 +51,13 @@ const HomeInner = () => {
 
   return (
     <div className="App relative">
-      <Header onOpenLibrary={openModal} onOpenNotebookCart={() => setNotebookCartOpen(true)} onOpenCreator={() => setCreatorOpen(true)} />
+      <Header onOpenLibrary={openModal} onOpenNotebookCart={() => setNotebookCartOpen(true)} onOpenCreator={() => setCreatorOpen(true)} onOpenTour={() => setTourOpen(true)} />
       <main>
         <Hero onOpenLibrary={openModal} />
         <SearchSection query={searchQuery} onSearch={setSearchQuery} />
         <Categories />
         <FeaturedBooks searchQuery={searchQuery} generalBooks={generalBooks} onSearch={setSearchQuery} />
+        <BookProposalForm />
         <CTABanner onOpenLibrary={openModal} />
       </main>
       <Footer onOpenCreator={() => setCreatorOpen(true)} />
@@ -52,6 +65,7 @@ const HomeInner = () => {
       <AdminLogin />
       <AdminBadge />
       <CreatorModal open={creatorOpen} onClose={() => setCreatorOpen(false)} />
+      <WelcomeTour open={tourOpen} onClose={closeTour} />
       {notebookCartOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Carrito de NotebookLM">
           <div className="max-w-3xl mx-auto mt-12">

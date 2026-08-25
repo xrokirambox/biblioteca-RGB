@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.core.deps import require_staff
+from app.core.deps import require_admin, require_staff
 from app.domain.schemas import CategoryCreate, CategoryUpdate
 from app.services import categories_service
 
@@ -23,6 +23,6 @@ async def update_category(category_id: str, payload: CategoryUpdate, current=Dep
 
 
 @router.delete("/{category_id}")
-async def delete_category(category_id: str, current=Depends(require_staff)):
+async def delete_category(category_id: str, current=Depends(require_admin)):
     deleted = await categories_service.delete_category(category_id, current)
     return {"deleted": deleted}

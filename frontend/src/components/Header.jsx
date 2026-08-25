@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Menu, X, LogOut, Shield, ShoppingCart } from "lucide-react";
+import { Menu, X, LogOut, Shield, ShoppingCart, CircleHelp } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
 import { useAuth } from "../context/AuthContext";
 import { UserAvatar } from "./UserAvatar";
@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { id: "creador", label: "Creador" },
 ];
 
-export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {}, onOpenCreator = () => {} }) => {
+export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {}, onOpenCreator = () => {}, onOpenTour = () => {} }) => {
   const [open, setOpen] = useState(false);
   const { isStaff, user, role, setLoginOpen, logout } = useAuth();
   const { notebookCart } = useLibrary();
@@ -69,6 +69,9 @@ export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {}, onOpenCre
             Carrito
             {notebookCart.length > 0 && <span className="min-w-4 h-4 px-1 rounded-full bg-[#c9a227] text-[#020b04] text-[9px] inline-flex items-center justify-center">{notebookCart.length}</span>}
           </button>
+          <button onClick={onOpenTour} data-testid="header-tour-btn" title="Cómo funciona la biblioteca" className="p-2 text-[#a3b3a6] transition hover:text-[#c9a227]" aria-label="Ver guía de la biblioteca">
+            <CircleHelp className="w-5 h-5" />
+          </button>
           <button onClick={onOpenLibrary} data-testid="header-open-library-btn"
             className="btn-gold px-4 py-1.5 rounded-sm text-sm font-dm-sans font-semibold tracking-wide">
             Biblioteca
@@ -95,6 +98,7 @@ export const Header = ({ onOpenLibrary, onOpenNotebookCart = () => {}, onOpenCre
             className="btn-outline-gold inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm text-xs font-dm-sans font-semibold tracking-widest uppercase">
             <ShoppingCart className="w-3.5 h-3.5" /> Carrito{notebookCart.length ? ` (${notebookCart.length})` : ""}
           </button>
+          <button onClick={() => { setOpen(false); onOpenTour(); }} className="font-dm-sans text-left text-sm text-[#f4f1e1]">¿Cómo funciona?</button>
           <button onClick={() => { setOpen(false); onOpenLibrary(); }} data-testid="mobile-open-library-btn"
             className="btn-gold px-4 py-2 rounded-sm text-sm font-dm-sans font-semibold">
             Abrir Biblioteca

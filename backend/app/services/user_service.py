@@ -9,8 +9,13 @@ from app.core.security import hash_password
 from app.domain.schemas import UserCreate, UserUpdate
 from app.repositories.user_repo import UserRepository
 
-ALLOWED_ROLES = ("admin", "rector")
+ALLOWED_ROLES = ("admin", "rector", "docente")
 user_repo = UserRepository()
+
+
+def validate_password(password: str) -> None:
+    if len(password) < 12:
+        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos 12 caracteres")
 
 
 async def list_users() -> List[Dict[str, Any]]:
@@ -18,12 +23,13 @@ async def list_users() -> List[Dict[str, Any]]:
 
 
 async def create_user(payload: UserCreate, current: Dict[str, Any]) -> Dict[str, Any]:
+    validate_password(payload.password)
     if payload.role not in ALLOWED_ROLES:
         raise HTTPException(status_code=400, detail="Rol inválido (admin|rector)")
-    if current["role"] == "rector" and payload.role != "rector":
+    if current["role"] == "rector" and payload.role != "docente":
         raise HTTPException(
             status_code=403,
-            detail="Un rector solo puede crear usuarios con rol 'rector'",
+            detail="Un rector solo puede crear credenciales de docente",
         )
     email = payload.email.lower().strip()
     if await user_repo.get_by_email(email):
@@ -51,6 +57,9 @@ async def update_user(user_id: str, payload: UserUpdate,
     if not existing:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
+    if current["role"] != "admin" and user_id != current["id"] and existing["role"] != "docente":
+        raise HTTPException(status_code=403, detail="Un rector solo puede editar su cuenta o cuentas docentes")
+
     if payload.role is not None:
         if current["role"] != "admin":
             raise HTTPException(status_code=403, detail="Solo admin puede cambiar roles")
@@ -63,6 +72,7 @@ async def update_user(user_id: str, payload: UserUpdate,
     if payload.role is not None:
         changes["role"] = payload.role
     if payload.password is not None and payload.password.strip():
+        validate_password(payload.password)
         changes["password_hash"] = hash_password(payload.password)
     if payload.profile_photo_url is not None:
         changes["profile_photo_url"] = payload.profile_photo_url or None
@@ -83,6 +93,11 @@ async def update_user(user_id: str, payload: UserUpdate,
 async def delete_user(user_id: str, current: Dict[str, Any]) -> int:
     if user_id == current["id"]:
         raise HTTPException(status_code=400, detail="No puedes eliminar tu propio usuario")
+    target = await user_repo.get_by_id(user_id)
+    if not target:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    if target["role"] == "admin" and await user_repo.count_by_role("admin") <= 1:
+        raise HTTPException(status_code=400, detail="Debe existir al menos un administrador")
     deleted = await user_repo.delete(user_id)
     if deleted == 0:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")

@@ -3,7 +3,7 @@ import axios from "axios";
 const backendUrl = process.env.REACT_APP_BACKEND_URL || "";
 const baseURL = `${backendUrl}/api`;
 
-const TOKEN_KEY = "rgb_staff_token";
+let csrfToken = null;
 
 export const api = axios.create({
   baseURL,
@@ -13,31 +13,14 @@ export const api = axios.create({
   },
 });
 
-// Attach Bearer token automatically if present
+// The session is an HttpOnly cookie; only this short-lived CSRF value is held in memory.
 api.interceptors.request.use((config) => {
-  const token =
-    (typeof localStorage !== "undefined" &&
-      localStorage.getItem(TOKEN_KEY)) ||
-    null;
-
-  if (token) {
+  if (csrfToken) {
     config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers["X-CSRF-Token"] = csrfToken;
   }
 
   return config;
 });
 
-export const setAuthToken = (token) => {
-  if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
-  } else {
-    localStorage.removeItem(TOKEN_KEY);
-  }
-};
-
-export const getAuthToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
-};
-
-export const TOKEN_STORAGE_KEY = TOKEN_KEY;
+export const setCsrfToken = (token) => { csrfToken = token || null; };

@@ -33,3 +33,6 @@ class UserRepository:
     async def delete(self, user_id: str) -> int:
         result = await self.collection.delete_one({"id": user_id})
         return result.deleted_count
+
+    async def count_by_role(self, role: str) -> int:
+        return await self.collection.count_documents({"role": role})

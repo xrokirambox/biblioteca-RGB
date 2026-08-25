@@ -183,15 +183,12 @@ El backend se configura mediante variables de entorno. El archivo `backend/app/c
 | `MONGO_URL` | URI de conexión a MongoDB | *requerida* |
 | `DB_NAME` | Nombre de la base de datos | *requerida* |
 | `JWT_SECRET` | Clave secreta para firmar JWT | *requerida* |
-| `JWT_EXPIRE_HOURS` | Duración del token en horas | `12` |
+| `JWT_EXPIRE_HOURS` | Duración del token en horas | `8` |
 | `CORS_ORIGINS` | Orígenes permitidos (separados por coma) | `https://biblioteca-rgb.vercel.app` |
 | `SECURE_COOKIES` | Activar cookies seguras (HTTPS) | `True` |
-| `ADMIN_EMAIL` | Email del administrador semilla | `admin@rgb.edu` |
-| `ADMIN_PASSWORD` | Contraseña del administrador semilla | `admin123` |
-| `RECTOR_EMAIL` | Email del rector semilla | `rector@rgb.edu` |
-| `RECTOR_PASSWORD` | Contraseña del rector semilla | `rector123` |
+No existen cuentas ni contraseñas predeterminadas. El primer administrador se crea de forma interactiva con `python scripts/bootstrap_admin.py --email admin@colegio.edu` y las demás cuentas se gestionan desde el panel.
 
-> **Importante:** En producción, sobreescribir siempre `ADMIN_PASSWORD`, `RECTOR_PASSWORD` y `JWT_SECRET` con valores seguros.
+> **Importante:** Use un `JWT_SECRET` aleatorio y mantenga `SECURE_COOKIES=True` en producción.
 
 ---
 
@@ -369,7 +366,7 @@ La API se monta bajo el prefijo `/api`.
 ```json
 // POST /api/auth/login
 // Body:
-{ "email": "admin@rgb.edu", "password": "admin123" }
+{ "email": "admin@colegio.edu", "password": "una-contraseña-segura" }
 
 // Respuesta 200:
 {
@@ -377,7 +374,7 @@ La API se monta bajo el prefijo `/api`.
   "email": "admin@rgb.edu",
   "name": "Administrador",
   "role": "admin",
-  "token": "eyJhbGci..."
+  "csrf_token": "token-de-proteccion-de-solicitud"
 }
 ```
 
@@ -473,7 +470,7 @@ La capa de servicios contiene la lógica de negocio. Los routers delegan en ella
 
 - `login(email, password, request)` — valida credenciales, aplica rate limit, genera token, registra en auditoría.
 - `logout(current)` — registra en auditoría.
-- `seed_default_users()` — crea o actualiza los usuarios admin y rector al arrancar.
+- Las cuentas se crean únicamente desde el panel o mediante el script de arranque seguro.
 
 #### `books_service.py`
 
@@ -690,24 +687,15 @@ La URL del backend se configura en `frontend/src/lib/api.js` mediante la variabl
 MONGO_URL=mongodb+srv://...
 DB_NAME=biblioteca_rgb
 JWT_SECRET=<clave-segura-aleatoria>
-ADMIN_EMAIL=admin@tu-dominio.edu
-ADMIN_PASSWORD=<contraseña-segura>
-RECTOR_EMAIL=rector@tu-dominio.edu
-RECTOR_PASSWORD=<contraseña-segura>
 CORS_ORIGINS=https://tu-frontend.vercel.app
 SECURE_COOKIES=True
 ```
 
 ---
 
-## Credenciales por Defecto
+## Creación de la primera cuenta
 
-> ⚠️ **Cambiar inmediatamente en producción.**
-
-| Rol | Email | Contraseña |
-|---|---|---|
-| Administrador | `admin@rgb.edu` | `admin123` |
-| Rector | `rector@rgb.edu` | `rector123` |
+No hay credenciales por defecto. Ejecute `python scripts/bootstrap_admin.py --email admin@colegio.edu` desde `backend`; el comando solicita una contraseña de al menos 12 caracteres y solo guarda su hash bcrypt en MongoDB.
 
 ---
 

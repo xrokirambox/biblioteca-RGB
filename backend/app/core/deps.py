@@ -11,10 +11,6 @@ user_repo = UserRepository()
 async def get_current_user(request: Request) -> Dict[str, Any]:
     token = request.cookies.get("access_token")
     if not token:
-        auth = request.headers.get("Authorization", "")
-        if auth.startswith("Bearer "):
-            token = auth[7:]
-    if not token:
         raise HTTPException(status_code=401, detail="No autenticado")
     try:
         payload = decode_access_token(token)
@@ -24,6 +20,7 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
         raise HTTPException(status_code=401, detail="Token inválido")
     if payload.get("type") != "access":
         raise HTTPException(status_code=401, detail="Token inválido")
+    request.state.csrf_token = payload.get("csrf", "")
     user = await user_repo.get_by_id(payload["sub"])
     if not user:
         raise HTTPException(status_code=401, detail="Usuario no encontrado")

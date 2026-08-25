@@ -8,12 +8,13 @@ import { toast } from "sonner";
 const ROLES = [
   { id: "admin", label: "Administrador" },
   { id: "rector", label: "Rector" },
+  { id: "docente", label: "Docente" },
 ];
 
-const UserForm = ({ initial, onSubmit, onCancel, submitting, canChangeRole }) => {
+const UserForm = ({ initial, onSubmit, onCancel, submitting, canChangeRole, isRector }) => {
   const [form, setForm] = useState(
     initial ? { email: initial.email, name: initial.name || "", role: initial.role, password: "" }
-            : { email: "", name: "", role: "rector", password: "" }
+            : { email: "", name: "", role: isRector ? "docente" : "rector", password: "" }
   );
   useEffect(() => {
     if (initial) setForm({ email: initial.email, name: initial.name || "", role: initial.role, password: "" });
@@ -41,7 +42,7 @@ const UserForm = ({ initial, onSubmit, onCancel, submitting, canChangeRole }) =>
         <label className="block font-dm-sans text-[10px] tracking-widest uppercase text-[#c9a227]/80 mb-1.5">Rol</label>
         <select data-testid="user-form-role" value={form.role} onChange={handle("role")} disabled={isEdit && !canChangeRole}
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227] disabled:opacity-60">
-          {ROLES.map((r) => <option key={r.id} value={r.id} className="bg-[#051a09]">{r.label}</option>)}
+          {ROLES.filter((r) => !isRector || r.id === "docente" || (isEdit && r.id === initial.role)).map((r) => <option key={r.id} value={r.id} className="bg-[#051a09]">{r.label}</option>)}
         </select>
         {isEdit && !canChangeRole && (
           <div className="font-dm-sans text-[10px] text-[#a3b3a6] mt-1">Solo admin puede cambiar roles</div>
@@ -85,7 +86,7 @@ const RoleBadge = ({ role }) => {
 };
 
 export const UsersManager = () => {
-  const { user, canChangeRoles, canDeleteUsers } = useAuth();
+  const { user, canChangeRoles, canDeleteUsers, isRector } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState("list");
@@ -172,12 +173,12 @@ export const UsersManager = () => {
       </div>
 
       {mode === "create" && (
-        <UserForm onSubmit={handleCreate} onCancel={() => setMode("list")} submitting={busy} canChangeRole={canChangeRoles} />
+        <UserForm onSubmit={handleCreate} onCancel={() => setMode("list")} submitting={busy} canChangeRole={canChangeRoles} isRector={isRector} />
       )}
       {mode === "edit" && editing && (
         <>
           <UserForm initial={editing} onSubmit={handleUpdate} onCancel={() => { setMode("list"); setEditing(null); }}
-            submitting={busy} canChangeRole={canChangeRoles} />
+            submitting={busy} canChangeRole={canChangeRoles} isRector={isRector} />
           <ProfilePhotoUploader user={editing} onPhotoUpdate={handlePhotoUpdate} uploading={busy} />
         </>
       )}
@@ -210,10 +211,10 @@ export const UsersManager = () => {
                   <td className="px-4 py-3 text-[#a3b3a6] text-xs">{(u.created_at || "").slice(0, 10)}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex items-center gap-2">
-                      <button onClick={() => { setEditing(u); setMode("edit"); }} data-testid={`user-edit-${u.id}`}
+                      {(user?.id === u.id || !isRector || u.role === "docente") && <button onClick={() => { setEditing(u); setMode("edit"); }} data-testid={`user-edit-${u.id}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-[#c9a227]/50 text-[#c9a227] hover:bg-[#c9a227]/10 text-[10px] tracking-widest uppercase">
                         <Edit3 className="w-3 h-3" /> Editar
-                      </button>
+                      </button>}
                       {canDeleteUsers && u.id !== user?.id && (
                         <button onClick={() => handleDelete(u)} data-testid={`user-delete-${u.id}`}
                           className="p-2 rounded-sm border border-red-900/50 text-red-400/80 hover:bg-red-950/50" title="Eliminar">

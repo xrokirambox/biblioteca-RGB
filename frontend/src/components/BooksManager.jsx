@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Save, Trash2, Edit3, Loader2, BookOpen, ShoppingCart } from "lucide-react";
 import { useLibrary } from "../context/LibraryContext";
+import { useAuth } from "../context/AuthContext";
 import { CATEGORIAS } from "../data/materias";
 import { toast } from "sonner";
 import { NotebookCart } from "./NotebookCart";
@@ -74,6 +75,7 @@ const BookForm = ({ initial, onSubmit, onCancel, submitting }) => {
 
 export const BooksManager = () => {
   const { books, createBook, updateBook, deleteBook, refreshBooks, notebookCart, toggleNotebookBook, setNotebookCart } = useLibrary();
+  const { isAdmin } = useAuth();
   const [mode, setMode] = useState("list");
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -142,10 +144,10 @@ export const BooksManager = () => {
                       className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-sm border border-[#c9a227]/50 text-[#c9a227] hover:bg-[#c9a227]/10 font-dm-sans text-[10px] tracking-widest uppercase">
                       <Edit3 className="w-3 h-3" /> Editar
                     </button>
-                    <button onClick={() => handleDelete(b)} data-testid={`admin-book-delete-${b.id}`}
+                    {isAdmin && <button onClick={() => handleDelete(b)} data-testid={`admin-book-delete-${b.id}`}
                       className="p-2 rounded-sm border border-red-900/50 text-red-400/80 hover:bg-red-950/50" title="Eliminar">
                       <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    </button>}
                   </div>
                 </div>
               </div>

@@ -168,8 +168,8 @@ Estas limitaciones se derivan de la revisión del código. Comunicarlas con clar
 | Prioridad | Limitación actual | Impacto | Tratamiento recomendado |
 | --- | --- | --- |
 | Crítica antes de producción | El archivo de Render indica `uvicorn backend.main:app`, pero el punto de entrada existente es `backend/server.py`. | El backend podría no iniciar con esa configuración tal como está. | Corregir y probar el comando de despliegue durante la puesta en producción. |
-| Crítica antes de producción | Hay credenciales predeterminadas en la configuración (`admin123` y `rector123`) y el arranque sincroniza las cuentas semilla con las variables. | Riesgo de acceso no autorizado si se usa sin configuración. | Definir correos, contraseñas robustas y `JWT_SECRET` únicos por colegio antes del primer lanzamiento. |
-| Alta | El token también se persiste en `localStorage` para enviar el encabezado Bearer. | Una vulnerabilidad XSS podría exponer una sesión. | Mantener dependencias actualizadas, aplicar CSP y, para una versión endurecida, migrar a cookie HttpOnly exclusivamente con estrategia CSRF. |
+| Resuelta | Las cuentas no tienen credenciales predeterminadas ni se sincronizan al arrancar. | El acceso inicial requiere una creación explícita y auditable. | Ejecutar el script seguro de creación del primer administrador y usar contraseñas de 12 o más caracteres. |
+| Resuelta | La sesión se almacena exclusivamente en cookie HttpOnly y las mutaciones exigen CSRF. | Reduce el riesgo de robo de token por XSS y de solicitudes forjadas. | Mantener HTTPS, `SECURE_COOKIES=true` y un `JWT_SECRET` único. |
 | Alta | El límite de intentos de login es un diccionario en memoria y toma `X-Forwarded-For` sin una capa de proxy confiable. | Se reinicia al redeploy y no se comparte entre réplicas; su eficacia depende de la infraestructura. | Usar Redis/rate limiting gestionado y configurar correctamente el proxy/CDN si se prevé alto tráfico. |
 | Alta | No hay recuperación de contraseña, MFA, revocación de JWT ni bloqueo de cuenta persistente. | La administración de accesos depende del administrador y del vencimiento de sesión. | Incluir estas funciones en una fase de seguridad institucional si el colegio las exige. |
 | Media | Los enlaces, portadas y fotos se alojan externamente (p. ej. Google Drive o Unsplash); la plataforma guarda URL, no archivos. | Si el proveedor externo cambia permisos o borra el archivo, el recurso deja de funcionar. | Definir una política editorial y, si se requiere, integrar almacenamiento institucional/S3 y revisión de enlaces. |
@@ -190,8 +190,8 @@ La venta responsable debe incluir una fase corta de implementación. El producto
 
 - [ ] Elegir dominio o subdominio y habilitar HTTPS.
 - [ ] Crear base de datos MongoDB exclusiva por institución y restringir el acceso de red.
-- [ ] Definir `MONGO_URL`, `DB_NAME`, `JWT_SECRET`, `CORS_ORIGINS`, `SECURE_COOKIES`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `RECTOR_EMAIL` y `RECTOR_PASSWORD`.
-- [ ] Reemplazar todas las credenciales por defecto y guardar los secretos fuera del repositorio.
+- [ ] Definir `MONGO_URL`, `DB_NAME`, `JWT_SECRET`, `CORS_ORIGINS` y `SECURE_COOKIES`.
+- [ ] Crear el primer administrador mediante el script seguro y guardar los secretos fuera del repositorio.
 - [ ] Corregir, desplegar y verificar el comando de inicio del backend.
 - [ ] Definir `REACT_APP_BACKEND_URL` del frontend con la URL HTTPS real de la API.
 - [ ] Configurar CORS exclusivamente para el dominio institucional; no usar `*` con cookies.
@@ -319,4 +319,3 @@ Su mayor fortaleza es ofrecer valor inmediato sin exigir a la institución adopt
 ### Colecciones MongoDB
 
 `users`, `books`, `links`, `categories`, `hierarchy_categories`, `subcategories`, `hierarchy_materias` y `audit_log`.
-
