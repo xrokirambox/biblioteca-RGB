@@ -15,7 +15,7 @@ const TABS = [
   { id: "categories", label: "Salones", icon: Layers },
   { id: "hierarchy", label: "Jerarquía", icon: Network },
   { id: "audit", label: "Auditoría", icon: History },
-  { id: "proposals", label: "Propuestas", icon: Lightbulb },
+  { id: "proposals", label: "Solicitudes", icon: Lightbulb, adminOnly: true },
 ];
 
 export const StaffPanel = ({ open, onClose }) => {
@@ -61,7 +61,7 @@ export const StaffPanel = ({ open, onClose }) => {
 
         {/* Tabs */}
         <div className="px-2 sm:px-6 border-b border-[#c9a227]/15 bg-[#020b04]/30 flex gap-1 overflow-x-auto scrollbar-thin">
-          {TABS.map((t) => {
+          {TABS.filter((t) => !t.adminOnly || role === "admin").map((t) => {
             const Icon = t.icon;
             const active = tab === t.id;
             return (

@@ -60,7 +60,8 @@ class BookProposalCreate(BaseModel):
 
 
 class BookProposalUpdate(BaseModel):
-    status: str = Field(pattern="^(pending|reviewed|accepted|rejected)$")
+    status: str = Field(pattern="^(pending|attended|rejected)$")
+    response_reason: str = Field(default="", max_length=1000)
 
 
 class BookProposalRecord(BookProposalCreate):
@@ -71,6 +72,7 @@ class BookProposalRecord(BookProposalCreate):
     submitted_at: str = Field(default_factory=now_iso)
     reviewed_by: str = ""
     reviewed_at: Optional[str] = None
+    response_reason: str = ""
 
 
 # ---------- Links ----------

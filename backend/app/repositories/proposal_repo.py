@@ -19,3 +19,7 @@ class ProposalRepository:
     async def update(self, proposal_id: str, changes: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         await self.collection.update_one({"id": proposal_id}, {"$set": changes})
         return await self.get_by_id(proposal_id)
+
+    async def delete(self, proposal_id: str) -> int:
+        result = await self.collection.delete_one({"id": proposal_id})
+        return result.deleted_count

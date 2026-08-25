@@ -5,14 +5,15 @@ import { api } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
 export const BookProposalForm = () => {
-  const { isTeacher, user, setLoginOpen } = useAuth();
+  const { isTeacher, user } = useAuth();
   const [form, setForm] = useState({ teacher_name: user?.name || "", book_title: "", author: "", reason: "" });
   const [sending, setSending] = useState(false);
+
+  if (!isTeacher) return null;
 
   const update = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
   const submit = async (event) => {
     event.preventDefault();
-    if (!isTeacher) return setLoginOpen(true);
     setSending(true);
     try {
       await api.post("/proposals", form);
@@ -47,7 +48,7 @@ export const BookProposalForm = () => {
               <input value={form.reason} onChange={update("reason")} disabled={!isTeacher} placeholder="¿Por qué lo recomiendas?" className="mt-1.5 w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-3 text-sm text-white disabled:opacity-50" />
             </label>
             <button type="submit" disabled={sending} className="sm:col-span-2 btn-gold mt-2 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-sm font-dm-sans text-xs font-semibold tracking-widest uppercase disabled:opacity-60">
-              <Send className="w-4 h-4" /> {isTeacher ? (sending ? "Enviando..." : "Enviar propuesta") : "Ingresar como docente para proponer"}
+              <Send className="w-4 h-4" /> {sending ? "Enviando..." : "Enviar propuesta"}
             </button>
           </form>
         </div>
