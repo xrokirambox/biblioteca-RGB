@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.core.deps import require_admin, require_roles
+from app.core.deps import require_admin, require_roles, require_staff
 from app.domain.schemas import BookProposalCreate, BookProposalUpdate
 from app.services import proposal_service
 
@@ -13,12 +13,12 @@ async def create_proposal(payload: BookProposalCreate, current=Depends(require_r
 
 
 @router.get("")
-async def list_proposals(_admin=Depends(require_admin)):
+async def list_proposals(_staff=Depends(require_staff)):
     return await proposal_service.list_proposals()
 
 
 @router.put("/{proposal_id}")
-async def update_proposal(proposal_id: str, payload: BookProposalUpdate, current=Depends(require_admin)):
+async def update_proposal(proposal_id: str, payload: BookProposalUpdate, current=Depends(require_staff)):
     return await proposal_service.update_proposal(proposal_id, payload, current)
 
 

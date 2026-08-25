@@ -62,6 +62,10 @@ async def csrf_protection(request, call_next):
         from app.core.security import decode_access_token
 
         token = request.cookies.get("access_token")
+        if not token:
+            authorization = request.headers.get("Authorization", "")
+            if authorization.startswith("Bearer "):
+                token = authorization[7:]
         supplied = request.headers.get("X-CSRF-Token", "")
         try:
             payload = decode_access_token(token) if token else {}

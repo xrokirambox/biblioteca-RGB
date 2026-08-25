@@ -11,6 +11,10 @@ user_repo = UserRepository()
 async def get_current_user(request: Request) -> Dict[str, Any]:
     token = request.cookies.get("access_token")
     if not token:
+        authorization = request.headers.get("Authorization", "")
+        if authorization.startswith("Bearer "):
+            token = authorization[7:]
+    if not token:
         raise HTTPException(status_code=401, detail="No autenticado")
     try:
         payload = decode_access_token(token)

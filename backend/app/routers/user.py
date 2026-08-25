@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.core.deps import require_admin, require_staff
+from app.core.deps import require_admin
 from app.domain.schemas import UserCreate, UserUpdate
 from app.services import user_service
 
@@ -8,12 +8,12 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("")
-async def list_users(_staff=Depends(require_staff)):
+async def list_users(_admin=Depends(require_admin)):
     return await user_service.list_users()
 
 
 @router.post("", status_code=200)  # forzar 200
-async def create_user(payload: UserCreate, current=Depends(require_staff)):
+async def create_user(payload: UserCreate, current=Depends(require_admin)):
     return await user_service.create_user(payload, current)
 
 
@@ -21,7 +21,7 @@ async def create_user(payload: UserCreate, current=Depends(require_staff)):
 async def update_user(
     user_id: str,
     payload: UserUpdate,
-    current=Depends(require_staff),
+    current=Depends(require_admin),
 ):
     return await user_service.update_user(user_id, payload, current)
 

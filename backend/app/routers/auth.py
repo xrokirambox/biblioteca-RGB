@@ -20,7 +20,7 @@ async def login(payload: LoginIn, response: Response, request: Request):
         max_age=settings.jwt_expire_hours * 3600,  # FIX: expiry→expire
         path="/",
     )
-    return {k: v for k, v in result.items() if k != "access_token"}
+    return result
 
 
 @router.post("/logout")

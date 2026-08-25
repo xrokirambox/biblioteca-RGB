@@ -14,7 +14,12 @@ async def create_proposal(payload: BookProposalCreate, current: Dict[str, Any]) 
     proposal = BookProposalRecord(**payload.model_dump(), submitted_by=current["id"])
     document = proposal.model_dump()
     await proposal_repo.insert(document)
-    await audit.record(current, "create", "book_proposal", proposal.id, {"title": proposal.book_title})
+    # La propuesta ya está guardada: un fallo de auditoría no debe impedir que
+    # el docente reciba una respuesta exitosa.
+    try:
+        await audit.record(current, "create", "book_proposal", proposal.id, {"title": proposal.book_title})
+    except Exception:
+        pass
     return document
 
 

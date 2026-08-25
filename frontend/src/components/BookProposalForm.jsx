@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Lightbulb, Send } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "../lib/api";
@@ -9,18 +9,34 @@ export const BookProposalForm = () => {
   const [form, setForm] = useState({ teacher_name: user?.name || "", book_title: "", author: "", reason: "" });
   const [sending, setSending] = useState(false);
 
+  useEffect(() => {
+    if (user?.name) setForm((current) => ({ ...current, teacher_name: current.teacher_name || user.name }));
+  }, [user?.name]);
+
   if (!isTeacher) return null;
 
   const update = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
   const submit = async (event) => {
     event.preventDefault();
+    if (form.teacher_name.trim().length < 2) return toast.error("Escribe tu nombre para enviar la solicitud.");
+    if (form.book_title.trim().length < 2) return toast.error("Escribe el título del libro que deseas proponer.");
     setSending(true);
     try {
-      await api.post("/proposals", form);
+      await api.post("/proposals", {
+        ...form,
+        teacher_name: form.teacher_name.trim(),
+        book_title: form.book_title.trim(),
+        author: form.author.trim(),
+        reason: form.reason.trim(),
+      });
       setForm({ teacher_name: user?.name || "", book_title: "", author: "", reason: "" });
       toast.success("Tu propuesta fue enviada para revisión.");
     } catch (error) {
-      toast.error(error.response?.data?.detail || "No fue posible enviar la propuesta.");
+      const detail = error.response?.data?.detail;
+      if (Array.isArray(detail)) toast.error(detail.map((item) => item?.msg || "Datos inválidos").join(". "));
+      else if (detail) toast.error(detail);
+      else if (error.request) toast.error("No se pudo conectar con el servidor. Revisa el despliegue del backend y CORS.");
+      else toast.error("No fue posible enviar la propuesta.");
     } finally { setSending(false); }
   };
 

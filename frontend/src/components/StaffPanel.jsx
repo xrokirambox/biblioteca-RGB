@@ -10,12 +10,12 @@ import { ProposalsManager } from "./ProposalsManager";
 import { useAuth } from "../context/AuthContext";
 
 const TABS = [
-  { id: "books", label: "Libros", icon: BookOpen },
-  { id: "credentials", label: "Credenciales", icon: KeyRound },
-  { id: "categories", label: "Salones", icon: Layers },
-  { id: "hierarchy", label: "Jerarquía", icon: Network },
-  { id: "audit", label: "Auditoría", icon: History },
-  { id: "proposals", label: "Solicitudes", icon: Lightbulb, adminOnly: true },
+  { id: "books", label: "Libros", icon: BookOpen, roles: ["admin", "rector"] },
+  { id: "credentials", label: "Credenciales", icon: KeyRound, roles: ["admin"] },
+  { id: "categories", label: "Salones", icon: Layers, roles: ["admin", "rector"] },
+  { id: "hierarchy", label: "Jerarquía", icon: Network, roles: ["admin", "rector"] },
+  { id: "audit", label: "Auditoría", icon: History, roles: ["admin"] },
+  { id: "proposals", label: "Solicitudes", icon: Lightbulb, roles: ["admin", "rector"] },
 ];
 
 export const StaffPanel = ({ open, onClose }) => {
@@ -61,7 +61,7 @@ export const StaffPanel = ({ open, onClose }) => {
 
         {/* Tabs */}
         <div className="px-2 sm:px-6 border-b border-[#c9a227]/15 bg-[#020b04]/30 flex gap-1 overflow-x-auto scrollbar-thin">
-          {TABS.filter((t) => !t.adminOnly || role === "admin").map((t) => {
+          {TABS.filter((t) => t.roles.includes(role)).map((t) => {
             const Icon = t.icon;
             const active = tab === t.id;
             return (
