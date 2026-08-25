@@ -11,6 +11,12 @@ const ROLES = [
   { id: "docente", label: "Docente" },
 ];
 
+const formatApiError = (detail, fallback) => {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) return detail.map((item) => item?.msg || "Datos inválidos").join(". ");
+  return fallback;
+};
+
 const UserForm = ({ initial, onSubmit, onCancel, submitting, canChangeRole, isRector }) => {
   const [form, setForm] = useState(
     initial ? { email: initial.email, name: initial.name || "", role: initial.role, password: "" }
@@ -53,7 +59,7 @@ const UserForm = ({ initial, onSubmit, onCancel, submitting, canChangeRole, isRe
           {isEdit ? "Nueva contraseña (opcional)" : "Contraseña *"}
         </label>
         <input data-testid="user-form-password" type="password" value={form.password} onChange={handle("password")}
-          required={!isEdit} placeholder={isEdit ? "Dejar vacío para no cambiar" : "Mínimo 6 caracteres"}
+          required={!isEdit} minLength="12" placeholder={isEdit ? "Dejar vacío para no cambiar" : "Mínimo 12 caracteres"}
           className="w-full bg-black/40 border border-[#c9a227]/20 rounded-sm px-3 py-2.5 text-sm font-dm-sans text-white placeholder:text-[#a3b3a6]/50 focus:outline-none focus:border-[#c9a227] focus:ring-1 focus:ring-[#c9a227]" />
       </div>
       <div className="sm:col-span-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
@@ -107,6 +113,7 @@ export const UsersManager = () => {
 
   const handleCreate = async (form) => {
     if (!form.email || !form.password) return toast.error("Correo y contraseña son obligatorios");
+    if (form.password.length < 12) return toast.error("La contraseña debe tener al menos 12 caracteres");
     setBusy(true);
     try {
       const res = await api.post(`/users`, form);
@@ -114,7 +121,7 @@ export const UsersManager = () => {
       toast.success("Usuario creado");
       setMode("list");
     } catch (e) {
-      toast.error(e.response?.data?.detail || "No se pudo crear");
+      toast.error(formatApiError(e.response?.data?.detail, "No se pudo crear el usuario"));
     } finally { setBusy(false); }
   };
 
