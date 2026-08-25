@@ -13,7 +13,7 @@ async def login(payload: LoginIn, response: Response, request: Request):
     result = await auth_service.login(payload.email, payload.password, request)
     response.set_cookie(
         key="access_token",
-        value=result["token"],
+        value=result["access_token"],
         httponly=True,
         secure=settings.secure_cookies,
         samesite="none" if settings.secure_cookies else "lax",
